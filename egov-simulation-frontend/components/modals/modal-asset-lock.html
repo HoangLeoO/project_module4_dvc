@@ -1,0 +1,49 @@
+<!-- Modal Asset Lock -->
+<div class="modal fade" id="assetLockModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger border-2">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-lock-fill me-2"></i>Phong tỏa / Ngăn chặn Tài sản</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="alert alert-warning d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                    <div>
+                        <strong>Cảnh báo tác động mạnh!</strong>
+                        <div class="small">Thao tác này sẽ ngăn chặn mọi giao dịch liên quan đến tài sản này.</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Tài sản mục tiêu</label>
+                    <input type="text" class="form-control fw-bold bg-light" value="QSDĐ số BK123456 - Thửa 12, Tờ 5"
+                        readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Loại ngăn chặn</label>
+                    <select class="form-select">
+                        <option value="DISPUTE">Tranh chấp (Tòa án thụ lý)</option>
+                        <option value="MORTGAGE">Thế chấp ngân hàng</option>
+                        <option value="DISTRAINT">Kê biên thi hành án</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Căn cứ pháp lý / Số văn bản</label>
+                    <textarea class="form-control" rows="3"
+                        placeholder="VD: Quyết định số 123/QĐ-TA ngày..."></textarea>
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger fw-bold shadow-sm">
+                    <i class="bi bi-shield-lock-fill me-2"></i>Xác nhận Phong tỏa
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

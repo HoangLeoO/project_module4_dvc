@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Cư trú - Hệ thống Một cửa</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/internal.css">
+    <style>
+        .tree-line {
+            border-left: 2px dashed #dee2e6;
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- WRAPPER -->
+    <div class="d-flex" id="wrapper">
+
+        <!-- SIDEBAR -->
+        <div class="bg-white border-end"
+            style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <div class="p-3 border-bottom d-flex align-items-center bg-primary text-white">
+                <i class="bi bi-building-fill-gear fs-4 me-2"></i>
+                <div class="fw-bold">HỆ THỐNG MỘT CỬA</div>
+            </div>
+            <div class="list-group list-group-flush p-2">
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Nghiệp
+                    vụ</small>
+                <a href="officer-dashboard.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-grid-fill me-2"></i>Bàn làm việc</a>
+                <a href="officer-reception.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-input-cursor-text me-2"></i>Tiếp nhận hồ sơ</a>
+                <a href="officer-return.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-check2-circle me-2"></i>Trả kết quả</a>
+                <a href="officer-complaints.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0 d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-megaphone-fill me-2"></i>Phản ánh</span>
+                    <span class="badge bg-danger rounded-pill">1</span>
+                </a>
+                <a href="officer-household-mgmt.html"
+                    class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
+                        class="bi bi-people-fill me-2"></i>Quản lý cư trú</a>
+
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
+                    thống</small>
+                <a href="../06-shared/internal-login.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
+                        class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+            <!-- HEADER -->
+            <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="officer-dashboard.html">Bàn làm việc</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Quản lý Cư trú & Hộ tịch</li>
+                    </ol>
+                </nav>
+            </nav>
+
+            <main class="flex-grow-1 p-4">
+
+                <!-- 1. LOOKUP -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body bg-light">
+                        <label class="form-label fw-bold">Tra cứu Hộ khẩu</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Nhập số sổ hộ khẩu hoặc CCCD chủ hộ..."
+                                value="200012345 (Nguyễn Văn A)">
+                            <button class="btn btn-primary fw-bold px-4">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. FAMILY TREE RESULT -->
+                <div class="card border-0 shadow-sm">
+                    <div
+                        class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-primary">
+                            <i class="bi bi-house-door-fill me-2"></i>Hộ ông: NGUYỄN VĂN A
+                        </h6>
+                        <span class="badge bg-success">Hộ khẩu thường trú</span>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <!-- HEAD -->
+                        <div
+                            class="d-flex align-items-center p-3 border rounded mb-3 bg-primary bg-opacity-10 border-primary">
+                            <div class="me-3">
+                                <img src="https://ui-avatars.com/api/?name=Nguyen+Van+A"
+                                    class="rounded-circle shadow-sm" width="50">
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-0">Nguyễn Văn A (1990)</h6>
+                                <small class="text-primary fw-bold">CHỦ HỘ</small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown">Thao tác</button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Chỉnh sửa thông tin</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#">Xóa đăng ký thường trú</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- MEMBERS TREE -->
+                        <div class="tree-line">
+
+                            <!-- MEMBER 1 -->
+                            <div class="d-flex align-items-center p-3 border rounded mb-3 bg-white shadow-sm">
+                                <div class="me-3">
+                                    <img src="https://ui-avatars.com/api/?name=Tran+Thi+B" class="rounded-circle"
+                                        width="40">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-0">Trần Thị B (1992)</h6>
+                                    <small class="text-muted">Quan hệ: Vợ</small>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                        data-bs-toggle="dropdown">Thao tác</button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#">Tách hộ</a></li>
+                                        <li><a class="dropdown-item" href="#">Chuyển khẩu</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- MEMBER 2 (DECEASED DEMO) -->
+                            <div
+                                class="d-flex align-items-center p-3 border rounded mb-3 bg-secondary bg-opacity-10 grayscale">
+                                <div class="me-3 position-relative">
+                                    <img src="https://ui-avatars.com/api/?name=Nguyen+Van+C" class="rounded-circle"
+                                        width="40" style="filter: grayscale(100%);">
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">Đã
+                                        mất</span>
+                                </div>
+                                <div class="flex-grow-1 text-muted">
+                                    <h6 class="fw-bold mb-0 text-decoration-line-through">Nguyễn Văn C (2015)</h6>
+                                    <small>Quan hệ: Con - <span class="text-danger fw-bold">Đã xóa đăng ký (Khai
+                                            tử)</span></small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-light border" disabled>Đã khóa</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

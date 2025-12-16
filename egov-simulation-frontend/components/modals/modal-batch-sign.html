@@ -1,0 +1,85 @@
+<!-- Modal Batch Sign Progress -->
+<div class="modal fade" id="batchSignProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-collection-fill me-2"></i>Đang xử lý Ký hàng loạt</h5>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold mb-0" id="batchCount">0/0</h2>
+                    <div class="text-muted small">Hồ sơ đã ký</div>
+                </div>
+
+                <div class="progress mb-3" style="height: 25px;">
+                    <div id="batchProgressBar"
+                        class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                        style="width: 0%">0%</div>
+                </div>
+
+                <div class="bg-dark text-success p-3 rounded font-monospace small overflow-auto" id="batchLog"
+                    style="height: 150px; border: 1px solid #444;">
+                    <div class="text-muted">Waiting for stream...</div>
+                </div>
+
+                <div id="batchResult" class="alert alert-success mt-3 d-none text-center fw-bold animate-fade-in">
+                    <i class="bi bi-check-circle-fill me-2"></i>Hoàn tất quá trình ký!
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary disabled" id="batchCloseBtn"
+                    data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function startBatchSign(totalDocs) {
+        const modalEl = document.getElementById('batchSignProgressModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+        let current = 0;
+        const progressBar = document.getElementById('batchProgressBar');
+        const countDisplay = document.getElementById('batchCount');
+        const logDisplay = document.getElementById('batchLog');
+        const resultAlert = document.getElementById('batchResult');
+        const closeBtn = document.getElementById('batchCloseBtn');
+
+        // Reset
+        current = 0;
+        progressBar.style.width = '0%';
+        progressBar.innerText = '0%';
+        countDisplay.innerText = `0/${totalDocs}`;
+        logDisplay.innerHTML = '';
+        resultAlert.classList.add('d-none');
+        closeBtn.classList.add('disabled');
+
+        const interval = setInterval(() => {
+            current++;
+            const percent = Math.round((current / totalDocs) * 100);
+
+            // Update UI
+            progressBar.style.width = `${percent}%`;
+            progressBar.innerText = `${percent}%`;
+            countDisplay.innerText = `${current}/${totalDocs}`;
+
+            // Add Log
+            const logEntry = document.createElement('div');
+            logEntry.innerText = `> [${new Date().toLocaleTimeString()}] Signing Doc #${current} - HS-2023-${1000 + current}... OK`;
+            logDisplay.appendChild(logEntry);
+            logDisplay.scrollTop = logDisplay.scrollHeight;
+
+            if (current >= totalDocs) {
+                clearInterval(interval);
+                resultAlert.classList.remove('d-none');
+                closeBtn.classList.remove('disabled');
+                closeBtn.classList.replace('btn-secondary', 'btn-primary');
+            }
+
+        }, 800); // Simulate .8s per doc
+    }
+</script>

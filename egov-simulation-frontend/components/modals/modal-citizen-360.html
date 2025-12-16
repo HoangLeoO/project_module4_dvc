@@ -1,0 +1,172 @@
+<!-- Modal Citizen 360 -->
+<div class="modal fade" id="citizen360Modal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2"></i>Tra cứu Thông tin Công dân 360
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+
+                <!-- Search Bar inside Modal -->
+                <div class="input-group mb-4 shadow-sm">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-start-0 ps-0"
+                        placeholder="Nhập số CCCD/Định danh cá nhân..." value="048090000123">
+                    <button class="btn btn-primary fw-bold">Tra cứu</button>
+                </div>
+
+                <div class="row">
+                    <!-- Sidebar Tabs -->
+                    <div class="col-md-3">
+                        <div class="list-group shadow-sm">
+                            <a href="#info360" class="list-group-item list-group-item-action active"
+                                data-bs-toggle="list">
+                                <i class="bi bi-person-lines-fill me-2"></i>Thông tin cá nhân
+                            </a>
+                            <a href="#family360" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-people-fill me-2"></i>Gia đình & Hộ khẩu
+                            </a>
+                            <a href="#assets360" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-house-fill me-2"></i>Đất đai & Tài sản
+                            </a>
+                            <a href="#records360" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-folder-fill me-2"></i>Lịch sử hồ sơ
+                            </a>
+                        </div>
+
+                        <div class="card mt-3 border-0 shadow-sm text-center p-3">
+                            <img src="https://ui-avatars.com/api/?name=Nguyen+Van+A&size=100"
+                                class="rounded-circle mx-auto mb-2">
+                            <h6 class="fw-bold">Nguyễn Văn A</h6>
+                            <div class="badge bg-success">Công dân gương mẫu</div>
+                            <div class="mt-2 text-center">
+                                <i class="bi bi-fingerprint text-muted fs-1" title="Vân tay đã thu thập"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="col-md-9">
+                        <div class="tab-content">
+
+                            <!-- TAB 1: PERSONAL -->
+                            <div class="tab-pane fade show active" id="info360">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white fw-bold">Dữ liệu Dân cư Quốc gia</div>
+                                    <div class="card-body">
+                                        <form class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="small text-muted fw-bold">Họ và tên</label>
+                                                <div class="form-control-plaintext fw-bold">NGUYỄN VĂN A</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small text-muted fw-bold">Ngày sinh</label>
+                                                <div class="form-control-plaintext">01/01/1990</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small text-muted fw-bold">Số CCCD</label>
+                                                <div class="form-control-plaintext fw-bold text-primary">048090000123
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small text-muted fw-bold">Quê quán</label>
+                                                <div class="form-control-plaintext">Xã Hòa Khương, Huyện Hòa Vang, TP.
+                                                    Đà Nẵng</div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="small text-muted fw-bold">Thường trú</label>
+                                                <div class="form-control-plaintext">123 Nguyễn Văn Linh, P. Vĩnh Trung,
+                                                    Q. Thanh Khê, TP. Đà Nẵng</div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 2: FAMILY -->
+                            <div class="tab-pane fade" id="family360">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white fw-bold d-flex justify-content-between">
+                                        <span>Thành viên Hộ gia đình</span>
+                                        <span class="badge bg-secondary">SHK: 200012345</span>
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="fw-bold">Nguyễn Văn A</span>
+                                                <span class="badge bg-primary ms-2">Chủ hộ</span>
+                                            </div>
+                                            <small class="text-muted">Nam - 1990</small>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="fw-bold">Trần Thị B</span>
+                                                <span class="badge bg-light text-dark border ms-2">Vợ</span>
+                                            </div>
+                                            <small class="text-muted">Nữ - 1992</small>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- TAB 3: ASSETS -->
+                            <div class="tab-pane fade" id="assets360">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="card h-100 border-success shadow-sm">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <i class="bi bi-house-check-fill text-success fs-3 me-3"></i>
+                                                    <h6 class="fw-bold mb-0">Thửa đất số 12, Tờ bản đồ số 5</h6>
+                                                </div>
+                                                <p class="small text-muted mb-1">Địa chỉ: Hòa Hải, Ngũ Hành Sơn</p>
+                                                <p class="small text-muted mb-1">Diện tích: 100m2</p>
+                                                <span class="badge bg-success bg-opacity-10 text-success">Đang sử
+                                                    dụng</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 4: RECORDS -->
+                            <div class="tab-pane fade" id="records360">
+                                <table class="table table-hover small">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã HS</th>
+                                            <th>Thủ tục</th>
+                                            <th>Ngày nộp</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>HS-009</td>
+                                            <td>Đăng ký Khai sinh</td>
+                                            <td>10/12/2025</td>
+                                            <td><span class="badge bg-warning text-dark">Đang xử lý</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>HS-005</td>
+                                            <td>Lý lịch Tư pháp</td>
+                                            <td>01/12/2025</td>
+                                            <td><span class="badge bg-success">Hoàn thành</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

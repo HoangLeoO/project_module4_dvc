@@ -1,0 +1,191 @@
+<!-- 
+    COMPONENT: LAND SPLIT EDITOR MODAL
+    ID: #landSplitEditorModal
+    Location: components/modals/modal-land-split.html
+    Usage: Included in Land Registry pages. Triggered by 'Tach Thua' action.
+-->
+<div class="modal fade" id="landSplitEditorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- HEADER -->
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-primary">
+                    <i class="bi bi-ui-checks-grid me-2"></i>Phương án tách thửa (Mô phỏng)
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <div class="row">
+                    <!-- LEFT: CONTROLS -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Diện tích gốc (m2)</label>
+                            <input type="number" class="form-control bg-light" id="originalArea" value="200" readonly>
+                        </div>
+
+                        <hr>
+                        <h6 class="fw-bold mb-3">Thông số chia tách</h6>
+
+                        <!-- Input A -->
+                        <div class="mb-3">
+                            <label for="areaA" class="form-label">Thửa A (Mới)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="areaA" placeholder="Nhập diện tích"
+                                    oninput="calculateSplit()">
+                                <span class="input-group-text">m2</span>
+                            </div>
+                        </div>
+
+                        <!-- Input B -->
+                        <div class="mb-3">
+                            <label for="areaB" class="form-label">Thửa B (Còn lại)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="areaB" placeholder="Tự động tính"
+                                    readonly>
+                                <span class="input-group-text">m2</span>
+                            </div>
+                        </div>
+
+                        <!-- Validation Message -->
+                        <div id="splitError" class="alert alert-danger d-none small p-2">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Diện tích tối thiểu phải > 60m2 mỗi thửa!
+                        </div>
+
+                        <div class="text-muted small fst-italic">
+                            * Đường kẻ chia tách sẽ hiển thị trực quan trên hình vẽ bên phải.
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: CANVAS VISUALIZER -->
+                    <div class="col-md-8">
+                        <div class="card bg-light border-0 h-100 d-flex align-items-center justify-content-center">
+                            <canvas id="splitCanvas" width="400" height="300"
+                                class="bg-white border shadow-sm rounded"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-primary" id="btnSaveSplit" onclick="saveSplitPlan()" disabled>
+                    <i class="bi bi-save me-1"></i>Xác nhận phương án
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JS Logic -->
+<script>
+    const canvas = document.getElementById('splitCanvas');
+    const ctx = canvas.getContext('2d');
+    const MIN_AREA = 60;
+
+    // Draw Initial State
+    function drawLand(splitRatio = 0) {
+        // Clear
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Constants for drawing a generic rectangle land
+        const padding = 50;
+        const w = canvas.width - padding * 2;
+        const h = canvas.height - padding * 2;
+        const startX = padding;
+        const startY = padding;
+
+        // Draw Main Rect (The Land)
+        ctx.beginPath();
+        ctx.rect(startX, startY, w, h);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#333';
+        ctx.stroke();
+        ctx.fillStyle = '#f8f9fa';
+        ctx.fill();
+
+        // Draw Split Line if valid ratio (0 < ratio < 1)
+        if (splitRatio > 0 && splitRatio < 1) {
+            const splitX = startX + (w * splitRatio);
+
+            // Draw Line
+            ctx.beginPath();
+            ctx.moveTo(splitX, startY);
+            ctx.lineTo(splitX, startY + h);
+            ctx.setLineDash([5, 5]); // Dashed line
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#dc3545'; // Red color for split
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset style
+
+            // Labels
+            ctx.fillStyle = '#0d6efd'; // Blue text
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText("Thửa A", startX + 10, startY + h / 2);
+
+            ctx.fillStyle = '#198754'; // Green text
+            ctx.fillText("Thửa B", splitX + 10, startY + h / 2);
+        } else {
+            // Label Original
+            ctx.fillStyle = '#6c757d';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText("Thửa Gốc", startX + w / 2 - 30, startY + h / 2);
+        }
+    }
+
+    function calculateSplit() {
+        const original = parseFloat(document.getElementById('originalArea').value);
+        const valA = parseFloat(document.getElementById('areaA').value);
+        const inputB = document.getElementById('areaB');
+        const btnSave = document.getElementById('btnSaveSplit');
+        const errorMsg = document.getElementById('splitError');
+
+        if (isNaN(valA) || valA <= 0) {
+            inputB.value = '';
+            drawLand(0);
+            btnSave.disabled = true;
+            errorMsg.classList.add('d-none');
+            return;
+        }
+
+        const valB = original - valA;
+        inputB.value = valB;
+
+        // Validate
+        if (valA < MIN_AREA || valB < MIN_AREA) {
+            errorMsg.classList.remove('d-none');
+            btnSave.disabled = true;
+            // Still draw but maybe warning style? For now standard draw
+        } else {
+            errorMsg.classList.add('d-none');
+            btnSave.disabled = false;
+        }
+
+        // Calculate Ratio for Visualizer
+        const ratio = valA / original;
+        drawLand(ratio);
+    }
+
+    function saveSplitPlan() {
+        alert("Đã lưu phương án tách thửa vào Hồ sơ!");
+        document.querySelector('#landSplitEditorModal .btn-close').click();
+    }
+
+    // Init
+    // Wait for modal to be shown to draw? Or just draw immediately if script loaded.
+    // For safety in standalone, draw once.
+    drawLand(0);
+
+    // If used inside Bootstrap modal events:
+    // const modalEl = document.getElementById('landSplitEditorModal')
+    // modalEl.addEventListener('shown.bs.modal', event => {
+    //   drawLand(0);
+    // })
+</script>

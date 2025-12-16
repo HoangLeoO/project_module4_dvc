@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết kế Quy trình - Admin Core</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/internal.css">
+    <style>
+        .workflow-canvas {
+            background-color: #f8f9fa;
+            background-image:
+                linear-gradient(#e9ecef 1px, transparent 1px),
+                linear-gradient(90deg, #e9ecef 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            min-height: 600px;
+            overflow: auto;
+        }
+
+        .flow-node {
+            width: 150px;
+            position: absolute;
+            cursor: move;
+            transition: box-shadow 0.2s;
+        }
+
+        .flow-node:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .flow-connect {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #adb5bd;
+            border-radius: 50%;
+            cursor: w-resize;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- WRAPPER -->
+    <div class="d-flex" id="wrapper">
+        <!-- SIDEBAR -->
+        <div class="bg-dark text-white border-end"
+            style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <div class="p-3 border-bottom d-flex align-items-center bg-black bg-opacity-25">
+                <i class="bi bi-cpu-fill fs-4 me-2 text-info"></i>
+                <div class="fw-bold">E-GOV ADMIN CORE</div>
+            </div>
+            <div class="list-group list-group-flush p-2">
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Giám sát &
+                    Vận hành</small>
+                <a href="admin-dashboard.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-speedometer2 me-2"></i>System Health</a>
+                <a href="admin-audit-logs.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-activity me-2"></i>Audit Logs</a>
+                <a href="admin-payment-history.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-currency-exchange me-2"></i>Giao dịch</a>
+
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Quản trị Dữ
+                    liệu</small>
+                <a href="admin-users.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-people-fill me-2"></i>Người dùng</a>
+                <a href="admin-mock-console.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-database-fill-gear me-2"></i>Mock Console (God)</a>
+                <a href="admin-mock-relations.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-diagram-3 me-2"></i>Quan hệ Dân cư</a>
+
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Cấu
+                    hình</small>
+                <a href="admin-services.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-list-check me-2"></i>Dịch vụ công</a>
+                <a href="admin-workflow.html"
+                    class="list-group-item list-group-item-action active bg-secondary bg-opacity-25 text-white border-0 fw-bold"><i
+                        class="bi bi-diagram-2 me-2"></i>Quy trình (Workflow)</a>
+                <a href="admin-system-settings.html"
+                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                        class="bi bi-sliders me-2"></i>Tham số hệ thống</a>
+
+                <div class="mt-4 px-2">
+                    <a href="../06-shared/internal-login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                            class="bi bi-box-arrow-left me-2"></i>Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+            <!-- HEADER -->
+            <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm" style="height: 60px;">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="admin-dashboard.html">Admin</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Workflow Designer</li>
+                    </ol>
+                </nav>
+            </nav>
+
+            <main class="flex-grow-1 p-4">
+
+                <!-- TOOLBAR -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body p-2 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <select class="form-select w-auto fw-bold text-primary">
+                                <option>Đăng ký Khai sinh (Standard Flow)</option>
+                                <option>Đất đai: Cấp mới GCN (Land Flow)</option>
+                            </select>
+                            <span class="badge bg-success">Active V1.0</span>
+                        </div>
+                        <button class="btn btn-primary fw-bold"><i class="bi bi-floppy2-fill me-2"></i>Lưu Quy
+                            trình</button>
+                    </div>
+                </div>
+
+                <!-- DESIGNER -->
+                <div class="row g-0 border bg-white shadow-sm" style="height: 700px;">
+
+                    <!-- TOOLBOX -->
+                    <div class="col-md-2 bg-light border-end p-3">
+                        <h6 class="text-uppercase text-muted fw-bold small mb-3">Toolbox Nodes</h6>
+
+                        <div class="card mb-2 cursor-grab shadow-sm border-success border-start border-4">
+                            <div class="card-body p-2 d-flex align-items-center">
+                                <i class="bi bi-play-circle-fill text-success fs-5 me-2"></i>
+                                <span class="fw-bold small">Start Event</span>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 cursor-grab shadow-sm border-primary border-start border-4">
+                            <div class="card-body p-2 d-flex align-items-center">
+                                <i class="bi bi-person-gear text-primary fs-5 me-2"></i>
+                                <span class="fw-bold small">User Task (Officer)</span>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 cursor-grab shadow-sm border-warning border-start border-4">
+                            <div class="card-body p-2 d-flex align-items-center">
+                                <i class="bi bi-diamond-fill text-warning fs-5 me-2"></i>
+                                <span class="fw-bold small">Gateway (Branch)</span>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2 cursor-grab shadow-sm border-danger border-start border-4">
+                            <div class="card-body p-2 d-flex align-items-center">
+                                <i class="bi bi-stop-circle-fill text-danger fs-5 me-2"></i>
+                                <span class="fw-bold small">End Event</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- CANVAS -->
+                    <div class="col-md-8 workflow-canvas" id="canvas">
+
+                        <!-- MOCK NODES -->
+
+                        <!-- Start -->
+                        <div class="card flow-node border-success border-2 shadow-sm text-center p-2 rounded-circle"
+                            style="top: 50px; left: 350px; width: 60px; height: 60px;">
+                            <i class="bi bi-play-fill fs-2 text-success"></i>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div class="card flow-node shadow-sm" style="top: 150px; left: 300px;">
+                            <div class="card-body p-2">
+                                <div class="text-primary small fw-bold mb-1"><i class="bi bi-person-badge me-1"></i>Tiếp
+                                    nhận</div>
+                                <div class="text-muted" style="font-size: 10px;">Role: OFFICER</div>
+                            </div>
+                            <!-- Connector Points -->
+                            <div class="flow-connect" style="top: -5px; left: 45%;"></div>
+                            <div class="flow-connect" style="bottom: -5px; left: 45%;"></div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="card flow-node shadow-sm" style="top: 280px; left: 300px;">
+                            <div class="card-body p-2">
+                                <div class="text-info small fw-bold mb-1"><i class="bi bi-check-square me-1"></i>Thẩm
+                                    định</div>
+                                <div class="text-muted" style="font-size: 10px;">Role: SPECIALIST</div>
+                            </div>
+                            <!-- Connector Points -->
+                            <div class="flow-connect" style="top: -5px; left: 45%;"></div>
+                            <div class="flow-connect" style="bottom: -5px; left: 45%;"></div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="card flow-node shadow-sm" style="top: 410px; left: 300px;">
+                            <div class="card-body p-2">
+                                <div class="text-danger small fw-bold mb-1"><i class="bi bi-pen-fill me-1"></i>Ký duyệt
+                                </div>
+                                <div class="text-muted" style="font-size: 10px;">Role: LEADER</div>
+                            </div>
+                            <!-- Connector Points -->
+                            <div class="flow-connect" style="top: -5px; left: 45%;"></div>
+                            <div class="flow-connect" style="bottom: -5px; left: 45%;"></div>
+                        </div>
+
+                        <!-- Connecting Lines (SVG Mock) -->
+                        <svg class="position-absolute top-0 start-0 w-100 h-100"
+                            style="pointer-events: none; z-index: 0;">
+                            <line x1="380" y1="110" x2="375" y2="150" stroke="#adb5bd" stroke-width="2"
+                                marker-end="url(#arrowhead)" />
+                            <line x1="375" y1="210" x2="375" y2="280" stroke="#adb5bd" stroke-width="2"
+                                marker-end="url(#arrowhead)" />
+                            <line x1="375" y1="340" x2="375" y2="410" stroke="#adb5bd" stroke-width="2"
+                                marker-end="url(#arrowhead)" />
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5"
+                                    orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#adb5bd" />
+                                </marker>
+                            </defs>
+                        </svg>
+
+                    </div>
+
+                    <!-- PROPERTIES -->
+                    <div class="col-md-2 bg-light border-start p-3">
+                        <h6 class="text-uppercase text-muted fw-bold small mb-3">Properties</h6>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Step Name</label>
+                            <input type="text" class="form-control form-control-sm" value="Thẩm định">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Assigned Role</label>
+                            <select class="form-select form-select-sm">
+                                <option>OFFICER</option>
+                                <option selected>SPECIALIST</option>
+                                <option>LEADER</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">SLA (Hours)</label>
+                            <input type="number" class="form-control form-control-sm" value="8">
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
