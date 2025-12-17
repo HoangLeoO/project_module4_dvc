@@ -12,12 +12,12 @@ import org.example.project_module4_dvc.entity.base.BaseEntity;
 @Table(name = "ops_dossier_results")
 @Getter
 @Setter
-@SuperBuilder // Kế thừa SuperBuilder từ BaseEntity
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpsDossierResult extends BaseEntity {
 
-    // --- Quan hệ: Hồ sơ gốc (Có Constraint FK) ---
+
     @NotNull(message = "Hồ sơ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dossier_id", nullable = false, referencedColumnName = "id")
@@ -37,5 +37,5 @@ public class OpsDossierResult extends BaseEntity {
     @Size(max = 500, message = "Đường dẫn tệp không được vượt quá 500 ký tự")
     private String eFileUrl;
 
-    // Lưu ý: BaseEntity đã có sẵn 'id' và 'createdAt'
+
 }

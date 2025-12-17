@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ký duyệt Hồ sơ - Lãnh đạo</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/internal.css">
+</head>
+
+<body class="bg-light">
+
+    <!-- WRAPPER -->
+    <div class="d-flex" id="wrapper">
+
+        <!-- SIDEBAR -->
+        <div class="bg-white border-end"
+            style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <div class="p-3 border-bottom d-flex align-items-center bg-danger text-white">
+                <i class="bi bi-briefcase-fill fs-4 me-2"></i>
+                <div class="fw-bold">LÃNH ĐẠO ĐƠN VỊ</div>
+            </div>
+            <div class="list-group list-group-flush p-2">
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Điều
+                    hành</small>
+                <a href="leader-dashboard.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-speedometer2 me-2"></i>Tổng quan (Cockpit)</a>
+                <a href="leader-approval.html"
+                    class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
+                        class="bi bi-pen-fill me-2"></i>Duyệt & Ký số <span
+                        class="badge bg-danger ms-auto">15</span></a>
+                <a href="leader-reports.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-bar-chart-line-fill me-2"></i>Báo cáo số liệu</a>
+                <a href="leader-delegation.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-person-fill-gear me-2"></i>Ủy quyền ký</a>
+
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
+                    thống</small>
+                <a href="../06-shared/internal-login.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
+                        class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+            <!-- HEADER -->
+            <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="leader-dashboard.html">Lãnh đạo</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Trình ký</li>
+                    </ol>
+                </nav>
+            </nav>
+
+            <main class="flex-grow-1 p-4">
+
+                <!-- TABS -->
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" href="#">Hồ sơ của tôi (12)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-secondary" href="#"><i
+                                class="bi bi-shield-lock-fill me-2"></i>Hồ sơ được Ủy quyền (3)</a>
+                    </li>
+                </ul>
+
+                <!-- TOOLBAR -->
+                <div
+                    class="bg-white p-3 border rounded shadow-sm mb-3 d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleBatchBtn()">
+                        <label class="form-check-label fw-bold" for="selectAll">Chọn tất cả</label>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-funnel"></i> Lọc thủ
+                            tục</button>
+                        <button id="batchSignBtn" class="btn btn-primary fw-bold" disabled onclick="startBatchSign(5)">
+                            <i class="bi bi-pen-fill me-2"></i>Ký duyệt hàng loạt (<span id="selectedCount">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="card border-0 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Trích yếu nội dung</th>
+                                    <th>Thủ tục</th>
+                                    <th>Người trình</th>
+                                    <th>Độ khẩn / Hạn</th>
+                                    <th class="text-end pe-3">Tác vụ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Item 1 -->
+                                <tr class="cursor-pointer">
+                                    <td class="text-center"><input class="form-check-input doc-check" type="checkbox"
+                                            onchange="updateCount()"></td>
+                                    <td onclick="openSignModal()">
+                                        <div class="fw-bold text-primary">V/v Cấp giấy khai sinh cho Nguyễn Văn Kon
+                                        </div>
+                                        <small class="text-muted">Mã HS: HS-2023-009</small>
+                                    </td>
+                                    <td>Đăng ký khai sinh</td>
+                                    <td>Chuyên viên A</td>
+                                    <td><span class="badge bg-danger animate-pulse">GẤP (Còn 2h)</span></td>
+                                    <td class="text-end pe-3">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openSignModal()">Xem &
+                                            Ký</button>
+                                    </td>
+                                </tr>
+                                <!-- Item 2 -->
+                                <tr>
+                                    <td class="text-center"><input class="form-check-input doc-check" type="checkbox"
+                                            onchange="updateCount()"></td>
+                                    <td onclick="openSignModal()">
+                                        <div class="fw-bold">V/v Cấp trích lục kết hôn</div>
+                                        <small class="text-muted">Mã HS: HS-2023-010</small>
+                                    </td>
+                                    <td>Hộ tịch</td>
+                                    <td>Chuyên viên B</td>
+                                    <td><span class="badge bg-light text-dark border">Trong hạn</span></td>
+                                    <td class="text-end pe-3">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openSignModal()">Xem &
+                                            Ký</button>
+                                    </td>
+                                </tr>
+                                <!-- Repeat Items (Mock) -->
+                                <tr>
+                                    <td class="text-center"><input class="form-check-input doc-check" type="checkbox"
+                                            onchange="updateCount()"></td>
+                                    <td onclick="openSignModal()">
+                                        <div class="fw-bold">V/v Xác nhận tình trạng hôn nhân</div>
+                                        <small class="text-muted">Mã HS: HS-2023-012</small>
+                                    </td>
+                                    <td>Hộ tịch</td>
+                                    <td>Chuyên viên A</td>
+                                    <td><span class="badge bg-light text-dark border">Trong hạn</span></td>
+                                    <td class="text-end pe-3">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openSignModal()">Xem &
+                                            Ký</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modalContainer"></div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Start Load Modals
+        const modals = ['modal-digital-sign.html', 'modal-batch-sign.html', 'modal-action.html'];
+        modals.forEach(file => {
+            fetch('../../components/modals/' + file)
+                .then(r => r.text())
+                .then(html => document.body.insertAdjacentHTML('beforeend', html));
+        });
+
+        function openSignModal() {
+            var myModal = new bootstrap.Modal(document.getElementById('digitalSignModal'));
+            myModal.show();
+        }
+
+        function updateCount() {
+            const checkboxes = document.querySelectorAll('.doc-check:checked');
+            const count = checkboxes.length;
+            document.getElementById('selectedCount').innerText = count;
+            document.getElementById('batchSignBtn').disabled = count < 2;
+        }
+
+        function toggleBatchBtn() {
+            const masterCheck = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.doc-check');
+            checkboxes.forEach(cb => cb.checked = masterCheck.checked);
+            updateCount();
+        }
+    </script>
+</body>
+
+</html>

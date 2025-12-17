@@ -23,8 +23,6 @@ public class MockBusiness {
     @Column(name = "tax_code", nullable = false, unique = true, length = 20)
     @NotBlank(message = "Mã số thuế không được để trống")
     @Size(max = 20, message = "Mã số thuế không được vượt quá 20 ký tự")
-    // Bạn có thể mở comment dòng dưới nếu muốn bắt buộc MST chỉ chứa số
-    // @Pattern(regexp = "\\d+", message = "Mã số thuế chỉ được chứa ký tự số")
     private String taxCode;
 
     @Column(name = "business_name", nullable = false, length = 200)

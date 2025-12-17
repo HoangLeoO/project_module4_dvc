@@ -19,15 +19,14 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 public class OpsDossierLog extends BaseEntity {
 
-    // --- Quan hệ: Hồ sơ (Có Constraint FK + Cascade Delete) ---
+
     @NotNull(message = "Hồ sơ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dossier_id", nullable = false, referencedColumnName = "id")
-    @OnDelete(action = OnDeleteAction.CASCADE) // Báo cho Hibernate biết DB đã có rule này
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private OpsDossier dossier;
 
-    // --- Người thực hiện (Không có Constraint FK trong SQL) ---
-    // Map thành Long (Raw ID) để đúng với cấu trúc bảng
+
     @Column(name = "actor_id", nullable = false)
     @NotNull(message = "ID người thực hiện không được để trống")
     private Long actorId;
@@ -35,7 +34,7 @@ public class OpsDossierLog extends BaseEntity {
     @Column(name = "action", nullable = false, length = 50)
     @NotBlank(message = "Hành động không được để trống")
     @Size(max = 50, message = "Hành động không được vượt quá 50 ký tự")
-    private String action; // VD: CHUYEN_BUOC, PHE_DUYET
+    private String action;
 
     @Column(name = "prev_status", length = 20)
     @Size(max = 20)
@@ -48,5 +47,4 @@ public class OpsDossierLog extends BaseEntity {
     @Column(name = "comments", columnDefinition = "TEXT")
     private String comments;
 
-    // Lưu ý: BaseEntity đã có sẵn 'id' và 'createdAt' (tự động mapping)
 }
