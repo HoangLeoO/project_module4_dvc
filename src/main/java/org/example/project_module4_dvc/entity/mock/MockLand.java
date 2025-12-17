@@ -21,7 +21,7 @@ public class MockLand {
     @Column(name = "id")
     private Long id;
 
-    // --- 1. Thông tin pháp lý ---
+
     @Column(name = "land_certificate_number", nullable = false, unique = true, length = 50)
     @NotBlank(message = "Số sổ đỏ không được để trống")
     @Size(max = 50, message = "Số sổ đỏ quá dài")

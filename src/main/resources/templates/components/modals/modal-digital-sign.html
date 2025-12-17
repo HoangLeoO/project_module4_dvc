@@ -1,0 +1,114 @@
+<!-- Modal Digital Sign -->
+<div class="modal fade" id="digitalSignModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pen-fill me-2"></i>Ký số & Phát hành Hồ sơ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row">
+
+                <!-- PDF Preview -->
+                <div
+                    class="col-lg-8 border-end bg-secondary bg-opacity-10 d-flex justify-content-center align-items-center position-relative overflow-hidden">
+                    <div class="bg-white shadow p-4" style="width: 80%; height: 500px; transform: scale(0.9);">
+                        <!-- Static Mock Content -->
+                        <div class="text-center mt-4">
+                            <h6 class="fw-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+                            <div class="small fw-bold text-decoration-underline">Độc lập - Tự do - Hạnh phúc</div>
+                            <h4 class="fw-bold text-danger mt-4">GIẤY KHAI SINH</h4>
+                            <div class="text-start mt-4 px-4">
+                                <p>Họ và tên: <strong class="text-uppercase">Nguyễn Văn Kon</strong></p>
+                                <p>Ngày sinh: 01/01/2025</p>
+                                <p>Nơi sinh: Đà Nẵng</p>
+                            </div>
+                            <div class="text-end mt-5 px-4 position-relative">
+                                <p class="fst-italic">Đà Nẵng, ngày 12 tháng 12 năm 2025</p>
+                                <p class="fw-bold">NGƯỜI KÝ</p>
+                                <div class="my-5"></div>
+                                <p class="fw-bold">Chủ tịch UBND</p>
+
+                                <!-- Stamp (Hidden by default) -->
+                                <div id="stampPreview" class="position-absolute d-none animate-stamp"
+                                    style="top: 60px; right: 20px;">
+                                    <div class="border border-danger border-4 rounded px-3 py-2 text-danger fw-bold text-center"
+                                        style="transform: rotate(-15deg); opacity: 0.8;">
+                                        <div class="small">KÝ SỐ BỞI</div>
+                                        <div class="text-uppercase">UBND QUẬN HẢI CHÂU</div>
+                                        <div class="small" style="font-size: 10px;">12/12/2025 14:30:00</div>
+                                    </div>
+                                    <i
+                                        class="bi bi-patch-check-fill text-success position-absolute bottom-0 end-0 fs-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sign Controls -->
+                <div class="col-lg-4 p-4">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">Thiết bị Ký số (Token)</h6>
+
+                    <div class="alert alert-success d-flex align-items-center mb-4">
+                        <i class="bi bi-usb-drive-fill fs-3 me-3"></i>
+                        <div>
+                            <strong>Đã kết nối USB Token</strong>
+                            <div class="small">Bit4ID - Seri: 54321...</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Nhập Mã PIN</label>
+                        <input type="password" class="form-control form-control-lg text-center letter-spacing-2"
+                            placeholder="******" value="123456">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg fw-bold shadow" onclick="performSign()">
+                            <i class="bi bi-vector-pen me-2"></i>Ký duyệt & Phát hành
+                        </button>
+                        <button class="btn btn-outline-danger fw-bold" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i>Hủy bỏ
+                        </button>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="fw-bold text-muted small mb-2">Tác vụ khác</h6>
+                    <button class="btn btn-outline-secondary w-100 mb-2 text-start"
+                        onclick="alert('Đã chuyển trả chuyên viên bổ sung!')">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>Trả lại chuyên viên
+                    </button>
+                    <button class="btn btn-outline-danger w-100 text-start" onclick="alert('Đã từ chối hồ sơ!')">
+                        <i class="bi bi-slash-circle me-2"></i>Từ chối hồ sơ
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function performSign() {
+        const stamp = document.getElementById('stampPreview');
+        const btn = event.target;
+
+        // Simulate processing
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang ký...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            stamp.classList.remove('d-none');
+            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Đã ký thành công';
+            btn.classList.replace('btn-primary', 'btn-success');
+
+            setTimeout(() => {
+                // Close modal or callback
+                alert('Ký thành công! Hồ sơ đã được phát hành.');
+                // bootstrap.Modal.getInstance(document.getElementById('digitalSignModal')).hide();
+            }, 1000);
+        }, 1500);
+    }
+</script>

@@ -12,12 +12,11 @@ import org.example.project_module4_dvc.entity.sys.SysUser;
 @Table(name = "mod_notifications")
 @Getter
 @Setter
-@SuperBuilder // Kế thừa SuperBuilder từ BaseEntity
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModNotification extends BaseEntity {
 
-    // --- Quan hệ: Người nhận (FK) ---
     @NotNull(message = "Người nhận không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
@@ -38,5 +37,5 @@ public class ModNotification extends BaseEntity {
     @Size(max = 50, message = "Loại thông báo không được vượt quá 50 ký tự")
     private String type;
 
-    // BaseEntity đã có created_at
+
 }

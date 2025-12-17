@@ -19,9 +19,6 @@ public class CatKnowledgeBase {
     @Column(name = "id")
     private Long id;
 
-    // --- Quan hệ: Dịch vụ (Optional) ---
-    // Có Constraint FK trong SQL -> Map sang Object CatService
-    // Cho phép NULL (service_id có thể null) -> Không thêm @NotNull validation
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", referencedColumnName = "id")
     private CatService service;

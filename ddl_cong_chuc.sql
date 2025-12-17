@@ -1,4 +1,3 @@
-
 -- 0. INITIALIZATION
 DROP DATABASE IF EXISTS egov_db;
 CREATE DATABASE egov_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -68,40 +67,40 @@ CREATE TABLE mock_household_members
 /* Bảng chứa thông tin chi tiết về các tài sản đất đai theo Sổ đỏ/GCN mới nhất. */
 CREATE TABLE mock_lands
 (
-    id                        BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của đất đai',
+    id                      BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của đất đai',
     -- Thông tin pháp lý (Sổ đỏ)
-    land_certificate_number   VARCHAR(50) NOT NULL UNIQUE COMMENT 'Số Sổ đỏ/Giấy chứng nhận (Số phát hành)',
-    issue_date                DATE COMMENT 'Ngày cấp Giấy chứng nhận',
-    issue_authority           VARCHAR(100) COMMENT 'Cơ quan cấp Giấy chứng nhận',
+    land_certificate_number VARCHAR(50) NOT NULL UNIQUE COMMENT 'Số Sổ đỏ/Giấy chứng nhận (Số phát hành)',
+    issue_date              DATE COMMENT 'Ngày cấp Giấy chứng nhận',
+    issue_authority         VARCHAR(100) COMMENT 'Cơ quan cấp Giấy chứng nhận',
     -- Thông tin vị trí
-    map_sheet_number          VARCHAR(20) COMMENT 'Số tờ bản đồ',
-    parcel_number             VARCHAR(20) COMMENT 'Số thửa đất',
-    address_detail            VARCHAR(255) COMMENT 'Địa chỉ chi tiết thửa đất (xã/phường, quận/huyện, tỉnh/thành)',
+    map_sheet_number        VARCHAR(20) COMMENT 'Số tờ bản đồ',
+    parcel_number           VARCHAR(20) COMMENT 'Số thửa đất',
+    address_detail          VARCHAR(255) COMMENT 'Địa chỉ chi tiết thửa đất (xã/phường, quận/huyện, tỉnh/thành)',
     -- Thông tin về đất
-    area_m2                   DECIMAL(10, 2) COMMENT 'Diện tích đất (mét vuông)',
-    usage_form                VARCHAR(50) COMMENT 'Hình thức sử dụng (VD: Sử dụng riêng, Sử dụng chung)',
-    land_purpose              VARCHAR(100) COMMENT 'Mục đích sử dụng đất (VD: Đất ở đô thị, Đất trồng cây lâu năm)',
-    usage_period              VARCHAR(50) COMMENT 'Thời hạn sử dụng đất (VD: Lâu dài, Đến ngày dd/mm/yyyy)',
+    area_m2                 DECIMAL(10, 2) COMMENT 'Diện tích đất (mét vuông)',
+    usage_form              VARCHAR(50) COMMENT 'Hình thức sử dụng (VD: Sử dụng riêng, Sử dụng chung)',
+    land_purpose            VARCHAR(100) COMMENT 'Mục đích sử dụng đất (VD: Đất ở đô thị, Đất trồng cây lâu năm)',
+    usage_period            VARCHAR(50) COMMENT 'Thời hạn sử dụng đất (VD: Lâu dài, Đến ngày dd/mm/yyyy)',
     -- Thông tin về tài sản gắn liền với đất (Nếu có)
-    house_area_m2             DECIMAL(10, 2) COMMENT 'Diện tích xây dựng nhà ở (mét vuông)',
-    construction_area_m2      DECIMAL(10, 2) COMMENT 'Diện tích sàn xây dựng (mét vuông)',
-    asset_notes               TEXT COMMENT 'Ghi chú về các tài sản khác gắn liền với đất (VD: Công trình, cây trồng)',
+    house_area_m2           DECIMAL(10, 2) COMMENT 'Diện tích xây dựng nhà ở (mét vuông)',
+    construction_area_m2    DECIMAL(10, 2) COMMENT 'Diện tích sàn xây dựng (mét vuông)',
+    asset_notes             TEXT COMMENT 'Ghi chú về các tài sản khác gắn liền với đất (VD: Công trình, cây trồng)',
     -- Thông tin chủ sở hữu
-    owner_id                  BIGINT      NOT NULL COMMENT 'ID của chủ sở hữu (công dân) - Liên kết tới mock_citizens',
+    owner_id                BIGINT      NOT NULL COMMENT 'ID của chủ sở hữu (công dân) - Liên kết tới mock_citizens',
     -- Trạng thái
-    land_status               VARCHAR(50) COMMENT 'Trạng thái đất đai (VD: Đang thế chấp, Đã chuyển nhượng, Hợp pháp)',
+    land_status             VARCHAR(50) COMMENT 'Trạng thái đất đai (VD: Đang thế chấp, Đã chuyển nhượng, Hợp pháp)',
     CONSTRAINT fk_land_owner FOREIGN KEY (owner_id) REFERENCES mock_citizens (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin tài sản đất đai chi tiết theo Sổ đỏ mới nhất';
 -- 5. Doanh nghiệp (Mock Businesses)
 /* Bảng chứa thông tin về các doanh nghiệp giả lập. */
 CREATE TABLE mock_businesses
 (
-    id            BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của doanh nghiệp',
-    tax_code      VARCHAR(20)  NOT NULL UNIQUE COMMENT 'Mã số thuế (Duy nhất)',
-    business_name VARCHAR(200) NOT NULL COMMENT 'Tên đầy đủ của doanh nghiệp',
-    capital       DECIMAL(15, 2) COMMENT 'Vốn điều lệ',
-    owner_id      BIGINT       NOT NULL COMMENT 'ID của người đại diện/chủ sở hữu (công dân)',
-    address       VARCHAR(255) COMMENT 'Địa chỉ trụ sở chính',
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của doanh nghiệp',
+    tax_code       VARCHAR(20)  NOT NULL UNIQUE COMMENT 'Mã số thuế (Duy nhất)',
+    business_name  VARCHAR(200) NOT NULL COMMENT 'Tên đầy đủ của doanh nghiệp',
+    capital        DECIMAL(15, 2) COMMENT 'Vốn điều lệ',
+    owner_id       BIGINT       NOT NULL COMMENT 'ID của người đại diện/chủ sở hữu (công dân)',
+    address        VARCHAR(255) COMMENT 'Địa chỉ trụ sở chính',
     business_lines VARCHAR(255) COMMENT 'Ngành nghề kinh doanh chính',
     CONSTRAINT fk_biz_owner FOREIGN KEY (owner_id) REFERENCES mock_citizens (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin doanh nghiệp';
@@ -273,6 +272,13 @@ CREATE TABLE ops_dossiers
     CONSTRAINT fk_dos_applicant FOREIGN KEY (applicant_id) REFERENCES sys_users (id),
     CONSTRAINT fk_dos_handler FOREIGN KEY (current_handler_id) REFERENCES sys_users (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin các Hồ sơ dịch vụ công';
+
+ALTER TABLE ops_dossiers
+    ADD COLUMN receiving_dept_id BIGINT NOT NULL COMMENT 'ID cơ quan tiếp nhận hồ sơ ban đầu'
+        AFTER service_id,
+    ADD CONSTRAINT fk_dos_receiving_dept
+        FOREIGN KEY (receiving_dept_id)
+            REFERENCES sys_departments (id);
 
 -- 18. File đính kèm (Operations Dossier Files)
 /* Danh sách các tệp đính kèm đi kèm hồ sơ. */

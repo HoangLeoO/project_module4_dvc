@@ -14,17 +14,17 @@ import org.example.project_module4_dvc.entity.sys.SysUser;
 @Table(name = "mod_feedbacks")
 @Getter
 @Setter
-@SuperBuilder // Kế thừa SuperBuilder từ BaseEntity
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModFeedback extends BaseEntity {
 
-    // --- Quan hệ: Người gửi (FK - Nullable nếu ẩn danh) ---
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private SysUser user;
 
-    // --- Dossier ID (Không có FK trong SQL -> Dùng Long) ---
+
     @Column(name = "dossier_id")
     private Long dossierId;
 
@@ -45,5 +45,4 @@ public class ModFeedback extends BaseEntity {
     @Builder.Default
     private Boolean isResolved = false;
 
-    // BaseEntity đã có created_at
 }
