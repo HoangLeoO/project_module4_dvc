@@ -2,8 +2,10 @@ package org.example.project_module4_dvc.entity.cat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.example.project_module4_dvc.converter.JsonToMapConverter;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Entity
 @Table(name = "cat_services")
@@ -43,9 +45,7 @@ public class CatService {
     @PositiveOrZero(message = "Lệ phí phải là số dương hoặc bằng 0")
     private BigDecimal feeAmount = BigDecimal.ZERO;
 
-    // Mapping cột JSON trong MySQL sang String trong Java
-    // Khi trả về API, Spring sẽ tự escape chuỗi này.
-    // Nếu muốn trả về JSON object thuần, cần xử lý ở DTO.
     @Column(name = "form_schema", columnDefinition = "json")
-    private String formSchema;
+    @Convert(converter = JsonToMapConverter.class)
+    private Map<String, Object> formSchema;
 }

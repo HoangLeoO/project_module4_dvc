@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ủy quyền Ký - Lãnh đạo</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/internal.css">
+</head>
+
+<body class="bg-light">
+
+    <!-- WRAPPER -->
+    <div class="d-flex" id="wrapper">
+
+        <!-- SIDEBAR -->
+        <div class="bg-white border-end"
+            style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <div class="p-3 border-bottom d-flex align-items-center bg-danger text-white">
+                <i class="bi bi-briefcase-fill fs-4 me-2"></i>
+                <div class="fw-bold">LÃNH ĐẠO ĐƠN VỊ</div>
+            </div>
+            <div class="list-group list-group-flush p-2">
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Điều
+                    hành</small>
+                <a href="leader-dashboard.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-speedometer2 me-2"></i>Tổng quan (Cockpit)</a>
+                <a href="leader-approval.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-pen-fill me-2"></i>Duyệt & Ký số <span
+                        class="badge bg-danger ms-auto">15</span></a>
+                <a href="leader-reports.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-bar-chart-line-fill me-2"></i>Báo cáo số liệu</a>
+                <a href="leader-delegation.html"
+                    class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
+                        class="bi bi-person-fill-gear me-2"></i>Ủy quyền ký</a>
+
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
+                    thống</small>
+                <a href="../06-shared/internal-login.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
+                        class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+            <!-- HEADER -->
+            <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="leader-dashboard.html">Lãnh đạo</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Ủy quyền</li>
+                    </ol>
+                </nav>
+            </nav>
+
+            <main class="flex-grow-1 p-4">
+
+                <div class="row g-4">
+                    <!-- LIST -->
+                    <div class="col-lg-7">
+                        <h5 class="fw-bold mb-3">Danh sách Ủy quyền đang hiệu lực</h5>
+                        <div class="list-group border-0 shadow-sm">
+                            <div class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="bi bi-arrow-right-circle-fill text-primary me-2"></i>
+                                        <span class="fw-bold">Phó CT: Nguyễn Văn Phó</span>
+                                    </div>
+                                    <div class="small text-muted mb-1">
+                                        Lĩnh vực: <span class="badge bg-light text-dark border">Hộ tịch</span>
+                                        <span class="badge bg-light text-dark border">Chứng thực</span>
+                                    </div>
+                                    <div class="small text-muted"><i class="bi bi-calendar-event me-1"></i>01/12/2025 -
+                                        31/12/2025 (Còn 20 ngày)</div>
+                                </div>
+                                <button class="btn btn-outline-danger btn-sm">Thu hồi</button>
+                            </div>
+
+                            <div
+                                class="list-group-item p-3 d-flex justify-content-between align-items-center bg-light opacity-75">
+                                <div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="bi bi-clock-history text-secondary me-2"></i>
+                                        <span class="fw-bold text-decoration-line-through">Phó CT: Trần Văn B</span>
+                                        <span class="badge bg-secondary ms-2">Đã hết hạn</span>
+                                    </div>
+                                    <div class="small text-muted">Lĩnh vực: Đất đai</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CREATE FORM -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white fw-bold py-3">
+                                <i class="bi bi-plus-circle-fill me-2"></i>Thiết lập Ủy quyền Mới
+                            </div>
+                            <div class="card-body">
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Người nhận ủy quyền</label>
+                                    <select class="form-select">
+                                        <option selected disabled>Chọn Lãnh đạo cấp phó...</option>
+                                        <option>Nguyễn Văn Phó (PCT Văn xã)</option>
+                                        <option>Trần Văn B (PCT Đô thị)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Phạm vi ủy quyền</label>
+                                    <div class="border rounded p-2 bg-light">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkAll">
+                                            <label class="form-check-label fw-bold" for="checkAll">Toàn quyền (Chủ tài
+                                                khoản)</label>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox">
+                                            <label class="form-check-label">Ký giấy khai sinh, kết hôn</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked>
+                                            <label class="form-check-label">Ký Sổ đỏ, Giấy tờ nhà đất</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold">Từ ngày</label>
+                                        <input type="date" class="form-control" value="2025-12-12">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold">Đến ngày</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button class="btn btn-primary fw-bold">Lưu cấu hình</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

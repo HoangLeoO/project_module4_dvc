@@ -1,0 +1,78 @@
+<!-- Modal Mock Data Generator -->
+<div class="modal fade" id="mockDataGenModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-database-add me-2"></i>Sinh Dữ liệu Giả lập (Mock Gen)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Đối tượng dữ liệu</label>
+                    <select class="form-select" id="genTarget">
+                        <option value="CITIZEN">Dân cư (Citizens)</option>
+                        <option value="LAND">Sổ đỏ / Đất đai (Lands)</option>
+                        <option value="BIZ">Doanh nghiệp (Business)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Số lượng (Record)</label>
+                    <input type="number" class="form-control" value="100" min="1" max="5000">
+                </div>
+
+                <div class="card p-3 bg-light mb-3">
+                    <label class="small fw-bold text-muted mb-2">Options</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label small">Tạo ngẫu nhiên Quan hệ gia đình</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label small">Trộn lẫn trạng thái (Alive/Deceased)</label>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div id="genProgress" class="d-none">
+                    <label class="small text-muted mb-1">Processing...</label>
+                    <div class="progress mb-2" style="height: 10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-success fw-bold" onclick="runGen()">
+                    <i class="bi bi-rocket-takeoff-fill me-2"></i>Bắt đầu sinh
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function runGen() {
+        const p = document.getElementById('genProgress');
+        const bar = p.querySelector('.progress-bar');
+        p.classList.remove('d-none');
+
+        let w = 0;
+        const int = setInterval(() => {
+            w += 10;
+            bar.style.width = w + '%';
+            if (w >= 100) {
+                clearInterval(int);
+                setTimeout(() => {
+                    alert('Đã sinh thành công dữ liệu mẫu!');
+                    bootstrap.Modal.getInstance(document.getElementById('mockDataGenModal')).hide();
+                    p.classList.add('d-none');
+                    bar.style.width = '0%';
+                }, 500);
+            }
+        }, 200);
+    }
+</script>

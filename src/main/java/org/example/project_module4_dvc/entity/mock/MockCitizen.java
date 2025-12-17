@@ -34,11 +34,8 @@ public class MockCitizen extends AuditableEntity {
     @Past(message = "Ngày sinh phải là ngày trong quá khứ")
     private LocalDate dob;
 
-    // Đã thay Enum bằng String theo yêu cầu
     @Column(name = "gender", nullable = false, length = 10)
     @NotBlank(message = "Giới tính không được để trống")
-    // Bạn có thể dùng @Pattern để giới hạn giá trị nhập vào nếu muốn
-    // @Pattern(regexp = "MALE|FEMALE|OTHER", message = "Giới tính không hợp lệ")
     private String gender;
 
     @Column(name = "hometown")
@@ -62,9 +59,9 @@ public class MockCitizen extends AuditableEntity {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    // Đã thay Enum bằng String theo yêu cầu
+
     @Column(name = "marital_status", length = 20)
-    @Builder.Default // Giá trị mặc định khi dùng Builder
+    @Builder.Default
     private String maritalStatus = "SINGLE";
 
     @Column(name = "spouse_id")
@@ -76,5 +73,5 @@ public class MockCitizen extends AuditableEntity {
 
     @Column(name = "status")
     @Builder.Default
-    private Integer status = 1; // 1: Active, 0: Inactive
+    private Integer status = 1;
 }

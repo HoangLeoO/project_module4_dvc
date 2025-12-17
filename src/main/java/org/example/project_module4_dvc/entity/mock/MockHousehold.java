@@ -26,10 +26,8 @@ public class MockHousehold extends BaseEntity {
     @NotBlank(message = "Địa chỉ hộ khẩu không được để trống")
     private String address;
 
-    // Mapping Foreign Key: head_citizen_id -> MockCitizen
-    // Sử dụng FetchType.LAZY để khi query Hộ khẩu thì chưa load ngay thông tin Chủ hộ (tối ưu hiệu năng)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "head_citizen_id", referencedColumnName = "id")
     private MockCitizen headCitizen;
-    // Lưu ý: BaseEntity đã có sẵn 'id' và 'createdAt'
+
 }

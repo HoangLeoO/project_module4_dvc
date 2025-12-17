@@ -1,0 +1,67 @@
+<!-- Modal Map Planning -->
+<div class="modal fade" id="mapPlanningModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-map-fill me-2"></i>Tra cứu Quy hoạch Đất đai</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 position-relative" style="height: 600px;">
+
+                <!-- Map Container (Static Mock) -->
+                <div class="w-100 h-100 bg-secondary position-relative overflow-hidden">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/HCM_District_Map.png"
+                        class="w-100 h-100 object-fit-cover opacity-50" style="object-fit: cover;">
+
+                    <!-- Simulating Plot Boundary -->
+                    <div class="position-absolute border border-danger border-3"
+                        style="top: 40%; left: 50%; width: 100px; height: 80px; background: rgba(255,0,0,0.1);">
+                        <span class="badge bg-danger position-absolute top-0 start-0 m-1">Thửa đang xét</span>
+                    </div>
+
+                    <!-- Layer Control -->
+                    <div class="card position-absolute top-0 end-0 m-3 shadow-sm" style="width: 250px;">
+                        <div class="card-header bg-white fw-bold small">Lớp bản đồ</div>
+                        <div class="card-body p-2 bg-white">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label small">Hiện trạng sử dụng đất</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label small">Quy hoạch 2030</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox">
+                                <label class="form-check-label small">Hạ tầng kỹ thuật</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div
+                        class="alert alert-info border-0 shadow position-absolute bottom-0 start-50 translate-middle-x mb-3 w-75">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Thông tin Quy hoạch: Thửa đất số 12, Tờ bản đồ số 5</h6>
+                                <p class="mb-0 small">
+                                    Chức năng sử dụng đất: <strong>Đất ở nông thôn (ONT)</strong>.<br>
+                                    Mật độ xây dựng: 80%. Tầng cao tối đa: 3 tầng.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary fw-bold">
+                    <i class="bi bi-printer me-2"></i>In Trích lục Quy hoạch
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
