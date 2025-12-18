@@ -57,27 +57,6 @@ public class OpsDossier {
     @JoinColumn(name = "current_handler_id", referencedColumnName = "id")
     private SysUser currentHandler;
 
-    // ============================================================================
-    // --- PHÒNG BAN TIẾP NHẬN HỒ SƠ (RECEIVING DEPARTMENT) ---
-    // ============================================================================
-
-    /**
-     * Phòng ban/UBND xã phường tiếp nhận hồ sơ
-     * Bắt buộc phải có để xác định địa bàn xử lý
-     */
-    @NotNull(message = "Đơn vị tiếp nhận hồ sơ không được để trống")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiving_dept_id", nullable = false, referencedColumnName = "id")
-    private SysDepartment receivingDepartment;
-
-    /**
-     * Địa điểm tiếp nhận cụ thể (tùy chọn)
-     * VD: "UBND xã Hòa Tiến, Huyện Hòa Vang, TP Đà Nẵng"
-     */
-    @Column(name = "receiving_location", length = 255)
-    @Size(max = 255, message = "Địa điểm tiếp nhận không được vượt quá 255 ký tự")
-    private String receivingLocation;
-
 
     // --- Trạng thái & Dữ liệu ---
     @Column(name = "dossier_status", length = 20)
