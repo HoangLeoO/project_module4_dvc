@@ -12,8 +12,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "mock_household_members",
         uniqueConstraints = {
-                // Đảm bảo: Một công dân (citizen_id) chỉ có thể có 1 trạng thái (status) tại 1 thời điểm.
-                // Ví dụ: Không thể vừa 'Active' ở hộ khẩu A vừa 'Active' ở hộ khẩu B.
                 @UniqueConstraint(name = "uq_citizen_active", columnNames = {"citizen_id", "status"})
         })
 @Getter
@@ -27,14 +25,13 @@ public class MockHouseholdMember {
     @Column(name = "id")
     private Long id;
 
-    // --- Relationship: N Members thuộc về 1 Household ---
+
     @NotNull(message = "Sổ hộ khẩu không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "household_id", nullable = false, referencedColumnName = "id")
     private MockHousehold household;
 
-    // --- Relationship: N Members liên kết với 1 Citizen ---
-    // (Thực tế là 1-1 tại một thời điểm active, nhưng lịch sử có thể nhiều lần chuyển hộ khẩu nên dùng N-1)
+
     @NotNull(message = "Công dân không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "citizen_id", nullable = false, referencedColumnName = "id")
@@ -50,6 +47,6 @@ public class MockHouseholdMember {
 
     @Column(name = "status")
     @Builder.Default
-    private Integer status = 1; // 1: Đang
+    private Integer status = 1;
 }
 

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.example.project_module4_dvc.converter.JsonToMapConverter;
+
+import java.util.Map;
 
 @Entity
 @Table(name = "cat_templates")
@@ -36,8 +39,7 @@ public class CatTemplate {
     @Size(max = 255, message = "Đường dẫn file quá dài")
     private String filePath;
 
-    // Mapping cột JSON: Lưu trữ cấu hình map biến
-    // Ví dụ: {"ho_ten": "citizen.fullName", "dia_chi": "citizen.permanentAddress"}
     @Column(name = "variable_mapping", columnDefinition = "json")
-    private String variableMapping;
+    @Convert(converter = JsonToMapConverter.class)
+    private Map<String, Object> variableMapping;
 }

@@ -5,12 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.example.project_module4_dvc.converter.JsonToMapConverter;
 import org.example.project_module4_dvc.entity.cat.CatService;
 import org.example.project_module4_dvc.entity.sys.SysDepartment;
 import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Table(name = "ops_dossiers")
@@ -31,13 +33,19 @@ public class OpsDossier {
     @Size(max = 50, message = "Mã hồ sơ không được vượt quá 50 ký tự")
     private String dossierCode;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "receiving_dept_id", nullable = false)
+    private SysDepartment receivingDept;
+
+
     // --- Quan hệ: Dịch vụ công (FK) ---
     @NotNull(message = "Dịch vụ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false, referencedColumnName = "id")
     private CatService service;
 
-    // --- Quan hệ: Người nộp hồ sơ (FK -> SysUser) ---
+    // --- Quan hệ: Người nộp hồ sơ (FK -> SysUser  ) ---
     @NotNull(message = "Người nộp hồ sơ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "applicant_id", nullable = false, referencedColumnName = "id")
@@ -87,7 +95,9 @@ public class OpsDossier {
     private LocalDateTime finishDate;
 
     @Column(name = "form_data", columnDefinition = "json")
-    private String formData;
+    @Convert(converter = JsonToMapConverter.class)
+    private Map<String, Object> formData;
+
 
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;

@@ -1,0 +1,50 @@
+<!-- Modal Action (Process) -->
+<div class="modal fade" id="actionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="actionModalTitle">Động thái xử lý</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Lý do / Nội dung</label>
+                    <textarea class="form-control" rows="5" id="actionReason"
+                        placeholder="Nhập nội dung chi tiết gửi công dân..."></textarea>
+                </div>
+
+                <!-- Presets -->
+                <div class="mb-3" id="reasonTags">
+                    <label class="small text-muted mb-2">Chọn mẫu nhanh:</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill"
+                            onclick="fillReason('Hồ sơ thiếu thành phần bắt buộc')">Thiếu giấy tờ</button>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill"
+                            onclick="fillReason('Thông tin trong tờ khai không khớp với giấy tờ đính kèm')">Sai thông
+                            tin</button>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill"
+                            onclick="fillReason('Căn cứ Luật Hộ tịch 2014, hồ sơ không đủ điều kiện')">Không đủ
+                            ĐK</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Đính kèm văn bản hướng dẫn (nếu có)</label>
+                    <input type="file" class="form-control form-control-sm">
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary fw-bold" id="actionSubmitBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function fillReason(text) {
+        document.getElementById('actionReason').value = text;
+    }
+</script>

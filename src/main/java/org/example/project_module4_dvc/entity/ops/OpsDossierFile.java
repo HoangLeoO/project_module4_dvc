@@ -22,12 +22,11 @@ public class OpsDossierFile {
     @Column(name = "id")
     private Long id;
 
-    // --- Quan hệ: Thuộc về Hồ sơ nào ---
+
     @NotNull(message = "Hồ sơ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dossier_id", nullable = false, referencedColumnName = "id")
-    // Annotation này giúp Hibernate hiểu là DB đã có ràng buộc ON DELETE CASCADE
-    // Giúp tối ưu hiệu năng khi xóa (Hibernate sẽ không cần issue lệnh delete cho từng file con)
+
     @OnDelete(action = OnDeleteAction.CASCADE)
     private OpsDossier dossier;
 

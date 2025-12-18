@@ -1,0 +1,98 @@
+<!-- Modal Editor (Template Maker) -->
+<div class="modal fade" id="editorModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-richtext me-2"></i>Soạn thảo Kết quả</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Toolbar -->
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="d-flex gap-2 align-items-center">
+                        <label class="fw-bold">Chọn Mẫu:</label>
+                        <select class="form-select form-select-sm" style="width: 250px;">
+                            <option>Giấy khai sinh (Bản chính)</option>
+                            <option>Trích lục khai sinh</option>
+                            <option>Thư từ chối hồ sơ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Editor Area (Mock) -->
+                <div class="row h-100">
+                    <div class="col-lg-9">
+                        <div class="border rounded shadow-sm p-5 bg-white h-100 overflow-auto"
+                            style="min-height: 500px; font-family: 'Times New Roman', serif;">
+                            <div class="text-center mb-4">
+                                <h5 class="fw-bold mb-1">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h5>
+                                <div class="text-decoration-underline fw-bold mb-3">Độc lập - Tự do - Hạnh phúc</div>
+                                <h3 class="fw-bold text-danger mt-4">GIẤY KHAI SINH</h3>
+                            </div>
+
+                            <div class="lh-lg">
+                                <p>Họ và tên: <strong class="text-primary text-uppercase">{FULL_NAME}</strong></p>
+                                <p>Ngày, tháng, năm sinh: <strong>{DOB}</strong></p>
+                                <p>Giới tính: <strong>{GENDER}</strong></p>
+                                <p>Dân tộc: <strong>{ETHNICITY}</strong> - Quốc tịch: <strong>{NATIONALITY}</strong></p>
+                                <p>Nơi sinh: <strong>{BIRTH_PLACE}</strong></p>
+                                <hr>
+                                <p>Họ tên cha: <strong>Nguyễn Văn P</strong></p>
+                                <p>Họ tên mẹ: <strong>Trần Thị M</strong></p>
+                            </div>
+
+                            <div class="row mt-5">
+                                <div class="col-6"></div>
+                                <div class="col-6 text-center">
+                                    <p class="fst-italic">Đà Nẵng, ngày 12 tháng 12 năm 2025</p>
+                                    <p class="fw-bold">NGƯỜI KÝ</p>
+                                    <div class="my-5 text-muted small">[Chữ ký số]</div>
+                                    <p class="fw-bold">Chủ tịch UBND</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Variables Sidebar -->
+                    <div class="col-lg-3">
+                        <div class="card border-0 bg-light h-100">
+                            <div class="card-header fw-bold bg-transparent">Dữ liệu hồ sơ</div>
+                            <div class="card-body overflow-auto">
+                                <small class="text-muted d-block mb-3">Các trường dữ liệu này sẽ tự động điền vào
+                                    mẫu.</small>
+
+                                <div class="mb-2">
+                                    <label class="small fw-bold text-muted">Họ tên</label>
+                                    <input type="text" class="form-control form-control-sm bg-white"
+                                        value="Nguyễn Văn Kon" readonly>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="small fw-bold text-muted">Ngày sinh</label>
+                                    <input type="text" class="form-control form-control-sm bg-white" value="01/01/2025"
+                                        readonly>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="small fw-bold text-muted">Cha</label>
+                                    <input type="text" class="form-control form-control-sm bg-white"
+                                        value="Nguyễn Văn P" readonly>
+                                </div>
+
+                                <div class="alert alert-warning small mt-3">
+                                    <i class="bi bi-exclamation-circle me-1"></i>Lưu ý kiểm tra chính tả trước khi lưu.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success fw-bold">
+                    <i class="bi bi-file-earmark-check me-2"></i>Lưu Dự thảo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

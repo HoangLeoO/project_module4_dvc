@@ -21,7 +21,7 @@ public class ModPersonalVault {
     @Column(name = "id")
     private Long id;
 
-    // --- Quan hệ: Người sở hữu (FK) ---
+
     @NotNull(message = "Người dùng không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")

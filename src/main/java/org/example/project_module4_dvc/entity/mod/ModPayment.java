@@ -24,14 +24,13 @@ public class ModPayment {
     @Column(name = "id")
     private Long id;
 
-    // --- Quan hệ: Hồ sơ (FK) ---
-    // SQL có constraint fk_pay_dossier -> Map Object
+
     @NotNull(message = "Hồ sơ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dossier_id", nullable = false, referencedColumnName = "id")
     private OpsDossier dossier;
 
-    // DECIMAL(15, 2) -> BigDecimal
+
     @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     @NotNull(message = "Số tiền không được để trống")
     @PositiveOrZero(message = "Số tiền phải lớn hơn hoặc bằng 0")

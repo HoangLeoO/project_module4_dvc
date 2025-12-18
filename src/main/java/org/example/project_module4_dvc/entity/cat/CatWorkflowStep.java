@@ -37,8 +37,6 @@ public class CatWorkflowStep {
     @Min(value = 1, message = "Thứ tự bước phải lớn hơn hoặc bằng 1")
     private Integer stepOrder;
 
-    // --- KHÔNG có FK trong SQL -> Dùng Long thuần túy ---
-    // Đây chỉ là một trường lưu ID, không tạo quan hệ JPA
     @Column(name = "role_required_id")
     private Long roleRequiredId;
 }
