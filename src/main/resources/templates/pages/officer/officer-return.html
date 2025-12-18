@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trả kết quả - Hệ thống Một cửa</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../static/assets/css/style.css">
+    <link rel="stylesheet" href="../../../static/assets/css/internal.css">
+</head>
+
+<body class="bg-light">
+
+    <!-- WRAPPER -->
+    <div class="d-flex" id="wrapper">
+
+        <!-- SIDEBAR -->
+        <div class="bg-white border-end"
+            style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <div class="p-3 border-bottom d-flex align-items-center bg-primary text-white">
+                <i class="bi bi-building-fill-gear fs-4 me-2"></i>
+                <div class="fw-bold">HỆ THỐNG MỘT CỬA</div>
+            </div>
+            <div class="list-group list-group-flush p-2">
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Nghiệp
+                    vụ</small>
+                <a href="officer-dashboard.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-grid-fill me-2"></i>Bàn làm việc</a>
+                <a href="officer-reception.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-input-cursor-text me-2"></i>Tiếp nhận hồ sơ</a>
+                <a href="officer-return.html"
+                    class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
+                        class="bi bi-check2-circle me-2"></i>Trả kết quả</a>
+                <a href="officer-complaints.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0 d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-megaphone-fill me-2"></i>Phản ánh</span>
+                    <span class="badge bg-danger rounded-pill">1</span>
+                </a>
+                <a href="officer-household-mgmt.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                        class="bi bi-people-fill me-2"></i>Quản lý cư trú</a>
+
+                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
+                    thống</small>
+                <a href="../06-shared/internal-login.html"
+                    class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
+                        class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+            <!-- HEADER -->
+            <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="officer-dashboard.html">Bàn làm việc</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Trả kết quả</li>
+                    </ol>
+                </nav>
+            </nav>
+
+            <main class="flex-grow-1 p-4">
+
+                <div class="row">
+                    <div class="col-lg-8">
+
+                        <!-- 1. FILTER TABS -->
+                        <ul class="nav nav-tabs mb-4">
+                            <li class="nav-item">
+                                <a class="nav-link active fw-bold" href="#">Chờ trả kết quả <span
+                                        class="badge bg-danger ms-2">2</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" href="#">Lịch sử đã trả</a>
+                            </li>
+                        </ul>
+
+                        <!-- 2. RESULT LIST -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-3 py-3">Mã hồ sơ</th>
+                                            <th>Kết quả</th>
+                                            <th>Chủ sở hữu</th>
+                                            <th>Ngày ký</th>
+                                            <th class="text-end pe-3">Tác vụ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-3 fw-bold">HS-2023-005</td>
+                                            <td><i class="bi bi-file-earmark-text text-primary me-2"></i>Giấy khai sinh
+                                            </td>
+                                            <td>Nguyễn Văn A</td>
+                                            <td>10/12/2025</td>
+                                            <td class="text-end pe-3">
+                                                <button class="btn btn-success btn-sm fw-bold"
+                                                    onclick="showHandover('HS-2023-005')">
+                                                    <i class="bi bi-check-lg me-1"></i>Xác nhận trả
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-3 fw-bold">HS-2023-008</td>
+                                            <td><i class="bi bi-file-earmark-diff text-danger me-2"></i>GCN QSDĐ (Sổ đỏ)
+                                            </td>
+                                            <td>Trần Thị B</td>
+                                            <td>09/12/2025</td>
+                                            <td class="text-end pe-3">
+                                                <button class="btn btn-success btn-sm fw-bold"
+                                                    onclick="showHandover('HS-2023-008')">
+                                                    <i class="bi bi-check-lg me-1"></i>Xác nhận trả
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COL: HANDOVER FORM (HIDDEN INITIALLY) -->
+                    <div class="col-lg-4">
+                        <div id="handoverForm" class="card border-success shadow-sm d-none animate-fade-in">
+                            <div class="card-header bg-success text-white fw-bold">
+                                <i class="bi bi-hand-thumbs-up-fill me-2"></i>Biên bản bàn giao
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted text-uppercase fw-bold">Mã hồ sơ đang xử
+                                        lý</label>
+                                    <input type="text" class="form-control fw-bold" id="handoverCode" value="HS-...."
+                                        readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Người nhận thực tế</label>
+                                    <input type="text" class="form-control" placeholder="Họ tên người nhận">
+                                    <div class="form-text">Mặc định là chủ hồ sơ. Nếu khác, vui lòng nhập số CCCD bên
+                                        dưới.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số CCCD Người nhận</label>
+                                    <input type="text" class="form-control" placeholder="Bắt buộc nếu nhận thay">
+                                </div>
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" id="checkOk" required>
+                                    <label class="form-check-label small" for="checkOk">
+                                        Công dân đã kiểm tra kết quả chính xác và ký vào sổ theo dõi.
+                                    </label>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-success fw-bold" onclick="alert('Đã hoàn tất trao trả!')">
+                                        Hoàn tất trao trả
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder Instruction -->
+                        <div id="instruction" class="text-center text-muted py-5">
+                            <i class="bi bi-arrow-left-circle fs-1 opacity-25"></i>
+                            <p class="mt-3">Chọn hồ sơ bên trái để tiến hành trả kết quả.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showHandover(code) {
+            document.getElementById('instruction').classList.add('d-none');
+            document.getElementById('handoverForm').classList.remove('d-none');
+            document.getElementById('handoverCode').value = code;
+        }
+    </script>
+</body>
+
+</html>

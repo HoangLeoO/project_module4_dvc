@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- Modal Action (Process) -->
+<div th:fragment="rejectReasonModal"
+     class="modal fade"
+     id="actionModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+        <form th:action="@{/officer/dashboard/reception/reject}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <div class="modal-content">
+
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold">
+                        Yêu cầu bổ sung hồ sơ
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- ID hồ sơ -->
+                    <input type="hidden"
+                           name="id"
+                           th:value="${dossier.id}">
+
+                    <!-- Nội dung -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Lý do / Nội dung
+                        </label>
+                        <textarea class="form-control"
+                                  rows="5"
+                                  name="reason"
+                                  required
+                                  placeholder="Nhập nội dung chi tiết gửi công dân..."></textarea>
+                    </div>
+
+                    <!-- File -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">
+                            Đính kèm văn bản hướng dẫn (nếu có)
+                        </label>
+                        <input type="file"
+                               name="attachment"
+                               class="form-control form-control-sm">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+                    <button type="submit"
+                            class="btn btn-danger fw-bold">
+                        Xác nhận yêu cầu bổ sung
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bàn làm việc Cán bộ - Hệ thống Một cửa</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- SockJS và STOMP (Dùng CDN cho nhanh) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../static/assets/css/style.css">
+    <link rel="stylesheet" href="../../../static/assets/css/internal.css">
+    <style>
+        .card-kpi {
+            transition: transform 0.2s;
+        }
+
+        .card-kpi:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Pulse Animation for Critical Items */
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+
+        .pulse-alarm {
+            animation: pulse-red 2s infinite;
+        }
+
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+            transform: translate3d(0, 0, 0);
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light" th:object="${dossiers}">
+
+<!-- WRAPPER -->
+<div class="d-flex" id="wrapper">
+
+    <!-- SIDEBAR - Included via JS or Server Limit - Here Static -->
+    <div class="bg-white border-end"
+         style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+        <div class="p-3 border-bottom d-flex align-items-center bg-primary text-white">
+            <i class="bi bi-building-fill-gear fs-4 me-2"></i>
+            <div class="fw-bold">HỆ THỐNG MỘT CỬA</div>
+        </div>
+        <div class="list-group list-group-flush p-2">
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Nghiệp
+                vụ</small>
+            <a href="officer-dashboard.html"
+               class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
+                    class="bi bi-grid-fill me-2"></i>Bàn làm việc</a>
+
+            <a href="officer-return.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                    class="bi bi-check2-circle me-2"></i>Trả kết quả</a>
+            <a href="officer-complaints.html"
+               class="list-group-item list-group-item-action rounded mb-1 border-0 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-megaphone-fill me-2"></i>Phản ánh</span>
+                <span class="badge bg-danger rounded-pill">1</span>
+            </a>
+
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
+                thống</small>
+            <a href="../06-shared/internal-login.html"
+               class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
+                    class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+        <!-- TOP HEADER -->
+        <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
+            <div class="fw-bold text-primary">UBND Quận Hải Châu - Bộ phận Một cửa</div>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <!-- Notifications -->
+                <!-- User Profile -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+                       data-bs-toggle="dropdown">
+                        <span class="me-2 fw-bold">Cán bộ A</span>
+                        <img src="https://ui-avatars.com/api/?name=Can+Bo&background=0d6efd&color=fff"
+                             class="rounded-circle" width="32">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="#">Thông tin tài khoản</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow-1 p-4">
+
+            <!-- 1. CRISIS ALERT (Scenario Complaint) -->
+            <div class="alert alert-danger d-flex align-items-center shadow-sm shake-animation mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                <div class="flex-grow-1">
+                    <strong class="fs-5">CẢNH BÁO NÓNG!</strong>
+                    <div>Có <strong>1 đánh giá 1 sao</strong> về thái độ phục vụ chưa được xử lý. Cần giải trình
+                        ngay.
+                    </div>
+                </div>
+                <a href="officer-complaints.html" class="btn btn-danger fw-bold border-white">Xử lý ngay</a>
+            </div>
+
+            <!-- 2. KPI CARDS -->
+            <div class="row g-4 mb-4">
+                <!-- Card 1: Pending -->
+                <div class="col-md-4">
+                    <div class="card card-widget border-0 shadow-sm h-100 card-kpi">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                                    <i class="bi bi-inbox-fill fs-4"></i>
+                                </div>
+                                <span class="badge bg-light text-muted">Hôm nay</span>
+                            </div>
+                            <h2 class="fw-bold mb-0" th:text="${dossiers.totalElements}"></h2>
+                            <div class="text-muted small">Chờ tiếp nhận</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2: Overdue Warning -->
+                <div class="col-md-4">
+                    <div class="card card-widget shadow h-100 card-kpi"
+                         th:classappend="${nearDueCount > 0} ? 'border-danger border-2 pulse-alarm' : 'border-success'">
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="p-2 rounded"
+                                     th:classappend="${nearDueCount > 0} ? 'bg-danger bg-opacity-10 text-danger'
+                                                         : 'bg-success bg-opacity-10 text-success'">
+                                    <i class="bi fs-4"
+                                       th:classappend="${nearDueCount > 0} ? 'bi-alarm-fill' : 'bi-check-circle-fill'">
+                                    </i>
+                                </div>
+
+                                <span class="badge"
+                                      th:classappend="${nearDueCount > 0} ? 'bg-danger' : 'bg-success'"
+                                      th:text="${nearDueCount > 0} ? 'Ưu tiên' : 'Ổn định'">
+                </span>
+                            </div>
+
+                            <h2 class="fw-bold mb-0"
+                                th:classappend="${nearDueCount > 0} ? 'text-danger' : 'text-success'"
+                                th:text="${nearDueCount}">
+                            </h2>
+
+                            <div class="small fw-bold"
+                                 th:classappend="${nearDueCount > 0} ? 'text-danger' : 'text-success'"
+                                 th:text="${nearDueCount > 0} ? 'Sắp quá hạn 6H' : 'Không có hồ sơ sắp quá hạn'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Finished -->
+                <div class="col-md-4">
+                    <div class="card card-widget border-0 shadow-sm h-100 card-kpi">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="bg-success bg-opacity-10 p-2 rounded text-success">
+                                    <i class="bi bi-check-circle-fill fs-4"></i>
+                                </div>
+                                <span class="badge bg-light text-muted">Hôm nay</span>
+                            </div>
+                            <h2 class="fw-bold mb-0">50</h2>
+                            <div class="text-muted small">Đã trả kết quả</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 4: Feedback -->
+                <!--                    <div class="col-md-3">-->
+                <!--                        <div class="card card-widget border-0 shadow-sm h-100 card-kpi">-->
+                <!--                            <div class="card-body">-->
+                <!--                                <div class="d-flex justify-content-between align-items-start mb-3">-->
+                <!--                                    <div class="bg-warning bg-opacity-10 p-2 rounded text-warning">-->
+                <!--                                        <i class="bi bi-star-half fs-4"></i>-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <h2 class="fw-bold mb-0">4.8/5</h2>-->
+                <!--                                <div class="text-muted small">Điểm hài lòng trung bình</div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+            </div>
+
+            <!-- 3. QUEUE TABLE -->
+            <div class="card border-0 shadow-sm">
+                <div
+                        class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-list-task me-2"></i>Danh sách Chờ xử lý</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th class="ps-3 py-3">STT</th>
+                            <th>Mã hồ sơ</th>
+                            <th>Công dân</th>
+                            <th>Thủ tục</th>
+                            <th>Thời gian nộp</th>
+                            <th>Tình trạng</th>
+                            <th class="text-end pe-3">Tác vụ</th>
+                        </tr>
+                        </thead>
+                        <tbody><!-- Item 1: Warning Overdue -->
+                        <tr th:each="dossier,i:${dossiers.content}" class="">
+                            <td class="ps-3" th:text="${i.count}"></td>
+                            <td><span class="badge bg-success text-light" th:text="${dossier.dossierCode}"></span></td>
+                            <td th:text="${dossier.applicantFullName}"></td>
+                            <td th:text="${dossier.serviceName}"></td>
+                            <td>
+                                <div class="fw-bold text-primary"
+                                     th:text="${#temporals.format(dossier.submissionDate, 'dd/MM/yyyy HH:mm')}"></div>
+                            </td>
+                            <td><span class="badge bg-warning text-dark" th:text="${dossier.dossierStatus}"></span></td>
+                            <td class="text-end pe-3">
+                                <a th:href="@{/officer/dashboard/reception(id=${dossier.id})}"
+                                   class="btn btn-sm btn-primary fw-bold shadow-sm">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Tiếp nhận
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white py-3">
+                    <nav>
+                        <ul class="pagination justify-content-center mb-0">
+
+                            <li class="page-item" th:classappend="${dossiers.hasPrevious()} ? '' : 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/officer/dashboard(page=${dossiers.number - 1})}">Trước</a>
+                            </li>
+                            <li class="page-item"
+                                th:each="pageNumber : ${#numbers.sequence(0, dossiers.totalPages - 1)}"
+                                th:classappend="${pageNumber == dossiers.number} ? 'active' : ''">
+                                <a class="page-link" th:href="@{/officer/dashboard(page=${pageNumber})}"
+                                   th:text="${pageNumber + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${dossiers.hasNext()} ? '' : 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/officer/dashboard(page=${dossiers.number + 1})}">Sau</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- JS Logic -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/websocket.js}"></script>
+</body>
+
+</html>

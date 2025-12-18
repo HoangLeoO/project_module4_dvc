@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiếp nhận Hồ sơ - Hệ thống Một cửa</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../static/assets/css/style.css">
+    <link rel="stylesheet" href="../../../static/assets/css/internal.css">
+</head>
+
+<body class="bg-light" th:object="${dossier}">
+
+<!-- WRAPPER -->
+<div class="d-flex" id="wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="bg-white border-end"
+         style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+        <div class="p-3 border-bottom d-flex align-items-center bg-primary text-white">
+            <i class="bi bi-building-fill-gear fs-4 me-2"></i>
+            <div class="fw-bold">HỆ THỐNG MỘT CỬA</div>
+        </div>
+        <div class="list-group list-group-flush p-2">
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Nghiệp
+                vụ</small>
+            <a th:href="@{/officer/dashboard}" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                    class="bi bi-grid-fill me-2"></i>Bàn làm việc</a>
+
+            <a href="officer-return.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
+                    class="bi bi-check2-circle me-2"></i>Trả kết quả</a>
+            <a href="officer-complaints.html"
+               class="list-group-item list-group-item-action rounded mb-1 border-0 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-megaphone-fill me-2"></i>Phản ánh</span>
+                <span class="badge bg-danger rounded-pill">1</span>
+            </a>
+
+
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
+                thống</small>
+            <a href="../06-shared/internal-login.html"
+               class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
+                    class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+        <!-- HEADER -->
+        <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a th:href="@{/officer/dashboard}">Bàn làm việc</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tiếp nhận hồ sơ</li>
+                </ol>
+            </nav>
+        </nav>
+
+        <main class="flex-grow-1 p-4">
+
+            <div class="row">
+                <!-- LEFT COL: SEARCH & INFO -->
+                <div class="col-lg-8">
+
+                    <!-- 1. SEARCH BAR -->
+                    <!--                        <div class="card border-0 shadow-sm mb-4">-->
+                    <!--                            <div class="card-body p-4">-->
+                    <!--                                <h5 class="fw-bold mb-3">Tra cứu thông tin / Quét mã</h5>-->
+                    <!--                                <div class="input-group input-group-lg">-->
+                    <!--                                    <span class="input-group-text bg-light"><i class="bi bi-qr-code-scan"></i></span>-->
+                    <!--                                    <input type="text" class="form-control"-->
+                    <!--                                        placeholder="Quét mã vạch hồ sơ hoặc nhập số CCCD..." value="HS-2023-009">-->
+                    <!--                                    <button class="btn btn-primary fw-bold" type="button">Tìm kiếm</button>-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+                    <!--                        </div>-->
+
+                    <!-- 2. CITIZEN INFO -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div
+                                class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-person-vcard-fill me-2 text-primary"></i>Thông tin người
+                                    nộp</span>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Họ và tên</label>
+                                    <input th:value="${dossier.applicantFullName}" type="text"
+                                           class="form-control bg-light" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Số CCCD</label>
+                                    <input type="text" class="form-control bg-light" th:value="${dossier.cccd}"
+                                           readonly>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label small text-muted">Thủ tục đăng ký</label>
+                                    <input type="text" class="form-control bg-light" th:value="${dossier.serviceName}"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. DOC CHECKLIST -->
+                    <div class="card border-0 shadow-sm mb-4" th:object="${files}">
+                        <div class="card-header bg-white fw-bold py-3">
+                            <i class="bi bi-check2-square me-2 text-success"></i>Thành phần hồ sơ
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <label th:each="file :${files}" class="list-group-item d-flex gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-check-square-fill" viewBox="0 0 16 16">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                                </svg>
+                                <span>
+                                        <strong th:text="${file.fileName}"></strong>
+                                        <small class="d-block text-muted">Đã điền đầy đủ theo mẫu TP/HT-2024</small>
+                                    </span>
+                                <a href="#" class="ms-auto text-decoration-none small"><i
+                                        class="bi bi-file-earmark-pdf me-1"></i>Xem file</a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COL: FEES & ACTION -->
+                <div class="col-lg-4">
+
+                    <!-- 4. FEE CALCULATOR -->
+                    <!--                        <div class="card border-0 shadow-sm mb-4">-->
+                    <!--                            <div class="card-header bg-white fw-bold py-3">-->
+                    <!--                                <i class="bi bi-calculator me-2 text-warning"></i>Tính phí & Lệ phí-->
+                    <!--                            </div>-->
+                    <!--                            <div class="card-body bg-light">-->
+                    <!--                                <div class="d-flex justify-content-between mb-2">-->
+                    <!--                                    <span>Lệ phí nhà nước:</span>-->
+                    <!--                                    <span class="fw-bold">50.000 đ</span>-->
+                    <!--                                </div>-->
+                    <!--                                <div class="d-flex justify-content-between mb-3">-->
+                    <!--                                    <span>Phí bưu điện:</span>-->
+                    <!--                                    <span class="fw-bold">0 đ</span>-->
+                    <!--                                </div>-->
+                    <!--                                <hr>-->
+                    <!--                                <div class="d-flex justify-content-between align-items-center">-->
+                    <!--                                    <h5 class="fw-bold mb-0">Tổng thu:</h5>-->
+                    <!--                                    <h4 class="fw-bold text-danger mb-0">50.000 đ</h4>-->
+                    <!--                                </div>-->
+                    <!--                                <div class="form-check mt-3">-->
+                    <!--                                    <input class="form-check-input" type="checkbox" id="paidCheck" checked>-->
+                    <!--                                    <label class="form-check-label small" for="paidCheck">-->
+                    <!--                                        Đã thanh toán (Ví điện tử / Tiền mặt)-->
+                    <!--                                    </label>-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+                    <!--                        </div>-->
+
+                    <!-- 5. ACTIONS -->
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/officer/dashboard/reception/update(id=${dossier.id})}"
+                           class="btn btn-primary btn-lg fw-bold shadow-sm">
+                            <i class="bi bi-printer-fill me-2"></i>Tiếp nhận
+                        </a>
+                        <button class="btn btn-outline-danger fw-bold bg-white"
+                                data-bs-toggle="modal"
+                                data-bs-target="#actionModal">
+                            <i class="bi bi-arrow-return-left me-2"></i> Yêu cầu bổ sung
+                        </button>
+                        <!--                            <a th:href="@{/officer/dashboard/reception/reject(id=${dossier.id})}" class="btn btn-outline-danger fw-bold bg-white">-->
+                        <!--                                <i class="bi bi-arrow-return-left me-2"></i>Yêu cầu bổ sung-->
+                        <!--                            </a>-->
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modals Include -->
+<th:block th:replace="components/modals/reject-reason-modal :: rejectReasonModal" ></th:block>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
