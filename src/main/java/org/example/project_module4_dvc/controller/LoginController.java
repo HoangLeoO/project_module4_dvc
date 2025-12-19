@@ -13,21 +13,18 @@ public class LoginController {
     @Autowired
     private ISysUserService userService;
 
-
-
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String landingPage() {
-        return "redirect:/login/citizen";
+        return "citizen/home";
     }
 
     @RequestMapping(value = "/login/citizen", method = RequestMethod.GET)
     public String loginPageCitizen() {
-        return "pages/login"; // Trang login hiện tại (dành cho công dân)
+        return "citizen/login";
     }
 
     @RequestMapping(value = "/login/official", method = RequestMethod.GET)
     public String loginPageOfficial() {
-        return "pages/official-login"; // Trang login mới dành cho cán bộ
+        return "pages/login"; // Keep old login for officials for now or use a dedicated one
     }
-
 }

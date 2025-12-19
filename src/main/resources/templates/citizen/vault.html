@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Kho dữ liệu số')}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('vault')}"></nav>
+
+    <!-- CONTENT -->
+    <main class="container mt-5 pt-4 mb-5">
+        <div class="row g-4 align-items-center mb-4">
+            <div class="col-md-6">
+                <h3 class="fw-bold text-dark mb-1">Kho tài liệu số cá nhân</h3>
+                <p class="text-muted mb-0">Lưu trữ và sử dụng lại các giấy tờ điện tử đã được xác thực.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-primary fw-bold shadow-sm px-4">
+                    <i class="bi bi-cloud-upload me-2"></i>Tải lên tài liệu
+                </button>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Sidebar filter -->
+            <div class="col-lg-3">
+                <div class="card card-modern border-0 shadow-sm p-3">
+                    <div class="list-group list-group-flush small">
+                        <a href="#" class="list-group-item list-group-item-action border-0 active rounded-2 mb-1"><i
+                                class="bi bi-files me-2"></i>Tất cả tài liệu</a>
+                        <a href="#" class="list-group-item list-group-item-action border-0 rounded-2 mb-1"><i
+                                class="bi bi-shield-check me-2"></i>Đã xác thực</a>
+                        <a href="#" class="list-group-item list-group-item-action border-0 rounded-2 mb-1"><i
+                                class="bi bi-folder me-2"></i>Giấy tờ tùy thân</a>
+                        <a href="#" class="list-group-item list-group-item-action border-0 rounded-2"><i
+                                class="bi bi-clock-history me-2"></i>Tài liệu gần đây</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Grid -->
+            <div class="col-lg-9">
+                <div class="row g-3">
+                    <!-- Doc item -->
+                    <div class="col-md-4" th:each="item : ${vaultItems}">
+                        <div class="card card-modern border-0 shadow-sm h-100 hover-lift">
+                            <div class="card-body p-4 text-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary d-inline-block mb-3">
+                                    <i class="bi bi-file-earmark-text-fill fs-1"
+                                        th:if="${#strings.contains(item.docType, 'Giấy tờ')}"></i>
+                                    <i class="bi bi-file-earmark-pdf-fill fs-1"
+                                        th:unless="${#strings.contains(item.docType, 'Giấy tờ')}"></i>
+                                </div>
+                                <h6 class="fw-bold text-dark mb-1 text-truncate" th:text="${item.docName}">Tên tài liệu
+                                </h6>
+                                <p class="small text-muted mb-3" th:text="${item.docType}">Loại tài liệu</p>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a th:href="${item.fileUrl}" target="_blank"
+                                        class="btn btn-sm btn-light border px-3">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a th:href="${item.fileUrl}" download class="btn btn-sm btn-light border px-3">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder for empty -->
+                    <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(vaultItems)}">
+                        <div class="opacity-25 mb-3">
+                            <i class="bi bi-folder-x display-1"></i>
+                        </div>
+                        <h5 class="text-muted">Kho tài liệu trống</h5>
+                        <p class="small text-muted">Bạn chưa có tài liệu nào trong kho số.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>
