@@ -280,7 +280,7 @@ VALUES
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('admin', '$2a$10$A182sMAmUPgfWsvm706dGu4SHLswniV/EkikgYAJ/3d8cFF7PuJSu', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
+    ('admin', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
 
 
 # PHƯỜNG HẢI CHÂU (dept_id = 2)

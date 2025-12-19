@@ -63,7 +63,7 @@
                     class="bi bi-sliders me-2"></i>Tham số hệ thống</a>
 
             <div class="mt-4 px-2">
-                <a href="../06-shared/internal-login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                <a href="/logout/official" class="btn btn-outline-danger w-100 btn-sm"><i
                         class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
             </div>
         </div>
@@ -96,12 +96,14 @@
                             </a>
                         </li>
                         <li><a class="dropdown-item text-warning" href="#"><i
-                                class="bi bi-exclamation-triangle me-2"></i> <span th:text="${unresolvedFeedbacks}">0</span> Phản ánh chưa trả lời</a></li>
+                                class="bi bi-exclamation-triangle me-2"></i> <span
+                                th:text="${unresolvedFeedbacks}">0</span> Phản ánh chưa trả lời</a></li>
                     </ul>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center fw-bold"
-                         style="width: 32px; height: 32px;">A</div>
+                         style="width: 32px; height: 32px;">A
+                    </div>
                     <div class="small fw-bold">Admin</div>
                 </div>
             </div>
@@ -138,7 +140,8 @@
                                 <i class="bi bi-hourglass-split fs-1 text-warning opacity-25"></i>
                             </div>
                             <div class="mt-2 small text-muted"><a href="admin-records.html?status=processing"
-                                                                  class="text-decoration-none">Xem chi tiết &rarr;</a></div>
+                                                                  class="text-decoration-none">Xem chi tiết &rarr;</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,7 +155,16 @@
                                 </div>
                                 <i class="bi bi-check-circle fs-1 text-success opacity-25"></i>
                             </div>
-                            <div class="mt-2 small text-muted">Tỷ lệ đúng hạn: 98%</div>
+                            <div class="mt-2 small text-muted">
+                                Tỷ lệ đúng hạn:
+                                <span class="fw-bold"
+                                      th:text="${onTimeRate} + '%'"
+                                      th:classappend="
+            ${onTimeRate >= 95} ? 'text-success' :
+            (${onTimeRate >= 80} ? 'text-warning' : 'text-danger')">
+        0%
+    </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -168,7 +180,8 @@
                                 <i class="bi bi-exclamation-octagon fs-1 text-danger opacity-25"></i>
                             </div>
                             <div class="mt-2 small fw-bold text-danger animate-pulse"><i
-                                    class="bi bi-exclamation-triangle-fill me-1"></i>Cần xử lý ngay</div>
+                                    class="bi bi-exclamation-triangle-fill me-1"></i>Cần xử lý ngay
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,7 +192,8 @@
                 <div class="col-lg-8">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-white fw-bold py-3"><i class="bi bi-graph-up me-2"></i>Biểu đồ Hồ
-                            sơ theo Lĩnh vực (Tháng 12)</div>
+                            sơ theo Lĩnh vực (Tháng 12)
+                        </div>
                         <div class="card-body">
                             <canvas id="recordsChart" height="250"></canvas>
                         </div>
@@ -321,9 +335,9 @@
     const labels = chartData.labels;
 
     const STATUS_CONFIG = {
-        PENDING:  { label: 'Đang xử lý',   color: '#ffc107' },
-        APPROVED: { label: 'Đã hoàn thành', color: '#198754' },
-        REJECTED: { label: 'Quá hạn',       color: '#dc3545' }
+        PENDING: {label: 'Đang xử lý', color: '#ffc107'},
+        APPROVED: {label: 'Đã hoàn thành', color: '#198754'},
+        REJECTED: {label: 'Quá hạn', color: '#dc3545'}
     };
 
     const datasets = chartData.datasets
@@ -346,7 +360,7 @@
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { stacked: true },
+                x: {stacked: true},
                 y: {
                     stacked: true,
                     grace: '10%',          // ✅ chừa 10% khoảng trống phía trên
@@ -356,7 +370,7 @@
                 }
             },
             plugins: {
-                legend: { position: 'bottom' }
+                legend: {position: 'bottom'}
             }
         }
     });

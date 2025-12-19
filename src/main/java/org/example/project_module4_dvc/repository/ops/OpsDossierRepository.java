@@ -34,6 +34,8 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     // =========================================================================
     // 1. QUERY HỒ SƠ CỦA TÔI (Gán trực tiếp cho Leader ID)
     // =========================================================================
+
+    // Lấy danh sách hồ sơ chờ duyệt của tôi
     @Query(value = """
         SELECT 
             d.id AS id,
@@ -80,6 +82,8 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     // =========================================================================
     // 2. QUERY HỒ SƠ ỦY QUYỀN (Gán cho người khác, nhưng tôi được quyền xử lý)
     // =========================================================================
+
+    // Lấy danh sách hồ sơ chờ duyệt của tôi
     @Query(value = """
         SELECT 
             d.id AS id,
@@ -133,6 +137,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             @Param("domain") String domain,
             Pageable pageable);
 
+    // Cập nhật trạng thái hồ sơ thành APPROVED
     @Transactional
     @Modifying
     @Query(value = "UPDATE ops_dossiers " +
@@ -210,6 +215,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
      * - Hiệu suất tốt
      * - Type-safe
      */
+    // 1. Lấy chi tiết hồ sơ theo ID
     @Query("""
             SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO(
                 d.id,
@@ -242,7 +248,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             WHERE d.id = :dossierId
             """)
     Optional<OpsDossierDetailDTO> findDossierDetailById(@Param("dossierId") Long dossierId);
-
+// 2. Đếm số lượng trạng thái hồ sơ theo người nộp
     @Query("""
                 SELECT d.dossierStatus, COUNT(d)
                 FROM OpsDossier d
@@ -250,7 +256,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 GROUP BY d.dossierStatus
             """)
     List<Object[]> countStatusesByApplicant(@Param("applicantId") Long applicantId);
-
+// 3. Tìm kiếm hồ sơ theo từ khóa và trạng thái cho người nộp
     @Query("""
             SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
                 d.id,
@@ -278,7 +284,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             @Param("keyword") String keyword,
             @Param("status") String status,
             Pageable pageable);
-
+// 4. Lấy danh sách hồ sơ tóm tắt theo người nộp
     @Query("""
             SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
                 d.id,
@@ -325,6 +331,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     // """)
     // List<OpsDossierLog> findLogsByDossierId(@Param("dossierId") Long dossierId);
 
+    // Lấy top 3 thông báo gần nhất cho công dân
     @Query(value = """
                 SELECT
                     d.id AS dossierId,
@@ -339,7 +346,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 LIMIT 3
             """, nativeQuery = true)
     List<CitizenNotificationProjection> findTop3NotificationsByApplicant(@Param("currentUserId") Long currentUserId);
-
+// Lấy tất cả thông báo cho công dân với phân trang
     @Query(value = """
               SELECT
                   d.id AS dossierId,
@@ -361,7 +368,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             Pageable pageable);
 
 
-
+    // lấy phân trang cảnh báo hồ sơ quá hạn và sắp đến hạn
     @Query(value = """
     SELECT 
         d.id AS id,
@@ -384,6 +391,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             nativeQuery = true)
     Page<Map<String, Object>> findOverdueAlerts(Pageable pageable);
 
+    // lấy phân trang cảnh báo hồ sơ sắp đến hạn
     @Query(value = """
     SELECT 
         d.id AS id,
@@ -405,4 +413,50 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 """,
             nativeQuery = true)
     Page<Map<String, Object>> findNearlyDueAlerts(Pageable pageable);
+    // đem số hồ sơ hoàn thành
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE d.dossierStatus = 'COMPLETED'
+      AND d.finishDate IS NOT NULL
+""")
+    long countCompleted();
+    // đêm số hồ sơ hoàn thành đúng hạn
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE d.dossierStatus = 'COMPLETED'
+      AND d.finishDate IS NOT NULL
+      AND d.dueDate IS NOT NULL
+      AND d.finishDate <= d.dueDate
+""")
+    long countCompletedOnTime();
+
+    // đếm tổng số hồ sơ
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE d.dossierStatus <> 'REJECTED'
+""")
+    long countTotalForKpi();
+
+    // đếm số hồ sơ hoàn thành đúng hạn
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE
+        (
+            d.dossierStatus = 'COMPLETED'
+            AND d.finishDate IS NOT NULL
+            AND d.dueDate IS NOT NULL
+            AND d.finishDate <= d.dueDate
+        )
+        OR
+        (
+            d.dossierStatus <> 'COMPLETED'
+            AND d.dueDate IS NOT NULL
+            AND d.dueDate >= CURRENT_TIMESTAMP
+        )
+""")
+    long countOnTimeForKpi();
 }

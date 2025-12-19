@@ -1,4 +1,4 @@
-package org.example.project_module4_dvc.service.iml;
+package org.example.project_module4_dvc.service.mod;
 
 import org.example.project_module4_dvc.entity.mod.ModFeedback;
 import org.springframework.data.domain.Page;

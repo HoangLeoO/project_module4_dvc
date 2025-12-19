@@ -3,7 +3,6 @@ package org.example.project_module4_dvc.service.mod;
 import lombok.RequiredArgsConstructor;
 import org.example.project_module4_dvc.entity.mod.ModFeedback;
 import org.example.project_module4_dvc.repository.mod.ModFeedbackRepository;
-import org.example.project_module4_dvc.service.iml.IModFeedbackService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

@@ -2,7 +2,7 @@ package org.example.project_module4_dvc.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.project_module4_dvc.service.iml.IDashboardAlertService;
-import org.example.project_module4_dvc.service.iml.IModFeedbackService;
+import org.example.project_module4_dvc.service.mod.IModFeedbackService;
 import org.example.project_module4_dvc.service.iml.ISysDepartmentService;
 import org.springframework.data.domain.PageRequest;
 import org.example.project_module4_dvc.service.ops.IOpsDossierService;
@@ -12,19 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.Map;
+
 
 @Controller
-@RequestMapping("/admin/")
-@RequiredArgsConstructor
-public class AdminController {
-    private final IOpsDossierService opsDossierService;
-    private final IModFeedbackService modFeedbackService;
-    private final ISysDepartmentService sysDepartmentService;
-
-    @GetMapping("dashboard")
-    public String showDashboard(Model model) {
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
@@ -48,6 +38,7 @@ public class AdminController {
 
         model.addAttribute("alerts",
                 dashboardAlertService.getAlerts(PageRequest.of(page, 3)));
+        model.addAttribute("onTimeRate",opsDossierService.calculateOnTimeRateStrict());
         return "pages/admin/dashboard";
     }
 }

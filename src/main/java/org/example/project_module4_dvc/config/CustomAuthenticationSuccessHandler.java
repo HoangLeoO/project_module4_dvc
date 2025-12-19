@@ -29,7 +29,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String role = authority.getAuthority();
 
             if ("ROLE_ADMIN".equals(role)) {
-                redirectUrl = "/admin/dashboard";
+                redirectUrl = "/admin/";
                 break;
             }
 

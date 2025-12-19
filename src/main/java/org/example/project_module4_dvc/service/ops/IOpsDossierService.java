@@ -3,10 +3,10 @@ package org.example.project_module4_dvc.service.ops;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.CitizenNotificationProjection;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
+import org.example.project_module4_dvc.dto.admin.ChartDataDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import org.example.project_module4_dvc.dto.ChartDataDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import java.util.List;
 import java.util.Map;
@@ -40,4 +40,11 @@ public interface IOpsDossierService {
     // lấy tất cả thông báo + phân trang
     Page<CitizenNotificationProjection> getAllMyNotifications(Long userId, Pageable pageable);
 
+
+    Page<Map<String, Object>> getOverdueAlerts(Pageable pageable);
+    Page<Map<String, Object>> getNearlyDueAlerts(Pageable pageable);
+
+    int getOnTimeRate();
+
+    int calculateOnTimeRateStrict();
 }
