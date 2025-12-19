@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh mục Dịch vụ công - Cổng Dịch vụ công</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/portal.css}">
+
+</head>
+
+<body class="bg-light">
+
+    <!-- 1. HEADER (Solid style for sub-pages) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm-soft py-3 bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" th:href="@{/citizen/dashboard}">
+                <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="landingNav">
+                <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium hover-white"
+                            th:classappend="${activePage == 'home'} ? 'active fw-bold border-bottom border-2 border-warning text-warning' : 'text-white-50'"
+                            th:href="@{/citizen/dashboard}">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium hover-white"
+                            th:classappend="${activePage == 'hoso'} ? 'active fw-bold border-bottom border-2 border-warning text-warning' : 'text-white-50'"
+                            th:href="@{/citizen/hoso}">Hồ sơ của tôi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium hover-white"
+                            th:classappend="${activePage == 'services'} ? 'active fw-bold border-bottom border-2 border-warning text-warning' : 'text-white-50'"
+                            th:href="@{/citizen/services}">Dịch vụ công</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium text-white-50 hover-white" href="#">Hướng dẫn</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium text-white-50 hover-white"
+                            th:href="@{/citizen/feedback}">Phản ánh kiến nghị</a></li>
+                </ul>
+                <div class="ms-lg-4 d-flex gap-2">
+                    <a href="portal-landing.html" class="btn btn-outline-light fw-bold shadow-sm px-3">
+                        <i class="bi bi-person-circle me-2"></i>Đăng nhập
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary">Danh mục Thủ tục Hành chính</h2>
+            <p class="text-muted">Tìm kiếm và nộp hồ sơ trực tuyến nhanh chóng, tiện lợi.</p>
+        </div>
+
+        <!-- 2. SEARCH & FILTER BAR -->
+        <div class="card card-modern shadow-md-soft p-4 mb-5">
+            <form th:action="@{/citizen/services}" method="get">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="keyword" class="form-control bg-light border-start-0"
+                                id="searchInput" th:value="${keyword}"
+                                placeholder="Nhập tên thủ tục (VD: Khai sinh, Đất đai...)">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-lg bg-light" name="domain" id="domainSelect"
+                            onchange="this.form.submit()">
+                            <option value="ALL" th:selected="${domain == 'ALL' or domain == null or domain == ''}">Tất
+                                cả lĩnh vực</option>
+                            <option value="HỘ TỊCH" th:selected="${domain == 'HỘ TỊCH'}">Hộ tịch</option>
+                            <option value="ĐẤT ĐAI" th:selected="${domain == 'ĐẤT ĐAI'}">Đất đai</option>
+                            <option value="KINH DOANH" th:selected="${domain == 'KINH DOANH'}">Kinh doanh</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 3. FEATURED SERVICES (TOP) -->
+        <!-- Chỉ hiển thị khi: (Keyword trống/null) VÀ (Domain trống/null/ALL) -->
+        <div class="mb-5"
+            th:if="${(keyword == null or keyword == '') and (domain == null or domain == '' or domain == 'ALL')}">
+            <h5 class="fw-bold text-dark mb-3 border-start border-4 border-primary ps-3">Dịch vụ nộp nhiều nhất</h5>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+
+                <!-- Dynamic Item Logic -->
+                <div class="col" th:each="service : ${featuredServices}">
+                    <div class="card card-modern h-100 border-0 shadow-sm-soft text-center service-card"
+                        th:data-service-code="${service.serviceCode}" onclick="goToDetailFromData(this)">
+                        <div class="card-body p-4">
+                            <div class="icon-circle bg-primary-soft text-primary mx-auto mb-3">
+                                <i
+                                    th:class="${service.domain == 'ĐẤT ĐAI' ? 'bi bi-geo-alt' : (service.domain == 'HỘ TỊCH' ? 'bi bi-person-badge' : 'bi bi-briefcase')}"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1" th:text="${service.serviceName}">Tên dịch vụ</h6>
+                            <p class="text-muted small mb-0" th:text="${service.domain}">Lĩnh vực</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. ALL SERVICES LIST / SEARCH RESULTS -->
+        <div class="d-flex align-items-center justify-content-between mb-3 border-start border-4 border-secondary ps-3">
+            <h5 class="fw-bold text-dark mb-0">
+                <span
+                    th:if="${(keyword == null or keyword == '') and (domain == null or domain == '' or domain == 'ALL')}">Danh
+                    sách toàn bộ</span>
+                <span
+                    th:unless="${(keyword == null or keyword == '') and (domain == null or domain == '' or domain == 'ALL')}">
+                    Kết quả tìm kiếm
+                    <th:block th:if="${keyword != null and keyword != ''}" th:text="'cho: ' + ${keyword}"></th:block>
+                    <th:block th:if="${domain != null and domain != '' and domain != 'ALL'}"
+                        th:text="' trong lĩnh vực: ' + ${domain}"></th:block>
+                </span>
+            </h5>
+            <span class="badge bg-light text-dark shadow-sm px-3 py-2" th:text="${allServices.size() + ' thủ tục'}">0
+                thủ tục</span>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="serviceList">
+
+            <div class="col service-item" th:each="service : ${allServices}"
+                th:data-service-code="${service.serviceCode}" onclick="goToDetailFromData(this)">
+                <div class="card card-modern h-100 service-card border-0 shadow-sm-soft">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="icon-circle bg-light mb-0" style="width: 50px; height: 50px;"
+                                th:classappend="${service.domain == 'ĐẤT ĐAI' ? 'text-success' : (service.domain == 'HỘ TỊCH' ? 'text-primary' : 'text-info')}">
+                                <i
+                                    th:class="${service.domain == 'ĐẤT ĐAI' ? 'bi bi-ui-checks-grid' : (service.domain == 'HỘ TỊCH' ? 'bi bi-person-check' : 'bi bi-bricks')}"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1" th:text="${service.serviceName}">Tên dịch vụ</h6>
+                            <p class="mb-0 text-muted small" th:text="'Lĩnh vực: ' + ${service.domain}">Lĩnh vực</p>
+                        </div>
+                        <div class="ms-auto">
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(allServices)}" class="col-12 text-center py-5">
+                <p class="text-muted">Không tìm thấy dịch vụ nào phù hợp với từ khóa của bạn.</p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-footer-dark text-white py-5 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Đơn vị vận hành</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-building fs-1 me-3 opacity-50"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">TRUNG TÂM HÀNH CHÍNH CÔNG</h6>
+                            <p class="mb-0 small opacity-75">Thành phố Đà Nẵng</p>
+                        </div>
+                    </div>
+                    <p class="small opacity-50">Hệ thống cung cấp dịch vụ công trực tuyến mức độ 3, 4 phục vụ người dân
+                        và doanh nghiệp.</p>
+                </div>
+                <div class="col-md-3 offset-md-1">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên kết</h5>
+                    <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Cổng thông tin Tp.</a></li>
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Sở TT & TT</a></li>
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Văn bản quy phạm</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên hệ</h5>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-geo-alt me-2"></i>24 Trần Phú, Hải Châu</p>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-telephone me-2"></i>(0236) 1022</p>
+                    <p class="small opacity-75"><i class="bi bi-envelope me-2"></i>contact@danang.gov.vn</p>
+                </div>
+            </div>
+            <hr class="opacity-10 my-4">
+            <div class="text-center small opacity-50">
+                &copy; 2025 E-Gov Simulation System (Static Prototype Mode)
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function goToDetailFromData(element) {
+            const code = element.getAttribute('data-service-code');
+            goToDetail(code);
+        }
+
+        function goToDetail(code) {
+            // Forward to detail page (Assume generic page for now or specific)
+            // For now, assume generic detail page with query param
+            window.location.href = `/citizen/service-detail?code=${code}`;
+        }
+    </script>
+</body>
+
+</html>

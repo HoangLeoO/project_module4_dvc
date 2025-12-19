@@ -1,11 +1,11 @@
-package org.example.project_module4_dvc.dto;
+package org.example.project_module4_dvc.dto.OpsDossierDTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * DTO để hiển thị thông tin chi tiết hồ sơ từ nhiều bảng:
@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class OpsDossierDetailDTO {
 
     // === Thông tin từ bảng ops_dossiers ===
@@ -27,7 +26,7 @@ public class OpsDossierDetailDTO {
     private LocalDateTime submissionDate;
     private LocalDateTime dueDate;
     private LocalDateTime finishDate;
-    private String formData;
+    private Map<String,Object> formData;
     private String rejectionReason;
 
     // === Thông tin người nộp hồ sơ (từ bảng sys_users) ===
@@ -63,7 +62,7 @@ public class OpsDossierDetailDTO {
             LocalDateTime submissionDate,
             LocalDateTime dueDate,
             LocalDateTime finishDate,
-            String formData,
+            Map<String,Object> formData,
             String rejectionReason,
             // Từ SysUser (applicant)
             Long applicantId,

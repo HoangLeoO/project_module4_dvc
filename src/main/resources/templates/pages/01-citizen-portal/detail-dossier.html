@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Hồ sơ - Dịch vụ công Đà Nẵng</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/portal.css}">
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        /* Vertical Line */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: -6px;
+            width: 2px;
+            background-color: #e9ecef;
+            z-index: 0;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+
+
+        .timeline-item.active::before {
+            background-color: #dee2e6;
+            border-left: 2px dashed var(--bs-primary);
+        }
+
+        /* Timeline Dot */
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 2px solid #dee2e6;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+
+
+        .timeline-item.active .timeline-dot {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+        }
+
+        .timeline-content {
+            background: #fff;
+            padding: 0.5rem 0;
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+    <!-- 1. HEADER -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm-soft py-3 bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" th:href="@{/citizen/hoso}">
+                <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'home'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            href="/citizen/dashboard">Trang chủ</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'hoso'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            th:href="@{/citizen/hoso}">Hồ sơ của tôi</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'services'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            href="/citizen/services">Dịch vụ công</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'feedback'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            href="/citizen/feedback">Phản ánh kiến nghị</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-4 d-flex align-items-center gap-3">
+                    <!-- Notification Bell -->
+                    <div class="position-relative cursor-pointer" id="notiTrigger" tabindex="0">
+                        <i class="bi bi-bell text-white fs-5 opacity-75 hover-white"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                            style="font-size: 0.6rem;">2</span>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=Cong+Dan&background=random"
+                                class="rounded-circle me-2" width="32">
+                            <span>Nguyễn Văn A</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="portal-profile.html"><i
+                                        class="bi bi-person me-2"></i>Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="portal-vault.html"><i class="bi bi-safe me-2"></i>Kho dữ
+                                    liệu số</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="portal-landing.html"><i
+                                        class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 mb-5">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a th:href="@{/citizen/hoso}" class="text-decoration-none text-muted hover-primary transition-all">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách hồ sơ
+            </a>
+        </div>
+
+        <!-- DOSSIER SUMMARY CARD -->
+        <div class="card card-modern border-0 shadow-lg-soft mb-4 overflow-hidden">
+            <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
+                            Mã hồ sơ: <span th:text="${d.dossierCode}">HS-001</span>
+                        </span>
+                        <h2 class="fw-bold text-dark mt-2" th:text="${d.serviceName}">Đăng ký khai sinh</h2>
+                    </div>
+                    <div class="mt-3 mt-md-0">
+                        <span th:if="${d.dossierStatus == 'NEW'}" class="badge bg-info px-4 py-2 fs-6 shadow-sm">Mới
+                            nộp</span>
+                        <span th:if="${d.dossierStatus == 'PENDING'}"
+                            class="badge bg-warning text-dark px-4 py-2 fs-6 shadow-sm">Đang xử lý</span>
+                        <span th:if="${d.dossierStatus == 'APPROVED'}"
+                            class="badge bg-success px-4 py-2 fs-6 shadow-sm">Đã hoàn thành</span>
+                        <span th:if="${d.dossierStatus == 'REJECTED'}"
+                            class="badge bg-danger px-4 py-2 fs-6 shadow-sm">Bị từ chối</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <!-- Column 1: Applicant Info -->
+                    <div class="col-md-6 border-end-md">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Thông tin người nộp</h6>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-light p-3 rounded-circle me-3 text-secondary">
+                                <i class="bi bi-person fs-4"></i>
+                            </div>
+                            <div>
+                                <p class="mb-0 text-muted small">Họ và tên</p>
+                                <p class="fw-bold text-dark mb-0" th:text="${d.applicantFullName}">Nguyễn Văn A</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-light p-3 rounded-circle me-3 text-secondary">
+                                <i class="bi bi-tag fs-4"></i>
+                            </div>
+                            <div>
+                                <p class="mb-0 text-muted small">Loại đối tượng</p>
+                                <p class="fw-bold text-dark mb-0" th:text="${d.applicantUserType}">Cá nhân</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Timeline Info -->
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Thời gian xử lý</h6>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <p class="mb-0 text-muted small">Ngày nộp</p>
+                                <p class="fw-bold text-dark"
+                                    th:text="${#temporals.format(d.submissionDate, 'dd/MM/yyyy HH:mm')}">01/01/2025
+                                    08:00</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-0 text-muted small">Hẹn trả</p>
+                                <p class="fw-bold text-dark" th:text="${#temporals.format(d.dueDate, 'dd/MM/yyyy')}">
+                                    10/01/2025</p>
+                            </div>
+                            <div class="col-6" th:if="${d.finishDate != null}">
+                                <p class="mb-0 text-muted small">Ngày hoàn thành</p>
+                                <p class="fw-bold text-success"
+                                    th:text="${#temporals.format(d.finishDate, 'dd/MM/yyyy HH:mm')}">--/--/----</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-0 text-muted small">Thời gian quy định</p>
+                                <p class="fw-bold text-dark" th:text="${d.processingDays + ' ngày làm việc'}">10 ngày
+                                    làm việc</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REJECTION REASON (IF REJECTED) -->
+        <div class="card card-modern border-0 shadow-sm-soft border-start border-5 border-danger mb-4 overflow-hidden"
+            th:if="${d.dossierStatus == 'REJECTED' and d.rejectionReason != null}">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-start">
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-circle text-danger me-4">
+                        <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-danger mb-2">Lý do từ chối hồ sơ</h5>
+                        <p class="text-dark mb-0 fs-6" th:text="${d.rejectionReason}">Hồ sơ thiếu các giấy tờ chứng minh
+                            quan hệ gia đình (Giấy tạm trú, hộ khẩu...). Vui lòng bổ sung và nộp lại.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETAIL TABS / SECTIONS -->
+        <div class="row g-4">
+            <!-- Left: Handling Info -->
+            <div class="col-lg-7">
+                <div class="card card-modern border-0 shadow-md-soft h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                        <i class="bi bi-person-gear text-primary fs-4 me-2"></i>
+                        <h6 class="fw-bold mb-0 text-dark">Thông tin thụ lý</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="list-group list-group-flush border-bottom-0">
+                            <div class="list-group-item px-0 py-3 d-flex justify-content-between">
+                                <span class="text-muted">Đơn vị xử lý:</span>
+                                <span class="fw-bold text-dark"
+                                    th:text="${d.handlerDeptName != null ? d.handlerDeptName : 'Đang chờ phân công'}">Phòng
+                                    Tư pháp Quận Hải Châu</span>
+                            </div>
+                            <div class="list-group-item px-0 py-3 d-flex justify-content-between">
+                                <span class="text-muted">Cán bộ thụ lý:</span>
+                                <span class="fw-bold text-dark"
+                                    th:text="${d.handlerFullName != null ? d.handlerFullName : 'Chưa tiếp nhận'}">Nguyễn
+                                    Văn B</span>
+                            </div>
+                            <div class="list-group-item px-0 py-3 d-flex justify-content-between">
+                                <span class="text-muted">Dịch vụ:</span>
+                                <span class="fw-bold text-primary" th:text="${d.serviceCode}">CS-001</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Actions/Help -->
+            <div class="col-lg-5">
+                <div class="card card-modern border-0 shadow-sm-soft">
+                    <div class="card-header bg-white fw-bold py-3 text-primary">
+                        <i class="bi bi-clock-history me-2"></i>Lịch sử xử lý hồ sơ
+                    </div>
+                    <div class="card-body p-4 ps-5">
+                        <div class="timeline" id="historyContainer">
+
+                            <!-- Loop through history logs -->
+                            <div th:each="log, status : ${history}" class="timeline-item"
+                                th:classappend="${status.last} ? 'active' : 'completed'">
+
+                                <div class="timeline-dot" th:text="${status.index + 1}">1</div>
+
+                                <div class="timeline-content">
+                                    <div class="step-label text-primary"
+                                        th:text="${#temporals.format(log.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                        01/01/2025 08:30
+                                    </div>
+                                    <h6 class="fw-bold mb-1 text-dark" th:text="${log.comments}">Nộp hồ sơ trực tuyến
+                                    </h6>
+
+                                    <div class="small text-muted mt-1">
+                                        <i class="bi bi-person-circle me-1"></i>
+                                        <span th:text="${log.actorName}">Người nộp</span>
+                                        <span th:if="${log.deptName != null}" th:text="' - ' + ${log.deptName}"> - Phòng
+                                            Tư Pháp</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Empty state -->
+                            <div th:if="${#lists.isEmpty(history)}" class="text-center py-5">
+                                <i class="bi bi-info-circle text-muted mb-3 d-block fs-1"></i>
+                                <p class="text-muted">Chưa có thông tin lịch sử xử lý.</p>
+                            </div>
+
+                            <!-- Fallback: Workflow steps if no history -->
+                            <div th:if="${not #lists.isEmpty(steps) and #lists.isEmpty(history)}" class="mt-3">
+                                <hr class="opacity-10">
+                                <p class="small text-muted fw-bold text-uppercase mb-2">Quy trình dự kiến:</p>
+                                <ul class="list-unstyled small text-muted">
+                                    <li th:each="step : ${steps}" class="mb-1">
+                                        <i class="bi bi-circle me-2"></i>
+                                        <span th:text="${step.stepName}">Bước xử lý</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-footer-dark text-white py-5 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Đơn vị vận hành</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-building fs-1 me-3 opacity-50"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">TRUNG TÂM HÀNH CHÍNH CÔNG</h6>
+                            <p class="mb-0 small opacity-75">Thành phố Đà Nẵng</p>
+                        </div>
+                    </div>
+                    <p class="small opacity-50">Hệ thống cung cấp dịch vụ công trực tuyến mức độ 3, 4 phục vụ người dân
+                        và doanh nghiệp.</p>
+                </div>
+                <div class="col-md-3 offset-md-1">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên kết</h5>
+                    <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white text-decoration-none hover-white">Cổng thông tin Tp.</a></li>
+                        <li><a href="#" class="text-white text-decoration-none hover-white">Sở TT & TT</a></li>
+                        <li><a href="#" class="text-white text-decoration-none hover-white">Văn bản quy phạm</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên hệ</h5>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-geo-alt me-2"></i>24 Trần Phú, Hải Châu</p>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-telephone me-2"></i>(0236) 1022</p>
+                    <p class="small opacity-75"><i class="bi bi-envelope me-2"></i>contact@danang.gov.vn</p>
+                </div>
+            </div>
+            <hr class="opacity-10 my-4">
+            <div class="text-center small opacity-50">
+                &copy; 2025 E-Gov Simulation System (Static Prototype Mode)
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

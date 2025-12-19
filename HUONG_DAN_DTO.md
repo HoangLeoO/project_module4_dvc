@@ -47,7 +47,7 @@ public class OpsDossierDetailDTO {
 
 // 2. Tạo query trong Repository
 @Query("""
-    SELECT new org.example.project_module4_dvc.dto.OpsDossierDetailDTO(
+    SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO(
         d.id,
         d.dossierCode,
         applicant.fullName,
@@ -155,7 +155,7 @@ public OpsDossierDetailDTO getDossierDetail(Long id) {
 ```java
 // Repository
 @Query("""
-    SELECT new org.example.project_module4_dvc.dto.OpsDossierSummaryDTO(
+    SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
         d.id,
         d.dossierCode,
         d.dossierStatus,
@@ -210,7 +210,7 @@ public class OpsDossierDetailDTO {
 
 // Repository
 @Query("""
-    SELECT new org.example.project_module4_dvc.dto.OpsDossierDetailDTO(
+    SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO(
         d.id,
         d.dossierCode,
         applicant.fullName,
@@ -327,7 +327,7 @@ public OpsDossierDetailDTO getDossierDetail(Long id) {
 SELECT new dto.OpsDossierDetailDTO(...)  // Thiếu full package
 
 ✅ Đúng:
-SELECT new org.example.project_module4_dvc.dto.OpsDossierDetailDTO(...)
+SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO(...)
 ```
 
 ---

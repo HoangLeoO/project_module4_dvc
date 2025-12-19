@@ -1,6 +1,5 @@
-package org.example.project_module4_dvc.dto;
+package org.example.project_module4_dvc.dto.OpsDossierDTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
+
 public class OpsDossierSummaryDTO {
     
     private Long dossierId;
@@ -31,9 +30,9 @@ public class OpsDossierSummaryDTO {
     // Thông tin cán bộ thụ lý
     private String handlerFullName;
     
-    /**
-     * Constructor cho JPQL Query
-     */
+//    /**
+//     * Constructor cho JPQL Query
+//     */
     public OpsDossierSummaryDTO(
             Long dossierId,
             String dossierCode,

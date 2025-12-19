@@ -48,7 +48,7 @@ Project này đã được cập nhật với **DTO Pattern** để hiển thị
 ```java
 // Repository - JPQL với constructor expression
 @Query("""
-    SELECT new org.example.project_module4_dvc.dto.OpsDossierDetailDTO(
+    SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO(
         d.id,
         d.dossierCode,
         applicant.fullName,

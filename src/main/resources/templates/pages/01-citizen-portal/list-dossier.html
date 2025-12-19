@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Hồ sơ - Dịch vụ công Đà Nẵng</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/portal.css}">
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+    <!-- 1. HEADER -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm-soft py-3 bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" th:href="@{/citizen/hoso}">
+                <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'home'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            href="/citizen/dashboard">Trang chủ</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'hoso'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            th:href="@{/citizen/hoso}">Hồ sơ của tôi</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'services'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            href="/citizen/services">Dịch vụ công</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${activePage == 'feedback'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                            href="/citizen/feedback">Phản ánh kiến nghị</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-4 d-flex align-items-center gap-3">
+                    <!-- Notification Bell -->
+                    <div class="position-relative cursor-pointer" id="notiTrigger" tabindex="0">
+                        <i class="bi bi-bell text-white fs-5 opacity-75 hover-white"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                            style="font-size: 0.6rem;">2</span>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=Cong+Dan&background=random"
+                                class="rounded-circle me-2" width="32">
+                            <span>Nguyễn Văn A</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="portal-profile.html"><i
+                                        class="bi bi-person me-2"></i>Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="portal-vault.html"><i class="bi bi-safe me-2"></i>Kho dữ
+                                    liệu số</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="portal-landing.html"><i
+                                        class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 mb-5">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a th:href="@{/citizen/hoso}" class="text-decoration-none text-muted hover-primary transition-all">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách hồ sơ
+            </a>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark mb-0">Danh sách Hồ sơ đã nộp</h2>
+            <a href="portal-submit-wizard.html" class="btn btn-primary fw-bold shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>Nộp hồ sơ mới
+            </a>
+        </div>
+
+        <!-- SEARCH FORM -->
+        <div class="card border-0 shadow-sm-soft mb-4">
+            <div class="card-body p-4">
+                <form th:action="@{/citizen/hoso/danh-sach}" method="get" class="row g-3">
+                    <div class="col-md-5">
+                        <label for="keyword" class="form-label fw-bold small text-uppercase text-muted">Tên hồ sơ / Dịch
+                            vụ</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control border-start-0" id="keyword" name="keyword"
+                                th:value="${keyword}" placeholder="Nhập tên hồ sơ để tìm kiếm...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label fw-bold small text-uppercase text-muted">Trạng
+                            thái</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value="NEW" th:selected="${status == 'NEW'}">Mới nộp</option>
+                            <option value="PENDING" th:selected="${status == 'PENDING'}">Đang xử lý</option>
+                            <option value="APPROVED" th:selected="${status == 'APPROVED'}">Đã hoàn thành</option>
+                            <option value="REJECTED" th:selected="${status == 'REJECTED'}">Bị từ chối</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold px-4">
+                            <i class="bi bi-filter me-2"></i>Lọc hồ sơ
+                        </button>
+                        <a th:href="@{/citizen/hoso/danh-sach}" class="btn btn-outline-secondary px-4">
+                            Làm mới
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- LIST CARD -->
+        <div class="card card-modern border-0 shadow-md-soft">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th style="width:15%" class="py-3 ps-4">Mã hồ sơ</th>
+                            <th style="width:37%" class="py-3">Tên dịch vụ</th>
+                            <th style="width:15%" class="py-3">Ngày nộp</th>
+                            <th style="width:10%" class="py-3">Trạng thái</th>
+                            <th style="width:15%" class="py-3">Cán bộ thụ lý</th>
+                            <th style="width:8%" class="py-3">Tác vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${dossiers}">
+                            <td class="ps-4 fw-bold text-primary" th:text="${item.dossierCode}">HS-001</td>
+                            <td th:text="${item.serviceName}">Dịch vụ công</td>
+                            <td th:text="${#temporals.format(item.submissionDate, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                            <td>
+                                <span th:if="${item.dossierStatus == 'NEW'}" class="badge bg-info">Mới nộp</span>
+                                <span th:if="${item.dossierStatus == 'PENDING'}" class="badge bg-warning text-dark">Đang
+                                    xử lý</span>
+                                <span th:if="${item.dossierStatus == 'APPROVED'}" class="badge bg-success">Đã hoàn
+                                    thành</span>
+                                <span th:if="${item.dossierStatus == 'REJECTED'}" class="badge bg-danger">Bị từ
+                                    chối</span>
+                            </td>
+                            <td th:text="${item.handlerFullName != null ? item.handlerFullName : 'Chưa tiếp nhận'}">--
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a th:href="@{/citizen/hoso/{id}(id=${item.dossierId})}"
+                                    class="btn btn-sm btn-outline-secondary rounded-pill">
+                                    Chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(dossiers)}">
+                            <td colspan="6" class="text-center py-5 text-muted fst-italic">
+                                Bạn chưa nộp hồ sơ nào.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="card-footer bg-white border-top-0 py-3" th:if="${dossierPage.totalPages > 1}">
+                <nav aria-label="Dossier pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${dossierPage.first} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/citizen/hoso/danh-sach(page=${dossierPage.number - 1}, keyword=${keyword}, status=${status})}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, dossierPage.totalPages - 1)}"
+                            th:classappend="${i == dossierPage.number} ? 'active'">
+                            <a class="page-link"
+                                th:href="@{/citizen/hoso/danh-sach(page=${i}, keyword=${keyword}, status=${status})}"
+                                th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${dossierPage.last} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/citizen/hoso/danh-sach(page=${dossierPage.number + 1}, keyword=${keyword}, status=${status})}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-footer-dark text-white py-5 mt-auto">
+        <div class="container text-center">
+            <p class="mb-0 opacity-50 small">&copy; 2025 Dịch vụ công Đà Nẵng. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

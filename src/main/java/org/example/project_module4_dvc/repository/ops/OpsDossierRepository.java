@@ -1,8 +1,11 @@
 package org.example.project_module4_dvc.repository.ops;
 
-import org.example.project_module4_dvc.dto.OpsDossierDetailDTO;
-import org.example.project_module4_dvc.dto.OpsDossierSummaryDTO;
+import org.example.project_module4_dvc.dto.OpsDossierDTO.CitizenNotificationProjection;
+import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO;
+import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,7 +27,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
      * - Type-safe
      */
     @Query("""
-            SELECT new org.example.project_module4_dvc.dto.OpsDossierDetailDTO(
+            SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO(
                 d.id,
                 d.dossierCode,
                 d.dossierStatus,
@@ -45,7 +48,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 service.id,
                 service.serviceName,
                 service.serviceCode,
-                service.processingDays
+                service.slaHours
             )
             FROM OpsDossier d
             JOIN d.applicant applicant
@@ -56,11 +59,16 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             """)
     Optional<OpsDossierDetailDTO> findDossierDetailById(@Param("dossierId") Long dossierId);
 
-    /**
-     * Lấy danh sách hồ sơ tóm tắt (cho list view)
-     */
     @Query("""
-            SELECT new org.example.project_module4_dvc.dto.OpsDossierSummaryDTO(
+                SELECT d.dossierStatus, COUNT(d)
+                FROM OpsDossier d
+                WHERE d.applicant.id = :applicantId
+                GROUP BY d.dossierStatus
+            """)
+    List<Object[]> countStatusesByApplicant(@Param("applicantId") Long applicantId);
+
+    @Query("""
+            SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
                 d.id,
                 d.dossierCode,
                 d.dossierStatus,
@@ -73,15 +81,22 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             JOIN d.applicant applicant
             JOIN d.service service
             LEFT JOIN d.currentHandler handler
+            WHERE applicant.id = :applicantId
+            AND (:keyword IS NULL OR (
+                LOWER(d.dossierCode) LIKE LOWER(:keyword) OR
+                LOWER(service.serviceName) LIKE LOWER(:keyword)
+            ))
+            AND (:status IS NULL OR d.dossierStatus = :status)
             ORDER BY d.submissionDate DESC
             """)
-    List<OpsDossierSummaryDTO> findAllDossierSummaries();
+    Page<OpsDossierSummaryDTO> searchDossiersByApplicant(
+            @Param("applicantId") Long applicantId,
+            @Param("keyword") String keyword,
+            @Param("status") String status,
+            Pageable pageable);
 
-    /**
-     * Tìm hồ sơ theo người nộp
-     */
     @Query("""
-            SELECT new org.example.project_module4_dvc.dto.OpsDossierSummaryDTO(
+            SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
                 d.id,
                 d.dossierCode,
                 d.dossierStatus,
@@ -97,27 +112,86 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             WHERE applicant.id = :applicantId
             ORDER BY d.submissionDate DESC
             """)
-    List<OpsDossierSummaryDTO> findDossiersByApplicantId(@Param("applicantId") Long applicantId);
+    Page<OpsDossierSummaryDTO> findDossiersByApplicantId(@Param("applicantId") Long applicantId, Pageable pageable);
 
     /**
+     * đã xong/
+     * 
+     * //----------------------------------------------------------------------------------------------------//
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * /**
      * Tìm hồ sơ theo cán bộ thụ lý
      */
+    // @Query("""
+    // SELECT l FROM OpsDossierLog l
+    // WHERE l.dossier.id = :dossierId
+    // ORDER BY l.createdAt ASC
+    // """)
+    // List<OpsDossierLog> findLogsByDossierId(@Param("dossierId") Long dossierId);
+
+    @Query(value = """
+                SELECT
+                    d.id AS dossierId,
+                    d.dossier_code AS dossierCode,
+                    l.action AS action,
+                    l.comments AS message,
+                    l.created_at AS createdAt
+                FROM ops_dossier_logs l
+                JOIN ops_dossiers d ON l.dossier_id = d.id
+                WHERE d.applicant_id = :currentUserId
+                ORDER BY l.created_at DESC
+                LIMIT 3
+            """, nativeQuery = true)
+    List<CitizenNotificationProjection> findTop3NotificationsByApplicant(@Param("currentUserId") Long currentUserId);
+
+    @Query(value = """
+              SELECT
+                  d.id AS dossierId,
+                  d.dossier_code AS dossierCode,
+                  l.action AS action,
+                  l.comments AS message,
+                  l.created_at AS createdAt
+              FROM ops_dossier_logs l
+              JOIN ops_dossiers d ON l.dossier_id = d.id
+              WHERE d.applicant_id = :currentUserId
+              ORDER BY l.created_at DESC
+            """, countQuery = """
+              SELECT COUNT(*)
+              FROM ops_dossier_logs l
+              JOIN ops_dossiers d ON l.dossier_id = d.id
+              WHERE d.applicant_id = :currentUserId
+            """, nativeQuery = true)
+    Page<CitizenNotificationProjection> findAllNotificationsByApplicant(@Param("currentUserId") Long currentUserId,
+            Pageable pageable);
+
     @Query("""
-            SELECT new org.example.project_module4_dvc.dto.OpsDossierSummaryDTO(
-                d.id,
-                d.dossierCode,
-                d.dossierStatus,
-                d.submissionDate,
-                applicant.fullName,
-                service.serviceName,
-                handler.fullName
-            )
-            FROM OpsDossier d
-            JOIN d.applicant applicant
-            JOIN d.service service
-            LEFT JOIN d.currentHandler handler
-            WHERE handler.id = :handlerId
-            ORDER BY d.submissionDate DESC
+                SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
+                    d.id,
+                    d.dossierCode,
+                    d.dossierStatus,
+                    d.submissionDate,
+                    applicant.fullName,
+                    service.serviceName,
+                    handler.fullName
+                )
+                FROM OpsDossier d
+                JOIN d.applicant applicant
+                JOIN d.service service
+                LEFT JOIN d.currentHandler handler
+                WHERE applicant.id = :applicantId
+                ORDER BY d.submissionDate DESC
             """)
     List<OpsDossierSummaryDTO> findDossiersByHandlerId(@Param("handlerId") Long handlerId);
 
@@ -125,7 +199,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
      * Tìm hồ sơ theo trạng thái
      */
     @Query("""
-            SELECT new org.example.project_module4_dvc.dto.OpsDossierSummaryDTO(
+            SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
                 d.id,
                 d.dossierCode,
                 d.dossierStatus,
@@ -143,36 +217,4 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             """)
     List<OpsDossierSummaryDTO> findDossiersByStatus(@Param("status") String status);
 
-    /**
-     * VÍ DỤ: Sử dụng Native Query với Interface Projection
-     * 
-     * Khi nào dùng Native Query:
-     * - Cần tối ưu performance với SQL phức tạp
-     * - Dùng database-specific features (window functions, CTEs, ...)
-     * - JPQL không đủ mạnh
-     * 
-     * Lưu ý: Phải dùng alias khớp với tên getter trong interface
-     * Ví dụ: getDossierId() -> alias là "dossierId"
-     */
-    @Query(value = """
-            SELECT
-                d.id AS dossierId,
-                d.dossier_code AS dossierCode,
-                d.dossier_status AS dossierStatus,
-                d.submission_date AS submissionDate,
-                applicant.full_name AS applicantFullName,
-                applicant.username AS applicantUsername,
-                service.service_name AS serviceName,
-                service.service_code AS serviceCode,
-                handler.full_name AS handlerFullName,
-                dept.dept_name AS handlerDeptName
-            FROM ops_dossiers d
-            INNER JOIN sys_users applicant ON d.applicant_id = applicant.id
-            INNER JOIN cat_services service ON d.service_id = service.id
-            LEFT JOIN sys_users handler ON d.current_handler_id = handler.id
-            LEFT JOIN sys_departments dept ON handler.dept_id = dept.id
-            WHERE d.id = :dossierId
-            """, nativeQuery = true)
-    Optional<org.example.project_module4_dvc.dto.OpsDossierNativeProjection> findDossierByIdNative(
-            @Param("dossierId") Long dossierId);
 }
