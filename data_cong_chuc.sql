@@ -280,68 +280,51 @@ VALUES
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('admin', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
+    ('admin', '$2a$10$admin', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
 
 
 # PHƯỜNG HẢI CHÂU (dept_id = 2)
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('hc_ct',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
-    ('hc_pct', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
-    ('hc_mc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
-    ('hc_tp',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
-    ('hc_dc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
-    ('hc_kt',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
+    ('hc_ct',  '$2a$10$hc_ct',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
+    ('hc_pct', '$2a$10$hc_pct', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
+    ('hc_mc',  '$2a$10$hc_mc',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
+    ('hc_tp',  '$2a$10$hc_tp',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
+    ('hc_dc',  '$2a$10$hc_dc',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
+    ('hc_kt',  '$2a$10$hc_kt',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_01', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Nguyễn Văn An',  'CITIZEN', 1),
-    ('cd_02', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Trần Thị Bình',  'CITIZEN', 2),
-    ('cd_03', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Lê Văn Cường',   'CITIZEN', 3),
-    ('cd_04', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Phạm Thị Dung',  'CITIZEN', 4),
-    ('cd_05', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Hoàng Văn Em',   'CITIZEN', 5),
-    ('cd_06', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Ngô Thị Hạnh',   'CITIZEN', 6);
+    ('cd_01', '$2a$10$cd1', 'Nguyễn Văn An',  'CITIZEN', 1),
+    ('cd_02', '$2a$10$cd2', 'Trần Thị Bình',  'CITIZEN', 2),
+    ('cd_03', '$2a$10$cd3', 'Lê Văn Cường',   'CITIZEN', 3),
+    ('cd_04', '$2a$10$cd4', 'Phạm Thị Dung',  'CITIZEN', 4),
+    ('cd_05', '$2a$10$cd5', 'Hoàng Văn Em',   'CITIZEN', 5),
+    ('cd_06', '$2a$10$cd6', 'Ngô Thị Hạnh',   'CITIZEN', 6);
 
 # PHƯỜNG THANH KHÊ (dept_id = 4)
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('tk_ct',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
-    ('tk_pct', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Đỗ Thị Ngọc',    'OFFICIAL', 10, 4),
-    ('tk_mc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Phan Văn Long',  'OFFICIAL', 13, 4),
-    ('tk_tp',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Trương Thị Quỳnh','OFFICIAL',12,4),
-    ('tk_dc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Võ Thị Lan',     'OFFICIAL',8,4),
-    ('tk_kt',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Lương Văn Quân', 'OFFICIAL',19,4);
+    ('tk_ct',  '$2a$10$tk_ct',  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
+    ('tk_pct', '$2a$10$tk_pct', 'Đỗ Thị Ngọc',    'OFFICIAL', 10, 4),
+    ('tk_mc',  '$2a$10$tk_mc',  'Phan Văn Long',  'OFFICIAL', 13, 4),
+    ('tk_tp',  '$2a$10$tk_tp',  'Trương Thị Quỳnh','OFFICIAL',12,4),
+    ('tk_dc',  '$2a$10$tk_dc',  'Võ Thị Lan',     'OFFICIAL',8,4),
+    ('tk_kt',  '$2a$10$tk_kt',  'Lương Văn Quân', 'OFFICIAL',19,4);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_07', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Bùi Văn Minh',    'CITIZEN', 9),
-    ('cd_08', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Đỗ Thị Ngọc',     'CITIZEN', 10),
-    ('cd_09', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Phan Văn Long',   'CITIZEN', 13),
-    ('cd_10', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Trương Thị Quỳnh','CITIZEN',12),
-    ('cd_11', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Võ Thị Lan',      'CITIZEN',8),
-    ('cd_12', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Lương Văn Quân',  'CITIZEN',19);
-
--- Gán role ADMIN cho user admin
-INSERT INTO sys_user_roles (user_id, role_id)
-SELECT u.id, r.id
-FROM sys_users u
-JOIN sys_roles r ON r.role_name = 'ADMIN'
-WHERE u.username = 'admin';
-
--- Thêm role CONG_DAN
-INSERT INTO sys_roles (role_name, description) VALUES ('CONG_DAN', 'Công dân - Người sử dụng dịch vụ công');
-
--- Gán role CONG_DAN cho tất cả user type CITIZEN
-INSERT INTO sys_user_roles (user_id, role_id)
-SELECT u.id, r.id
-FROM sys_users u
-JOIN sys_roles r ON r.role_name = 'CONG_DAN'
-WHERE u.user_type = 'CITIZEN';
+    ('cd_07', '$2a$10$cd7', 'Bùi Văn Minh',    'CITIZEN', 9),
+    ('cd_08', '$2a$10$cd8', 'Đỗ Thị Ngọc',     'CITIZEN', 10),
+    ('cd_09', '$2a$10$cd9', 'Phan Văn Long',   'CITIZEN', 13),
+    ('cd_10', '$2a$10$cd10','Trương Thị Quỳnh','CITIZEN',12),
+    ('cd_11', '$2a$10$cd11','Võ Thị Lan',      'CITIZEN',8),
+    ('cd_12', '$2a$10$cd12','Lương Văn Quân',  'CITIZEN',19);
 
 # Gán role cho PHƯỜNG HẢI CHÂU
 INSERT INTO sys_user_roles (user_id, role_id)
@@ -416,76 +399,84 @@ ORDER BY d.dept_name, r.role_name;
 
 -- Thêm các dịch vụ công vào bảng cat_services
 -- 1. Dịch vụ Hộ tịch, Cư trú, và Y tế cho trẻ em
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount, form_schema)
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount, form_schema)
 VALUES ('HK01_TRE',
         'Đăng ký khai sinh, đăng ký thường trú, cấp thẻ bảo hiểm y tế cho trẻ em dưới 6 tuổi',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
         'HỘ TỊCH & CƯ TRÚ',
         120, -- 5 ngày làm việc
         0.00,
         '{"sections": [{"id":"child_info","title":"Thông tin trẻ","fields":[{"name":"childFullName","label":"Họ và tên trẻ","type":"text","required":true},{"name":"dateOfBirth","label":"Ngày sinh","type":"date","required":true},{"name":"gender","label":"Giới tính","type":"select","options":[{"value":"MALE","label":"Nam"},{"value":"FEMALE","label":"Nữ"}],"required":true},{"name":"placeOfBirth","label":"Nơi sinh","type":"text","required":true}]},{"id":"parent_info","title":"Thông tin cha mẹ","fields":[{"name":"fatherFullName","label":"Họ tên cha","type":"text"},{"name":"fatherIdNumber","label":"CCCD Cha","type":"text"},{"name":"motherFullName","label":"Họ tên mẹ","type":"text","required":true},{"name":"motherIdNumber","label":"CCCD Mẹ","type":"text","required":true}]},{"id":"other_info","title":"Thông tin khác","fields":[{"name":"registeredAddress","label":"Địa chỉ thường trú","type":"text","required":true},{"name":"requestBhyt","label":"Đăng ký BHYT","type":"checkbox"}]}]}');
 
 -- 2. Đăng ký kết hôn
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount, form_schema)
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount, form_schema)
 VALUES ('HT01_KETHON',
         'Thủ tục đăng ký kết hôn',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
         'HỘ TỊCH',
         72, -- 3 ngày làm việc
         100000.00,
         '{"sections": [{"id":"husband_info","title":"Thông tin người chồng","fields":[{"name":"husbandFullName","label":"Họ tên chồng","type":"text","required":true},{"name":"husbandDob","label":"Ngày sinh","type":"date","required":true},{"name":"husbandIdNumber","label":"CCCD/CMND","type":"text","required":true}]},{"id":"wife_info","title":"Thông tin người vợ","fields":[{"name":"wifeFullName","label":"Họ tên vợ","type":"text","required":true},{"name":"wifeDob","label":"Ngày sinh","type":"date","required":true},{"name":"wifeIdNumber","label":"CCCD/CMND","type":"text","required":true}]},{"id":"marriage_info","title":"Thông tin đăng ký","fields":[{"name":"intendedMarriageDate","label":"Ngày dự định kết hôn","type":"date","required":true},{"name":"registeredPlace","label":"Nơi đăng ký","type":"text","required":true}]}]}');
 
 -- 3. Đăng ký khai tử, xóa thường trú, chế độ mai táng/tử tuất
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount, form_schema)
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount, form_schema)
 VALUES ('HK02_KAITU',
         'Đăng ký khai tử, xóa đăng ký thường trú, giải quyết mai táng phí, tử tuất',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
         'HỘ TỊCH & CƯ TRÚ & LĐTBXH',
         168, -- 7 ngày làm việc
         0.00,
         '{"sections": [{"id":"deceased_info","title":"Thông tin người mất","fields":[{"name":"deceasedFullName","label":"Họ tên người mất","type":"text","required":true},{"name":"dateOfBirth","label":"Ngày sinh","type":"date","required":true},{"name":"dateOfDeath","label":"Ngày mất","type":"date","required":true},{"name":"placeOfDeath","label":"Nơi mất","type":"text","required":true},{"name":"lastResidence","label":"Nơi cư trú cuối cùng","type":"text","required":true}]},{"id":"declarant_info","title":"Thông tin người khai","fields":[{"name":"relativeFullName","label":"Họ tên người thân","type":"text","required":true},{"name":"relativeRelationship","label":"Mối quan hệ","type":"text","required":true}]}]}');
 
 -- 4. Cấp Giấy xác nhận tình trạng hôn nhân
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount,
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('HT02_XACNHANHN',
         'Thủ tục cấp Giấy xác nhận tình trạng hôn nhân',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
         'HỘ TỊCH',
         48, -- 2 ngày làm việc
         30000.00,
         '{"sections": [{"id":"personal_info","title":"Thông tin người yêu cầu","fields":[{"name":"requesterFullName","label":"Họ tên người yêu cầu","type":"text","required":true},{"name":"dateOfBirth","label":"Ngày sinh","type":"date","required":true},{"name":"idNumber","label":"CCCD/CMND","type":"text","required":true}]},{"id":"status_info","title":"Tình trạng hôn nhân","fields":[{"name":"currentMaritalStatus","label":"Tình trạng hiện tại","type":"text","required":true},{"name":"confirmationPeriod","label":"Giai đoạn xác nhận","type":"text","required":true},{"name":"purposeOfUse","label":"Mục đích sử dụng","type":"text","required":true}]}]}');
 
 -- 5. Đăng ký biến động đất đai do thay đổi quyền sử dụng (hộ/vợ chồng)
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount,
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('DD01_BIENDONG',
         'Đăng ký biến động đối với trường hợp thay đổi quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất theo thỏa thuận của các thành viên hộ gia đình hoặc của vợ và chồng',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_DIA_CHINH'),
         'ĐẤT ĐAI',
         360, -- Khoảng 15 ngày làm việc
         50000.00,
         '{"sections": [{"id":"land_info","title":"Thông tin thửa đất","fields":[{"name":"landCertificateNumber","label":"Số GCN (Sổ đỏ)","type":"text","required":true},{"name":"landPlotNumber","label":"Số thửa","type":"text","required":true},{"name":"landMapSheet","label":"Tờ bản đồ số","type":"text","required":true},{"name":"currentOwner","label":"Chủ sở hữu hiện tại","type":"text","required":true}]},{"id":"change_info","title":"Thông tin biến động","fields":[{"name":"changeType","label":"Loại biến động","type":"text","required":true},{"name":"changeReason","label":"Lý do biến động","type":"text","required":true},{"name":"newOwner","label":"Chủ sở hữu mới","type":"text"}]}]}');
 
 -- 6. Chuyển mục đích sử dụng đất
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount,
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('DD02_CHUYENMDSD',
         'Thủ tục chuyển mục đích sử dụng đất phải được phép của cơ quan nhà nước có thẩm quyền đối với hộ gia đình, cá nhân',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_DIA_CHINH'),
         'ĐẤT ĐAI',
         480, -- Khoảng 20 ngày làm việc
         500000.00,
         '{"sections": [{"id":"land_info","title":"Thông tin thửa đất","fields":[{"name":"landCertificateNumber","label":"Số GCN (Sổ đỏ)","type":"text","required":true},{"name":"landPlotNumber","label":"Số thửa","type":"text","required":true},{"name":"mapSheetNumber","label":"Tờ bản đồ số","type":"text","required":true},{"name":"landAreaM2","label":"Diện tích (m2)","type":"number","required":true}]},{"id":"purpose_info","title":"Thông tin chuyển đổi","fields":[{"name":"currentLandPurpose","label":"Mục đích sử dụng hiện tại","type":"text","required":true},{"name":"requestedLandPurpose","label":"Mục đích sử dụng mong muốn","type":"text","required":true},{"name":"reasonForChange","label":"Lý do chuyển mục đích","type":"textarea","required":true}]},{"id":"commitment_info","title":"Cam kết","fields":[{"name":"commitment","label":"Cam kết của người xin chuyển","type":"textarea","required":true}]}]}');
 
 -- 7. Tách thửa hoặc hợp thửa đất
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount,
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('DD03_TACHHOP',
         'Thủ tục tách thửa hoặc hợp thửa đất',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_DIA_CHINH'),
         'ĐẤT ĐAI',
         360, -- Khoảng 15 ngày làm việc
         50000.00,
         '{"sections": [{"id":"land_info","title":"Thông tin thửa đất gốc","fields":[{"name":"landCertificateNumber","label":"Số GCN (Sổ đỏ)","type":"text","required":true},{"name":"landPlotNumber","label":"Số thửa","type":"text","required":true},{"name":"mapSheetNumber","label":"Tờ bản đồ số","type":"text","required":true},{"name":"originalAreaM2","label":"Diện tích gốc (m2)","type":"number","required":true}]},{"id":"split_info","title":"Thông tin tách thửa","fields":[{"name":"requestedSplitAreas","label":"Diện tích các thửa mới (phân cách bằng dấu phẩy)","type":"text","required":true},{"name":"numberOfNewPlots","label":"Số lượng thửa mới","type":"number","required":true},{"name":"splitReason","label":"Lý do tách thửa","type":"textarea","required":true},{"name":"surveyCompleted","label":"Đã đo đạc địa chính?","type":"checkbox","required":true}]}]}');
 
 -- 8. Đăng ký thành lập hộ kinh doanh
-INSERT INTO cat_services (service_code, service_name, domain, sla_hours, fee_amount, form_schema)
+INSERT INTO cat_services (service_code, service_name, id_role, domain, sla_hours, fee_amount, form_schema)
 VALUES ('KD01_HKD',
         'Đăng ký thành lập hộ kinh doanh',
+        (SELECT id FROM sys_roles WHERE role_name = 'CANBO_KINH_TE'),
         'KINH DOANH',
         72, -- 3 ngày làm việc
         50000.00,

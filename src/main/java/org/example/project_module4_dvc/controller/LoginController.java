@@ -30,4 +30,14 @@ public class LoginController {
         return "pages/official-login"; // Trang login mới dành cho cán bộ
     }
 
+    @RequestMapping(value = "/403", method = RequestMethod.GET)
+    public String accessDenied() {
+        return "pages/403";
+    }
+
+    @RequestMapping(value = "/404", method = RequestMethod.GET)
+    public String notFound() {
+        return "pages/404";
+    }
+
 }

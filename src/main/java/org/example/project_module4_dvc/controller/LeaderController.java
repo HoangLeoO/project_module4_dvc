@@ -33,7 +33,14 @@ public class LeaderController {
     }
 
     @GetMapping("dashboard")
-    public String showDashboard(){
+    public String showDashboard(Model model, Principal principal){
+        try {
+            SysUser sysUser = userService.findByUsername(principal.getName());
+            long delegatedCount = leaderService.countDelegatedDossiers(sysUser.getId(), "VERIFIED");
+            model.addAttribute("delegatedCount", delegatedCount);
+        } catch (Exception e) {
+            model.addAttribute("delegatedCount", 0);
+        }
         return "pages/04-leader/leader-dashboard";
     }
 
