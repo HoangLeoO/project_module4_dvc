@@ -45,9 +45,21 @@ public class WebSecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable);
 
+//        http.authorizeHttpRequests(auth -> auth
+//                .anyRequest().hasRole("ADMIN") // Bắt buộc phải là ADMIN
+//        );
+
         http.authorizeHttpRequests(auth -> auth
-                .anyRequest().hasRole("ADMIN") // Bắt buộc phải là ADMIN
+                .requestMatchers(
+                        "/login/official",
+                        "/error",          // 👈 BẮT BUỘC
+                        "/css/**",
+                        "/js/**"
+                ).permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
         );
+        http .exceptionHandling(ex -> ex.accessDeniedPage("/error"));
 
         http.formLogin(form -> form
                 .loginPage("/login/official")

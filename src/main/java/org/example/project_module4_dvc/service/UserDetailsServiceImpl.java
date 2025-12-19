@@ -49,6 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String deptName = (user.getDepartment() != null) ? user.getDepartment().getDeptName() : "UBND TP. Đà Nẵng";
         Long citizenId = (user.getCitizen() != null) ? user.getCitizen().getId() : null;
 
+
         UserDetails userDetails = new org.example.project_module4_dvc.config.CustomUserDetails(
                 user.getId(),
                 user.getUsername(),
