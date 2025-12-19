@@ -19,7 +19,7 @@ public class LoginController {
         return "citizen/home";
     }
 
-    @RequestMapping(value = "/login/citizen", method = RequestMethod.GET)
+    @RequestMapping(value = "login/citizen", method = RequestMethod.GET)
     public String loginPageCitizen() {
         return "citizen/login";
     }
