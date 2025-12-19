@@ -293,6 +293,6 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
               WHERE d.applicant_id = :currentUserId
             """, nativeQuery = true)
     Page<CitizenNotificationProjection> findAllNotificationsByApplicant(@Param("currentUserId") Long currentUserId,
-            Pageable pageable);
+                                                                        Pageable pageable);
 
 }
