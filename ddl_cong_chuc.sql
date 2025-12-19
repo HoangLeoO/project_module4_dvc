@@ -262,7 +262,6 @@ CREATE TABLE ops_dossiers
     service_id         BIGINT      NOT NULL COMMENT 'Dịch vụ công được áp dụng',
     applicant_id       BIGINT      NOT NULL COMMENT 'ID của người nộp hồ sơ (sys_users.id)',
     current_handler_id BIGINT COMMENT 'ID của cán bộ đang thụ lý hồ sơ hiện tại',
-    receiving_dept_id  BIGINT COMMENT 'ID của đơn vị tiếp nhận hồ sơ',
     dossier_status     VARCHAR(20) DEFAULT 'NEW' COMMENT 'Trạng thái xử lý hồ sơ (VD: NEW, PENDING, APPROVED, REJECTED)',
     submission_date    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm nộp hồ sơ',
     due_date           TIMESTAMP   NULL COMMENT 'Thời hạn phải hoàn thành xử lý (dựa trên SLA)',
@@ -271,9 +270,7 @@ CREATE TABLE ops_dossiers
     rejection_reason   TEXT COMMENT 'Lý do bị từ chối/trả lại hồ sơ',
     CONSTRAINT fk_dos_service FOREIGN KEY (service_id) REFERENCES cat_services (id),
     CONSTRAINT fk_dos_applicant FOREIGN KEY (applicant_id) REFERENCES sys_users (id),
-    CONSTRAINT fk_dos_handler FOREIGN KEY (current_handler_id) REFERENCES sys_users (id),
-    CONSTRAINT fk_dos_departments FOREIGN KEY (receiving_dept_id) REFERENCES sys_departments (id)
-    
+    CONSTRAINT fk_dos_handler FOREIGN KEY (current_handler_id) REFERENCES sys_users (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin các Hồ sơ dịch vụ công';
 
 ALTER TABLE ops_dossiers
@@ -298,17 +295,6 @@ CREATE TABLE ops_dossier_files
 -- 19. Nhật ký xử lý (Operations Dossier Logs)
 /* Chi tiết từng hành động được thực hiện trên hồ sơ. */
 CREATE TABLE ops_dossier_logs
-(
-    id          BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của nhật ký',
-    dossier_id  BIGINT      NOT NULL COMMENT 'ID của Hồ sơ liên quan',
-    actor_id    BIGINT      NOT NULL COMMENT 'ID của người thực hiện hành động (sys_users.id)',
-    action      VARCHAR(50) NOT NULL COMMENT 'Loại hành động (VD: CHUYEN_BUOC, THAM_DINH, PHE_DUYET)',
-    prev_status VARCHAR(20) COMMENT 'Trạng thái hồ sơ trước khi hành động',
-    next_status VARCHAR(20) COMMENT 'Trạng thái hồ sơ sau khi hành động',
-    comments    TEXT COMMENT 'Ghi chú/ý kiến của cán bộ xử lý',
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm xảy ra hành động',
-    CONSTRAINT fk_dl_dossier FOREIGN KEY (dossier_id) REFERENCES ops_dossiers (id) ON DELETE CASCADE
-) ENGINE = InnoDB COMMENT ='Nhật ký xử lý chi tiết Hồ sơ';CREATE TABLE ops_dossier_logs
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của nhật ký',
     dossier_id  BIGINT      NOT NULL COMMENT 'ID của Hồ sơ liên quan',

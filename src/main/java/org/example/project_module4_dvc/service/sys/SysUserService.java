@@ -1,4 +1,4 @@
-package org.example.project_module4_dvc.service;
+package org.example.project_module4_dvc.service.sys;
 
 import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.example.project_module4_dvc.repository.sys.SysUserRepository;
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SysUserService implements ISysUserService{
+public class SysUserService implements ISysUserService {
 
     @Autowired
     private SysUserRepository userRepository;

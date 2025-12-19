@@ -6,10 +6,22 @@ import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import org.example.project_module4_dvc.dto.ChartDataDTO;
+import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import java.util.List;
 import java.util.Map;
 
 public interface IOpsDossierService {
+    // --- ADMIN / DASHBOARD METHODS ---
+    Map<String, Long> getSummary();
+
+    ChartDataDTO getChartData();
+
+    List<OpsDossier> getOverdueDossiers();
+
+    List<Map<String, Object>> getDossierAlerts();
+
+    // --- CITIZEN METHODS ---
     // Lấy danh sách hồ sơ tóm tắt cho công dân (đang fix cứng ID=1)
     Page<OpsDossierSummaryDTO> getMyDossierList(Long userId, Pageable pageable);
 
