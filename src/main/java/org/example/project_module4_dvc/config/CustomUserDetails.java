@@ -1,6 +1,6 @@
 package org.example.project_module4_dvc.config;
 
-import lombok.Getter;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 

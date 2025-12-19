@@ -58,4 +58,91 @@ public class OpsDossierService implements IOpsDossierService {
     public Page<CitizenNotificationProjection> getAllMyNotifications(Long userId, Pageable pageable) {
         return opsDossierRepository.findAllNotificationsByApplicant(userId, pageable);
     }
+
+    // ==========================================
+    // merged from service.OpsDossierService
+    // ==========================================
+
+    @Override
+    public Map<String, Long> getSummary() {
+        Map<String, Long> map = new HashMap<>();
+        map.put("total", opsDossierRepository.countThisMonth());
+        map.put("processing", opsDossierRepository.countByDossierStatus("PENDING"));
+        map.put("completed", opsDossierRepository.countByDossierStatus("APPROVED"));
+        map.put("overdue", opsDossierRepository.countOverdue());
+        return map;
+    }
+
+    @Override
+    public org.example.project_module4_dvc.dto.ChartDataDTO getChartData() {
+        List<String> domains = opsDossierRepository.findAllDomains();
+        List<String> statuses = List.of("NEW", "PENDING", "APPROVED", "REJECTED");
+        List<Object[]> raw = opsDossierRepository.countByDomainAndStatus();
+
+        // domain -> status -> count
+        Map<String, Map<String, Long>> map = new HashMap<>();
+
+        for (Object[] r : raw) {
+            String domain = (String) r[0];
+            String status = (String) r[1];
+            Long count = (Long) r[2];
+
+            map.computeIfAbsent(domain, k -> new HashMap<>())
+                    .put(status, count);
+        }
+
+        List<org.example.project_module4_dvc.dto.ChartDatasetDTO> datasets = new java.util.ArrayList<>();
+
+        for (String status : statuses) {
+            List<Long> data = new java.util.ArrayList<>();
+            for (String domain : domains) {
+                data.add(
+                        map.getOrDefault(domain, Map.of())
+                                .getOrDefault(status, 0L)
+                );
+            }
+            datasets.add(new org.example.project_module4_dvc.dto.ChartDatasetDTO(status, data));
+        }
+
+        return new org.example.project_module4_dvc.dto.ChartDataDTO(domains, datasets);
+    }
+
+    @Override
+    public List<org.example.project_module4_dvc.entity.ops.OpsDossier> getOverdueDossiers() {
+        return opsDossierRepository.findOverdueDossiers();
+    }
+
+    @Override
+    public List<Map<String, Object>> getDossierAlerts() {
+        List<org.example.project_module4_dvc.entity.ops.OpsDossier> pendingDossiers = opsDossierRepository.findByDossierStatusNotIn(
+                java.util.Arrays.asList("APPROVED", "REJECTED")
+        );
+
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        List<Map<String, Object>> dossierAlerts = new java.util.ArrayList<>();
+
+        for (org.example.project_module4_dvc.entity.ops.OpsDossier d : pendingDossiers) {
+            if (d.getDueDate() != null) {
+                long daysDiff = java.time.temporal.ChronoUnit.DAYS.between(now.toLocalDate(), d.getDueDate().toLocalDate());
+
+                Map<String, Object> alert = new HashMap<>();
+                alert.put("id", d.getId());
+                alert.put("code", d.getDossierCode());
+                alert.put("domain", d.getService().getDomain());
+
+                if (daysDiff < 0) { // Quá hạn
+                    alert.put("type", "OVERDUE");
+                    alert.put("days", Math.abs(daysDiff));
+                } else if (daysDiff <= 3) { // Sắp đến hạn trong 3 ngày
+                    alert.put("type", "NEARLY_DUE");
+                    alert.put("days", daysDiff);
+                } else {
+                    continue; // Không cần cảnh báo
+                }
+
+                dossierAlerts.add(alert);
+            }
+        }
+        return dossierAlerts;
+    }
 }

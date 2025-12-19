@@ -161,7 +161,7 @@
             <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
                 style="font-size: 0.75rem; letter-spacing: 1px;">Nghiệp vụ</small>
 
-            <a th:href="@{/officer/dashboard}" class="nav-link-custom active">
+            <a th:href="@{/official/dashboard}" class="nav-link-custom active">
                 <i class="bi bi-grid-fill"></i>
                 Bàn làm việc
             </a>
@@ -197,7 +197,7 @@
         <nav class="top-header d-flex align-items-center justify-content-between">
             <!-- Breadcrumb / Context -->
             <div class="d-flex align-items-center">
-                <a th:href="@{/officer/dashboard}"
+                <a th:href="@{/official/dashboard}"
                     class="btn btn-light btn-sm rounded-circle me-3 text-muted border-0 shadow-sm"
                     style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-arrow-left"></i>
@@ -205,7 +205,7 @@
                 <div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 small">
-                            <li class="breadcrumb-item"><a th:href="@{/officer/dashboard}"
+                            <li class="breadcrumb-item"><a th:href="@{/official/dashboard}"
                                     class="text-decoration-none text-muted">Bàn làm việc</a></li>
                             <li class="breadcrumb-item active fw-semibold text-dark" aria-current="page">Tiếp nhận hồ sơ
                             </li>
@@ -327,7 +327,7 @@
                         </div>
 
                         <div class="d-grid gap-3">
-                            <a th:href="@{/officer/dashboard/reception/update(id=${dossier.id})}"
+                            <a th:href="@{/official/dashboard/reception/update(id=${dossier.id})}"
                                 class="btn btn-primary btn-action text-white">
                                 <i class="bi bi-printer-fill me-2"></i>Tiếp nhận & In phiếu
                             </a>

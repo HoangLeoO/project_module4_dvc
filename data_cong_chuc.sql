@@ -326,6 +326,23 @@ VALUES
     ('cd_11', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Võ Thị Lan',      'CITIZEN',8),
     ('cd_12', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Lương Văn Quân',  'CITIZEN',19);
 
+-- Gán role ADMIN cho user admin
+INSERT INTO sys_user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM sys_users u
+JOIN sys_roles r ON r.role_name = 'ADMIN'
+WHERE u.username = 'admin';
+
+-- Thêm role CONG_DAN
+INSERT INTO sys_roles (role_name, description) VALUES ('CONG_DAN', 'Công dân - Người sử dụng dịch vụ công');
+
+-- Gán role CONG_DAN cho tất cả user type CITIZEN
+INSERT INTO sys_user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM sys_users u
+JOIN sys_roles r ON r.role_name = 'CONG_DAN'
+WHERE u.user_type = 'CITIZEN';
+
 # Gán role cho PHƯỜNG HẢI CHÂU
 INSERT INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
