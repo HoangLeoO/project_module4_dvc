@@ -1,14 +1,16 @@
 package org.example.project_module4_dvc.service.officer;
 
 import org.example.project_module4_dvc.dto.dossier.NewDossierDTO;
+import org.example.project_module4_dvc.dto.dossier.ResultDossierDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import org.example.project_module4_dvc.entity.ops.OpsDossierFile;
 import org.example.project_module4_dvc.mapper.OpsDossierMapper;
+import org.example.project_module4_dvc.mapper.OpsDossierResultMapper;
 import org.example.project_module4_dvc.repository.ops.OpsDossierFileRepository;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
+import org.example.project_module4_dvc.repository.ops.OpsDossierResultRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,18 +19,30 @@ import java.util.List;
 @Service
 public class OfficerService implements IOfficerService {
     private final OpsDossierMapper opsDossierMapper;
+    private final OpsDossierResultMapper opsDossierResultMapper;
     private final OpsDossierRepository opsDossierRepository;
     private final OpsDossierFileRepository opsDossierFileRepository;
 
-    public OfficerService(OpsDossierMapper opsDossierMapper, OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository) {
+    private final OpsDossierResultRepository opsDossierResultRepository;
+
+    public OfficerService(OpsDossierMapper opsDossierMapper, OpsDossierResultMapper opsDossierResultMapper, OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository, OpsDossierResultRepository opsDossierResultRepository) {
         this.opsDossierMapper = opsDossierMapper;
+        this.opsDossierResultMapper = opsDossierResultMapper;
         this.opsDossierRepository = opsDossierRepository;
         this.opsDossierFileRepository = opsDossierFileRepository;
+        this.opsDossierResultRepository = opsDossierResultRepository;
     }
 
+    //ho so vua tao
     @Override
     public Page<NewDossierDTO> findAll(String dossierStatus, Pageable pageable) {
         return opsDossierRepository.findOpsDossierByDossierStatus(dossierStatus, pageable).map(opsDossierMapper::toDTO);
+    }
+
+    //kq tra ve
+    @Override
+    public Page<ResultDossierDTO> findAllResult(String dossierStatus, Pageable pageable) {
+        return opsDossierResultRepository.findOpsDossierResultByDossierDossierStatus(dossierStatus, pageable).map(opsDossierResultMapper::toDTO);
     }
 
     @Override

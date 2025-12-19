@@ -5,6 +5,7 @@ import org.example.project_module4_dvc.entity.ops.OpsDossierFile;
 import org.example.project_module4_dvc.service.officer.IOfficerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,8 +26,11 @@ public class DashboardController {
     }
 
     @GetMapping("")
-    public String getDossierList(Model model, @PageableDefault(size = 5) Pageable pageable) {
+    public String getDossierList(Model model, @PageableDefault(size = 5,
+            sort = "submissionDate",
+            direction = Sort.Direction.ASC) Pageable pageable) {
         Page<NewDossierDTO> page = officerService.findAll("NEW", pageable);
+        System.out.println(page.getContent().get(0).isOverdue());
         List<NewDossierDTO> nearDueList = officerService.findNearlyDue();
         model.addAttribute("nearDueCount", nearDueList.size());
         model.addAttribute("dossiers", page);
@@ -44,13 +48,13 @@ public class DashboardController {
 
     @GetMapping("reception/update")
     public String updateDossierStatus(@RequestParam("id") Long id) {
-        officerService.updateDossierStatus(id, "PENDING","");
+        officerService.updateDossierStatus(id, "PENDING", "");
         return "redirect:/officer/dashboard";
     }
 
     @PostMapping("reception/reject")
     public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
-        officerService.updateDossierStatus(id, "REJECTED",reason);
+        officerService.updateDossierStatus(id, "REJECTED", reason);
         return "redirect:/officer/dashboard";
     }
 

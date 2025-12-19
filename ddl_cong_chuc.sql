@@ -392,3 +392,4 @@ CREATE TABLE mod_payments
     pay_date       TIMESTAMP COMMENT 'Thời điểm thanh toán thành công',
     CONSTRAINT fk_pay_dossier FOREIGN KEY (dossier_id) REFERENCES ops_dossiers (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin giao dịch Thanh toán phí dịch vụ';
+
