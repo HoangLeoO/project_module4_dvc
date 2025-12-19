@@ -1,0 +1,48 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="form-label small text-muted fw-bold text-uppercase">1. Thông tin kinh doanh</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Tên doanh nghiệp</label>
+                <input type="text" class="form-control fw-bold" th:value="${formData.businessName}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Ngành kinh doanh</label>
+                <input type="text" class="form-control" th:value="${formData.businessLine}" readonly>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label small">Địa chỉ kinh doanh</label>
+                <input type="text" class="form-control" th:value="${formData.businessAddress}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin chủ kinh doanh</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên chủ</label>
+                <input type="text" class="form-control" th:value="${formData.businessOwner}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số CCCD/CMND</label>
+                <input type="text" class="form-control" th:value="${formData.ownerIdNumber}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">3. Thông tin tài chính</h6>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small">Vốn đăng ký</label>
+                <input type="text" class="form-control" th:value="${formData.registeredCapital}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số lượng nhân viên</label>
+                <input type="text" class="form-control" th:value="${formData.numberOfEmployees}" readonly>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>
+

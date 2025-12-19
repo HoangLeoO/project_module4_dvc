@@ -79,7 +79,7 @@ public class OpsDossierService implements IOpsDossierService {
         List<String> statuses = List.of("NEW", "PENDING", "APPROVED", "REJECTED");
         List<Object[]> raw = opsDossierRepository.countByDomainAndStatus();
 
-        // domain -> status -> count
+//         domain -> status -> count
         Map<String, Map<String, Long>> map = new HashMap<>();
 
         for (Object[] r : raw) {

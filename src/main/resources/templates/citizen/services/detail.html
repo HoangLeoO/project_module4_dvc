@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head(${s.serviceName})}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <!-- CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/citizen/services}"
+                        class="text-decoration-none text-muted">Dịch vụ công</a></li>
+                <li class="breadcrumb-item active text-primary fw-bold" th:text="${s.serviceName}">Chi tiết dịch vụ</li>
+            </ol>
+        </nav>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <!-- Main Header Card -->
+                <div class="card card-modern border-0 shadow-sm-soft p-4 mb-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary me-3">
+                            <i class="bi bi-file-earmark-text fs-2"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-light text-primary rounded-pill px-3 py-1 border mb-2"
+                                th:text="${s.domain}">Lĩnh vực</span>
+                            <h3 class="fw-bold text-dark mb-0" th:text="${s.serviceName}">Tên dịch vụ</h3>
+                        </div>
+                    </div>
+
+                    <!-- Meta Info row -->
+                    <div class="row g-3 py-3 border-top border-bottom mb-4">
+                        <div class="col-md-4 text-center border-end">
+                            <i class="bi bi-clock-history text-primary me-2"></i>
+                            <span class="small text-muted d-block mt-1">Thời gian giải quyết</span>
+                            <span class="fw-bold" th:text="${(s.slaHours / 24) + ' ngày làm việc'}">3 ngày làm
+                                việc</span>
+                        </div>
+                        <div class="col-md-4 text-center border-end">
+                            <i class="bi bi-cash-coin text-warning me-2"></i>
+                            <span class="small text-muted d-block mt-1">Lệ phí</span>
+                            <span class="fw-bold"
+                                th:text="${s.feeAmount > 0 ? #numbers.formatDecimal(s.feeAmount, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'Miễn phí'}">Phí</span>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="bi bi-check2-circle text-success me-2"></i>
+                            <span class="small text-muted d-block mt-1">Tình trạng</span>
+                            <span class="fw-bold">Đang triển khai</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabs Information -->
+                    <ul class="nav nav-pills mb-4 bg-light p-1 rounded-pill" id="serviceTab" role="tablist">
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button class="nav-link active rounded-pill fw-bold" id="info-tab" data-bs-toggle="pill"
+                                data-bs-target="#info-pane" type="button" role="tab" aria-selected="true">Trình tự thực
+                                hiện</button>
+                        </li>
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button class="nav-link rounded-pill fw-bold" id="doc-tab" data-bs-toggle="pill"
+                                data-bs-target="#doc-pane" type="button" role="tab" aria-selected="false">Thành phần hồ
+                                sơ</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="serviceTabContent">
+                        <div class="tab-pane fade show active" id="info-pane" role="tabpanel">
+                            <div class="p-2">
+                                <div class="timeline-steps">
+                                    <div th:each="step : ${s.steps}" class="d-flex gap-3 mb-4">
+                                        <div class="bg-primary text-white bg-gradient rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="width: 30px; height: 30px; font-size: 14px;"
+                                            th:text="${step.stepOrder}">1</div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1" th:text="${step.stepName}">Tên bước</h6>
+                                            <p class="text-muted small mb-0"
+                                                th:if="${step.stepName == 'Tiếp nhận hồ sơ'}">Cá nhân chuẩn bị đầy đủ hồ
+                                                sơ theo quy định và nộp trực tuyến qua Cổng Dịch vụ công.</p>
+                                            <p class="text-muted small mb-0" th:if="${step.stepName == 'Trả kết quả'}">
+                                                Kết quả được trả qua bưu điện hoặc nhận trực tiếp tại bộ phận Một cửa.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(s.steps)}" class="text-center py-4">
+                                        <p class="text-muted italic small">Quy trình xử lý đang được cập nhật...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="doc-pane" role="tabpanel">
+                            <div class="table-responsive p-1">
+                                <table class="table table-hover border-top">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="small py-3 ps-3">Tên giấy tờ</th>
+                                            <th class="small py-3 text-center" style="width: 150px;">Bản chính/Sao</th>
+                                            <th class="small py-3 text-center" style="width: 120px;">Số lượng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-3"><i class="bi bi-file-earmark-text text-primary me-2"></i>Tờ
+                                                khai theo mẫu quy định</td>
+                                            <td class="text-center font-monospace small">Bản chính</td>
+                                            <td class="text-center">01</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-3"><i
+                                                    class="bi bi-file-earmark-person text-primary me-2"></i>Giấy nhận
+                                                dạng (CCCD/Hộ chiếu)</td>
+                                            <td class="text-center font-monospace small">Bản sao</td>
+                                            <td class="text-center">01</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card card-modern border-0 shadow-sm-soft p-4 sticky-top" style="top: 100px; z-index: 10;">
+                    <h5 class="fw-bold mb-3">Tùy chọn nộp hồ sơ</h5>
+                    <p class="text-muted small mb-4">Hệ thống khuyến khích nộp hồ sơ trực tuyến để tiết kiệm thời gian
+                        và chi phí đi lại.</p>
+
+                    <a th:href="@{/citizen/submit-wizard(code=${s.serviceCode})}"
+                        class="btn btn-primary btn-lg w-100 fw-bold shadow mb-3">
+                        <i class="bi bi-send-fill me-2"></i>NỘP HỒ SƠ TRỰC TUYẾN
+                    </a>
+
+                    <button class="btn btn-outline-primary w-100 fw-bold mb-4">
+                        <i class="bi bi-download me-2"></i>TẢI MẪU ĐƠN
+                    </button>
+
+                    <div class="p-3 bg-light rounded-3">
+                        <h6 class="fw-bold small mb-2"><i class="bi bi-info-circle me-2 text-primary"></i>Hỗ trợ giải
+                            đáp</h6>
+                        <p class="small text-muted mb-0">Nếu có vướng mắc trong quá trình thực hiện, vui lòng gọi
+                            <strong>(0236) 1022</strong> để được hướng dẫn.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>
