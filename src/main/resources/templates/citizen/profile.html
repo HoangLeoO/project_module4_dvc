@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head th:replace="~{citizen/layout/fragments :: head('Thông tin cá nhân')}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('profile')}"></nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 pt-4 mb-5">
+        <div class="row">
+            <!-- LEFT: AVATAR & MENU -->
+            <div class="col-lg-4 text-center">
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4">
+                    <div class="profile-avatar-container mb-3 text-center">
+                        <img th:src="${'https://ui-avatars.com/api/?name=' + #strings.replace(#authentication.principal.fullName, ' ', '+') + '&size=150&background=random'}"
+                            class="rounded-circle shadow-sm border border-4 border-white"
+                            style="width: 150px; height: 150px; object-fit: cover;">
+                        <h4 class="fw-bold mt-3 mb-1" sec:authentication="principal.fullName">Nguyễn Văn A</h4>
+                        <span
+                            class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2 small">
+                            <i class="bi bi-shield-fill-check me-1"></i>Đã xác thực Định danh
+                        </span>
+                    </div>
+                </div>
+
+                <div class="list-group list-group-flush shadow-sm rounded-3 overflow-hidden border-0 mb-4 text-start">
+                    <a th:href="@{/citizen/profile}" class="list-group-item list-group-item-action py-3 active">
+                        <i class="bi bi-person-vcard me-2"></i>Thông tin định danh
+                    </a>
+                    <a th:href="@{/citizen/vault}" class="list-group-item list-group-item-action py-3">
+                        <i class="bi bi-folder2-open me-2"></i>Kho tài liệu số
+                    </a>
+                    <a th:href="@{/citizen/hoso}" class="list-group-item list-group-item-action py-3">
+                        <i class="bi bi-clock-history me-2"></i>Lịch sử giao dịch
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT: PERSONAL DATA FORM -->
+            <div class="col-lg-8">
+                <div class="card card-modern border-0 shadow-sm overflow-hidden">
+                    <div
+                        class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-info-circle me-2"></i>Dữ liệu cá nhân</h5>
+                        <span class="small text-muted fst-italic">Nguồn: CSDL Quốc gia về dân cư</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="alert alert-light border d-flex align-items-start mb-4">
+                            <i class="bi bi-shield-lock-fill text-primary fs-4 me-3"></i>
+                            <div class="small">
+                                Đây là thông tin đã được xác thực từ <strong>Hệ thống ĐỊnh danh & Xác thực điện
+                                    tử</strong>.
+                                Bạn không thể tự chỉnh sửa các thông tin cơ bản. Nếu có sai sót, vui lòng liên hệ Cơ
+                                quan Công an.
+                            </div>
+                        </div>
+
+                        <form class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Họ và tên</label>
+                                <input type="text" class="form-control bg-light fw-bold"
+                                    th:value="${#authentication.principal.fullName}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Số định danh /
+                                    CCCD</label>
+                                <input type="text" class="form-control bg-light font-monospace"
+                                    th:value="${#authentication.principal.username}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Ngày sinh</label>
+                                <input type="text" class="form-control bg-light"
+                                    th:value="${citizen != null ? #temporals.format(citizen.dob, 'dd/MM/yyyy') : 'Chưa cập nhật'}"
+                                    readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Giới tính</label>
+                                <input type="text" class="form-control bg-light"
+                                    th:value="${citizen != null ? citizen.gender : 'Chưa cập nhật'}" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Địa chỉ thường trú (Hộ
+                                    khẩu)</label>
+                                <textarea class="form-control bg-light" rows="2" readonly
+                                    th:text="${citizen != null ? citizen.permanentAddress : 'Chưa cập nhật'}">Hải Châu, Đà Nẵng</textarea>
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Thông tin liên hệ bổ sung</h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Số điện thoại</label>
+                                <input type="tel" class="form-control" placeholder="Chưa cập nhật" value="0905 xxx xxx">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Email</label>
+                                <input type="email" class="form-control" placeholder="Chưa cập nhật"
+                                    value="danang.citizen@example.com">
+                            </div>
+
+                            <div class="col-12 text-end mt-4">
+                                <button type="button" class="btn btn-primary px-4 fw-bold shadow-sm">
+                                    <i class="bi bi-save me-2"></i>CẬP NHẬT LIÊN HỆ
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>

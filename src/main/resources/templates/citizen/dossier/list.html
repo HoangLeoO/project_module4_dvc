@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Hồ sơ của tôi')}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('hoso')}"></nav>
+
+    <!-- CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+        <div class="row g-4 align-items-center mb-4">
+            <div class="col-md-6">
+                <h3 class="fw-bold text-dark mb-0">Danh sách Hồ sơ đã nộp</h3>
+                <p class="text-muted mb-0">Theo dõi tiến độ xử lý các hồ sơ trực tuyến của bạn.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a th:href="@{/citizen/services}" class="btn btn-primary fw-bold rounded-pill">
+                    <i class="bi bi-plus-lg me-2"></i>Nộp hồ sơ mới
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card card-modern border-0 shadow-sm p-3 mb-4">
+            <form th:action="@{/citizen/hoso/danh-sach}" method="get">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i
+                                    class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="keyword" class="form-control border-start-0" th:value="${keyword}"
+                                placeholder="Mã hồ sơ hoặc tên dịch vụ...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="NEW" th:selected="${status == 'NEW'}">Mới nộp</option>
+                            <option value="PENDING" th:selected="${status == 'PENDING'}">Đang xử lý</option>
+                            <option value="NEED_SUPPLEMENT" th:selected="${status == 'NEED_SUPPLEMENT'}">Cần bổ sung
+                            </option>
+                            <option value="APPROVED" th:selected="${status == 'APPROVED'}">Đã duyệt</option>
+                            <option value="REJECTED" th:selected="${status == 'REJECTED'}">Từ chối</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Lọc</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a th:href="@{/citizen/hoso/danh-sach}" class="btn btn-outline-secondary w-100 fw-bold">Xóa
+                            lọc</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card card-modern border-0 shadow-sm overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 small text-muted text-uppercase fw-bold">Mã hồ sơ</th>
+                            <th class="py-3 small text-muted text-uppercase fw-bold">Tên dịch vụ công</th>
+                            <th class="py-3 small text-muted text-uppercase fw-bold">Ngày nộp</th>
+                            <th class="py-3 small text-muted text-uppercase fw-bold">Trạng thái</th>
+                            <th class="pe-4 py-3 small text-muted text-uppercase fw-bold text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${dossiers}">
+                            <td class="ps-4">
+                                <span class="fw-bold text-primary" th:text="${d.dossierCode}">G01-2405001</span>
+                            </td>
+                            <td>
+                                <div class="fw-medium text-dark" th:text="${d.serviceName}">Đăng ký khai sinh</div>
+                            </td>
+                            <td class="small text-muted"
+                                th:text="${#temporals.format(d.submissionDate, 'dd/MM/yyyy HH:mm')}">15/05/2024</td>
+                            <td>
+                                <span th:if="${d.dossierStatus == 'NEW'}"
+                                    class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small">Mới
+                                    nộp</span>
+                                <span th:if="${d.dossierStatus == 'PENDING'}"
+                                    class="badge bg-info bg-opacity-10 text-info px-3 py-1 rounded-pill small">Đang xử
+                                    lý</span>
+                                <span th:if="${d.dossierStatus == 'NEED_SUPPLEMENT'}"
+                                    class="badge bg-warning bg-opacity-10 text-warning px-3 py-1 rounded-pill small">Cần
+                                    bổ sung</span>
+                                <span th:if="${d.dossierStatus == 'APPROVED'}"
+                                    class="badge bg-success bg-opacity-10 text-success px-3 py-1 rounded-pill small">Đã
+                                    duyệt</span>
+                                <span th:if="${d.dossierStatus == 'REJECTED'}"
+                                    class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill small">Từ
+                                    chối</span>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a th:href="@{/citizen/hoso/{id}(id=${d.dossierId})}"
+                                   class="btn btn-sm btn-outline-primary fw-bold">Chi tiết</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${dossierPage.empty}">
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-folder-x fs-1 opacity-25 d-block mb-3"></i>
+                                Không tìm thấy hồ sơ nào phù hợp.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="card-footer bg-white border-0 py-4" th:if="${dossierPage.totalPages > 1}">
+                <nav>
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${dossierPage.first} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/citizen/hoso/danh-sach(page=${dossierPage.number - 1}, keyword=${keyword}, status=${status})}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, dossierPage.totalPages - 1)}"
+                            th:classappend="${i == dossierPage.number} ? 'active'">
+                            <a class="page-link"
+                                th:href="@{/citizen/hoso/danh-sach(page=${i}, keyword=${keyword}, status=${status})}"
+                                th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${dossierPage.last} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/citizen/hoso/danh-sach(page=${dossierPage.number + 1}, keyword=${keyword}, status=${status})}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>

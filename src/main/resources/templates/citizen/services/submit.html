@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Nộp hồ sơ: ' + ${serviceName})}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <!-- CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header Info -->
+                <div class="text-center mb-5">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">NỘP HỒ
+                        SƠ TRỰC TUYẾN</span>
+                    <h2 class="fw-bold text-dark" th:text="${serviceName}">Dịch vụ công</h2>
+                    <p class="text-muted">Vui lòng hoàn thành các bước dưới đây để gửi hồ sơ đến cơ quan chức năng.</p>
+                </div>
+
+                <!-- Wizard Steps Indicator -->
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4">
+                    <div class="d-flex justify-content-between position-relative wizard-progress">
+                        <div class="wizard-step active" data-step="1">
+                            <div class="step-icon">1</div>
+                            <div class="step-label">Thông tin người nộp</div>
+                        </div>
+                        <div class="wizard-step" data-step="2">
+                            <div class="step-icon">2</div>
+                            <div class="step-label">Thành phần hồ sơ</div>
+                        </div>
+                        <div class="wizard-step" data-step="3">
+                            <div class="step-icon">3</div>
+                            <div class="step-label">Hoàn tất & Gửi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card card-modern border-0 shadow-sm p-5 mb-4">
+                    <form id="submitDossierForm">
+                        <input type="hidden" name="serviceCode" th:value="${serviceCode}">
+
+                        <!-- STEP 1: Personal Info -->
+                        <div class="step-content" id="step-1">
+                            <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Thông tin người
+                                nộp hồ sơ</h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Họ và tên <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg bg-light"
+                                        value="Nguyễn Văn A" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Số CCCD / Mã định danh <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg bg-light"
+                                        value="048090******" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Số điện thoại liên lạc <span
+                                            class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control form-control-lg" placeholder="0905 xxx xxx"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Email nhận thông báo</label>
+                                    <input type="email" class="form-control form-control-lg"
+                                        placeholder="example@gmail.com">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Địa chỉ thường trú <span
+                                            class="text-danger">*</span></label>
+                                    <textarea class="form-control bg-light" rows="2"
+                                        readonly>Hải Châu, Đà Nẵng</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: Documents (Hidden by default) -->
+                        <div class="step-content d-none" id="step-2">
+                            <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Thành phần hồ
+                                sơ đính kèm</h5>
+                            <div class="alert alert-info small d-flex align-items-center mb-4">
+                                <i class="bi bi-info-circle-fill fs-5 me-3"></i>
+                                <div>Dung lượng mỗi file không quá 10MB. Chấp nhận các định dạng: .pdf, .jpg, .png.
+                                </div>
+                            </div>
+
+                            <div class="document-upload-list">
+                                <div class="p-3 border rounded-3 mb-3 bg-light bg-opacity-50">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="fw-bold mb-0">1. Tờ khai theo mẫu quy định <span
+                                                class="text-danger">*</span></h6>
+                                        <span class="text-primary small cursor-pointer"><i
+                                                class="bi bi-download me-1"></i>Tải mẫu</span>
+                                    </div>
+                                    <input type="file" class="form-control">
+                                </div>
+                                <div class="p-3 border rounded-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="fw-bold mb-0">2. Bản sao giấy tờ tùy thân <span
+                                                class="text-danger">*</span></h6>
+                                    </div>
+                                    <input type="file" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Confirm (Hidden by default) -->
+                        <div class="step-content d-none" id="step-3">
+                            <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Xác nhận và Cam
+                                đoan</h5>
+                            <div class="bg-light p-4 rounded-3 mb-4 text-center">
+                                <i class="bi bi-shield-check text-success display-4 mb-3 d-block"></i>
+                                <h6 class="fw-bold">Thông tin nộp hồ sơ đã sẵn sàng</h6>
+                                <p class="text-muted small mb-0">Lệ phí dịch vụ dự kiến: <strong class="text-dark"
+                                        th:text="${fee > 0 ? #numbers.formatDecimal(fee, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'Miễn phí'}">0
+                                        VNĐ</strong></p>
+                            </div>
+
+                            <div class="form-check p-3 border rounded-3">
+                                <input class="form-check-input ms-0" type="checkbox" id="confirmCheck" required>
+                                <label class="form-check-label ps-2 small" for="confirmCheck">
+                                    Tôi cam đoan những nội dung khai trên là đúng sự thật và chịu trách nhiệm trước pháp
+                                    luật về tính chính xác của hồ sơ.
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                            <button type="button" class="btn btn-light fw-bold px-4" id="prevBtn" disabled>Quay
+                                lại</button>
+                            <button type="button" class="btn btn-primary fw-bold px-5" id="nextBtn">Tiếp tục <i
+                                    class="bi bi-arrow-right ms-2"></i></button>
+                            <button type="submit" class="btn btn-success fw-bold px-5 d-none" id="submitBtn">GỬI HỒ SƠ
+                                <i class="bi bi-send-check ms-2"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+    <!-- Logic Wizard -->
+    <script th:inline="javascript">
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentStep < totalSteps) {
+                document.getElementById(`step-${currentStep}`).classList.add('d-none');
+                document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+
+                currentStep++;
+
+                document.getElementById(`step-${currentStep}`).classList.remove('d-none');
+                document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+
+                updateButtons();
+            }
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentStep > 1) {
+                document.getElementById(`step-${currentStep}`).classList.add('d-none');
+                document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+
+                currentStep--;
+
+                document.getElementById(`step-${currentStep}`).classList.remove('d-none');
+                document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+
+                updateButtons();
+            }
+        });
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.disabled = (currentStep === 1);
+
+            if (currentStep === totalSteps) {
+                nextBtn.classList.add('d-none');
+                submitBtn.classList.remove('d-none');
+            } else {
+                nextBtn.classList.remove('d-none');
+                submitBtn.classList.add('d-none');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_module4_dvc.dto.cat.CatServiceDTO;
 import org.example.project_module4_dvc.entity.cat.CatService;
 import org.example.project_module4_dvc.repository.cat.CatServiceRepository;
+import org.example.project_module4_dvc.repository.cat.CatWorkflowStepRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class CatServiceService implements ICatServiceService {
 
     private final CatServiceRepository catServiceRepository;
+    private final CatWorkflowStepRepository catWorkflowStepRepository;
 
     @Override
     public List<CatServiceDTO> getAllServices() {
@@ -70,6 +72,7 @@ public class CatServiceService implements ICatServiceService {
                 .domain(entity.getDomain())
                 .slaHours(entity.getSlaHours())
                 .feeAmount(entity.getFeeAmount())
+                .steps(catWorkflowStepRepository.findByServiceIdOrderByStepOrderAsc(entity.getId()))
                 .build();
     }
 

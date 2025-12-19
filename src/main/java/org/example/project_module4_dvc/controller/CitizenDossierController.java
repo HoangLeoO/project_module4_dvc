@@ -9,10 +9,14 @@ import org.example.project_module4_dvc.dto.timeline.IWorkflowStepProjectionDTO;
 import org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository;
 import org.example.project_module4_dvc.service.cat.ICatWorkflowStepService;
 import org.example.project_module4_dvc.service.ops.IOpsDossierService;
+import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
+import org.example.project_module4_dvc.repository.mod.ModPersonalVaultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.example.project_module4_dvc.config.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,36 +34,24 @@ public class CitizenDossierController {
     @Autowired
     private IOpsDossierService opsDossierService;
     @Autowired
-    private ICatWorkflowStepService workflowStepService;
-    @Autowired
     private OpsDossierLogRepository dossierLogRepository;
+    @Autowired
+    private MockCitizenRepository citizenRepository;
+    @Autowired
+    private ModPersonalVaultRepository vaultRepository;
 
-    /**
-     * Hàm hỗ trợ lấy ID người dùng hiện tại.
-     * Hiện tại: Trả về 1.
-     * Tương lai: Lấy từ session.
-     */
-    private Long getCurrentUserId(HttpSession session) {
-        // Sau này làm Login xong thì dùng dòng này:
-        // Long userId = (Long) session.getAttribute("userId");
-        // return (userId != null) ? userId : 0L;
-
-        return 8L; // Fix cứng ID = 1 để làm giao diện
-    }
-
-    // 1. TRANG DANH SÁCH HỒ SƠ
+    // 1. TRANG DASHBOARD / HỒ SƠ CỦA TÔI
     @GetMapping("/hoso")
     public String showDossierList(Model model,
-            HttpSession session,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
 
-        Long userId = getCurrentUserId(session);
+        Long userId = userDetails.getUserId();
 
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "submissionDate"));
         Page<OpsDossierSummaryDTO> dossierPage = opsDossierService.getMyDossierList(userId, pageable);
 
-        // stats (nếu bạn đang dùng dashboard)
         Map<String, Long> statusCounts = opsDossierService.getStatusCountByUser(userId);
 
         model.addAttribute("dossiers", dossierPage.getContent());
@@ -73,39 +65,36 @@ public class CitizenDossierController {
         model.addAttribute("completedCount", statusCounts.getOrDefault("APPROVED", 0L));
         model.addAttribute("notificationsTop3", opsDossierService.getTop3MyNotifications(userId));
         model.addAttribute("activePage", "hoso");
-        return "pages/01-citizen-portal/portal-dashboard";
+        return "citizen/dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String showDashBoard(Model model) {
-        return "pages/01-citizen-portal/portal-tracking";
+    public String showDashBoard() {
+        return "redirect:/citizen/hoso";
     }
 
     // 2. TRANG CHI TIẾT HỒ SƠ
     @GetMapping("/hoso/{id}")
     public String showDossierDetail(@PathVariable("id") Long id, Model model) {
-        // Lấy chi tiết hồ sơ từ Service
         OpsDossierDetailDTO detail = opsDossierService.getDossierDetail(id);
-        List<IWorkflowStepProjectionDTO> steps = workflowStepService.getWorkflowSteps(id);
         List<IDossierLogProjectionDTO> history = dossierLogRepository.findLogsByDossierId(id);
 
-        model.addAttribute("steps", steps);
         model.addAttribute("history", history);
         model.addAttribute("currentDossierId", id);
         model.addAttribute("d", detail);
         model.addAttribute("activePage", "hoso");
-        return "pages/01-citizen-portal/detail-dossier";
+        return "citizen/dossier/detail";
     }
 
     // 3. TRANG DANH SÁCH TẤT CẢ HỒ SƠ
     @GetMapping("/hoso/danh-sach")
     public String showFullDossierList(Model model,
-            HttpSession session,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status) {
-        Long userId = getCurrentUserId(session);
+        Long userId = userDetails.getUserId();
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "submissionDate"));
 
         Page<OpsDossierSummaryDTO> dossierPage = opsDossierService.searchMyDossiers(userId, keyword, status, pageable);
@@ -115,6 +104,37 @@ public class CitizenDossierController {
         model.addAttribute("dossierPage", dossierPage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
-        return "pages/01-citizen-portal/list-dossier";
+        return "citizen/dossier/list";
+    }
+
+    // 4. CÁC TRANG BỔ SUNG KHÁC
+    @GetMapping("/profile")
+    public String showProfile(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        Long citizenId = userDetails.getCitizenId();
+        if (citizenId != null) {
+            model.addAttribute("citizen", citizenRepository.findById(citizenId).orElse(null));
+        }
+        model.addAttribute("activePage", "profile");
+        return "citizen/profile";
+    }
+
+    @GetMapping("/vault")
+    public String showVault(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        Long userId = userDetails.getUserId();
+        model.addAttribute("vaultItems", vaultRepository.findByUserId(userId));
+        model.addAttribute("activePage", "vault");
+        return "citizen/vault";
+    }
+
+    @GetMapping("/feedback")
+    public String showFeedback(Model model) {
+        model.addAttribute("activePage", "feedback");
+        return "citizen/feedback";
+    }
+
+    @GetMapping("/tracking")
+    public String showTracking(Model model) {
+        model.addAttribute("activePage", "tracking");
+        return "citizen/tracking";
     }
 }

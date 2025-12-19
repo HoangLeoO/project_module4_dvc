@@ -153,7 +153,7 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/citizen", "/register", "/assets/**", "/403", "/404").permitAll()
+                .requestMatchers("/", "/login/citizen", "/register", "/assets/**", "/403", "/404","citizen/**").permitAll()
                 .anyRequest().hasRole("CONG_DAN") // Hoặc .authenticated()
         );
 
@@ -161,6 +161,7 @@ public class WebSecurityConfig {
                 .loginPage("/login/citizen")
                 .loginProcessingUrl("/process-login") // URL post form
                 .successHandler(successHandler)
+                .defaultSuccessUrl("/citizen/hoso", true)
                 .usernameParameter("username")
                 .passwordParameter("password")
         );
