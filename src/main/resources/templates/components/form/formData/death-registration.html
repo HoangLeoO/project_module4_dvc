@@ -1,0 +1,44 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="form-label small text-muted fw-bold text-uppercase">1. Thông tin người đã mất</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên</label>
+                <input type="text" class="form-control fw-bold" th:value="${formData.deceasedFullName}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Ngày sinh</label>
+                <input type="date" class="form-control" th:value="${formData.dateOfBirth != null ? #temporals.format(formData.dateOfBirth, 'yyyy-MM-dd') : ''}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Ngày mất</label>
+                <input type="date" class="form-control" th:value="${formData.dateOfDeath != null ? #temporals.format(formData.dateOfDeath, 'yyyy-MM-dd') : ''}" readonly>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label small">Nơi mất</label>
+                <input type="text" class="form-control" th:value="${formData.placeOfDeath}" readonly>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label small">Nơi cư trú cuối cùng</label>
+                <input type="text" class="form-control" th:value="${formData.lastResidence}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin người thân</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên người thân</label>
+                <input type="text" class="form-control" th:value="${formData.relativeFullName}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Mối quan hệ</label>
+                <input type="text" class="form-control" th:value="${formData.relativeRelationship}" readonly>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>
+
