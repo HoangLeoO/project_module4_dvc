@@ -311,45 +311,4 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     Page<CitizenNotificationProjection> findAllNotificationsByApplicant(@Param("currentUserId") Long currentUserId,
             Pageable pageable);
 
-    @Query("""
-                SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
-                    d.id,
-                    d.dossierCode,
-                    d.dossierStatus,
-                    d.submissionDate,
-                    applicant.fullName,
-                    service.serviceName,
-                    handler.fullName
-                )
-                FROM OpsDossier d
-                JOIN d.applicant applicant
-                JOIN d.service service
-                LEFT JOIN d.currentHandler handler
-                WHERE applicant.id = :applicantId
-                ORDER BY d.submissionDate DESC
-            """)
-    List<OpsDossierSummaryDTO> findDossiersByHandlerId(@Param("handlerId") Long handlerId);
-
-    /**
-     * Tìm hồ sơ theo trạng thái
-     */
-    @Query("""
-            SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
-                d.id,
-                d.dossierCode,
-                d.dossierStatus,
-                d.submissionDate,
-                applicant.fullName,
-                service.serviceName,
-                handler.fullName
-            )
-            FROM OpsDossier d
-            JOIN d.applicant applicant
-            JOIN d.service service
-            LEFT JOIN d.currentHandler handler
-            WHERE d.dossierStatus = :status
-            ORDER BY d.submissionDate DESC
-            """)
-    List<OpsDossierSummaryDTO> findDossiersByStatus(@Param("status") String status);
-
 }

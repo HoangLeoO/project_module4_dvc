@@ -72,4 +72,9 @@ public class CatServiceService implements ICatServiceService {
                 .feeAmount(entity.getFeeAmount())
                 .build();
     }
+
+    @Override
+    public List<CatService> findAll() {
+        return catServiceRepository.findAll();
+    }
 }

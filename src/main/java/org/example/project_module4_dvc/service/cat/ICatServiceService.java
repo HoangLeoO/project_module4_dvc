@@ -1,6 +1,8 @@
 package org.example.project_module4_dvc.service.cat;
 
 import org.example.project_module4_dvc.dto.cat.CatServiceDTO;
+import org.example.project_module4_dvc.entity.cat.CatService;
+
 import java.util.List;
 
 public interface ICatServiceService {
@@ -11,4 +13,6 @@ public interface ICatServiceService {
     CatServiceDTO getServiceByCode(String code);
 
     List<CatServiceDTO> searchServices(String keyword, String domain);
+
+    List<CatService> findAll();
 }
