@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/officer/dashboard")
+@RequestMapping("/official/dashboard")
 public class DashboardController {
     private final IOfficerService officerService;
 
@@ -49,13 +49,13 @@ public class DashboardController {
     @GetMapping("reception/update")
     public String updateDossierStatus(@RequestParam("id") Long id) {
         officerService.updateDossierStatus(id, "PENDING", "");
-        return "redirect:/officer/dashboard";
+        return "redirect:/official/dashboard";
     }
 
     @PostMapping("reception/reject")
     public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
         officerService.updateDossierStatus(id, "REJECTED", reason);
-        return "redirect:/officer/dashboard";
+        return "redirect:/official/dashboard";
     }
 
 

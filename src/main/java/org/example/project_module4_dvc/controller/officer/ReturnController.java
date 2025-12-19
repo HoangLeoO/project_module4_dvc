@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/officer/dashboard/return")
+@RequestMapping("/official/dashboard/return")
 public class ReturnController {
     private final IOfficerService officerService;
 

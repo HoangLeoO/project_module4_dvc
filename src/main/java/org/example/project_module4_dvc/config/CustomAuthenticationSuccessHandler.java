@@ -29,7 +29,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String role = authority.getAuthority();
 
             if ("ROLE_ADMIN".equals(role)) {
-                redirectUrl = "/admin";
+                redirectUrl = "/admin/dashboard";
                 break;
             }
 
@@ -39,7 +39,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 break;
             }
 
-            if ("ROLE_USER".equals(role)) {
+            // Redirect cho Cán bộ (Một cửa, Tư pháp, Địa chính, Kinh tế)
+            if (role.startsWith("ROLE_CANBO_")) {
+                redirectUrl = "/official/dashboard"; // Đã đổi path từ /officer thánh /official
+                break;
+            }
+
+            // Redirect cho Công dân
+            if ("ROLE_CONG_DAN".equals(role) || "ROLE_USER".equals(role)) {
                 redirectUrl = "/";
                 break;
             }

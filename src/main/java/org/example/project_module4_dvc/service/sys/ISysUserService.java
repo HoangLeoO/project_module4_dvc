@@ -1,4 +1,4 @@
-package org.example.project_module4_dvc.service;
+package org.example.project_module4_dvc.service.sys;
 
 import org.example.project_module4_dvc.entity.sys.SysUser;
 
