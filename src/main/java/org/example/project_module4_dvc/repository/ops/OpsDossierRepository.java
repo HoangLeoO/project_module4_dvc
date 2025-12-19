@@ -30,7 +30,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     // Đếm theo trạng thái
     long countByDossierStatus(String dossierStatus);
 
-    // Quá hạn
+    // Đếm hồ sơ quá hạn
     @Query("""
         SELECT COUNT(d)
         FROM OpsDossier d
@@ -54,14 +54,15 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
         ORDER BY d.service.domain
     """)
     List<String> findAllDomains();
-
+    // Danh sách hồ sơ quá hạn
     @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus NOT IN ('APPROVED','REJECTED') AND d.dueDate < CURRENT_TIMESTAMP")
     List<OpsDossier> findOverdueDossiers();
-
+    // Danh sách hồ sơ không ở trong trạng thái cho trước
     List<OpsDossier> findByDossierStatusNotIn(List<String> statusList);
-
+    // Phân trang theo trạng thái
     Page<OpsDossier> findOpsDossierByDossierStatus(String dossierStatus, Pageable pageable);
 
+    // Tìm hồ sơ gần đến hạn (trạng thái NEW)
     @Query("""
     select hs
     from OpsDossier hs
@@ -72,6 +73,4 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             @Param("now") LocalDateTime now,
             @Param("limit") LocalDateTime limit
     );
-
-
 }

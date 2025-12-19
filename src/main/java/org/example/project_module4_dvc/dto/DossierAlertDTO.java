@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.project_module4_dvc.entity.ops.OpsDossier;
 
 @Getter
 @Setter
