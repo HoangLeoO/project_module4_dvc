@@ -14,23 +14,174 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../../static/assets/css/style.css">
     <link rel="stylesheet" href="../../../static/assets/css/internal.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
-        .card-kpi {
-            transition: transform 0.2s;
+        :root {
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --primary-gradient: linear-gradient(135deg, #0f4c81 0%, #1e6091 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
         }
 
-        .card-kpi:hover {
-            transform: translateY(-5px);
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            /* Slate-100 */
+            color: #334155;
+            overflow-x: hidden;
         }
 
-        /* Pulse Animation for Critical Items */
-        @keyframes pulse-red {
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 76, 129, 0.2);
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.5rem;
+            color: #64748b;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+            margin-bottom: 4px;
+        }
+
+        .nav-link-custom:hover {
+            background-color: #f8fafc;
+            color: var(--bs-primary);
+        }
+
+        .nav-link-custom.active {
+            background-color: #f0f9ff;
+            color: var(--bs-primary);
+            border-right-color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .nav-link-custom i {
+            font-size: 1.25rem;
+            width: 2rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        .top-header {
+            height: var(--header-height);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            padding: 0 2rem;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .card-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Table Styling */
+        .custom-table-card {
+            background: #b1b3b5;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            border: none;
+            overflow: hidden;
+        }
+
+        .custom-table thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .custom-table tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .custom-table tbody tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* Animations */
+        @keyframes pulse-soft {
             0% {
-                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.2);
             }
 
             70% {
-                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+                box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
             }
 
             100% {
@@ -38,252 +189,337 @@
             }
         }
 
-        .pulse-alarm {
-            animation: pulse-red 2s infinite;
+        .alert-pulse {
+            animation: pulse-soft 2s infinite;
         }
 
-        .shake-animation {
-            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
-            transform: translate3d(0, 0, 0);
+        .status-badge {
+            padding: 0.35em 0.8em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 50rem;
+            white-space: nowrap;
         }
 
-        @keyframes shake {
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
 
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
-            }
-
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
-            }
-
-            40%,
-            60% {
-                transform: translate3d(4px, 0, 0);
-            }
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 
-<body class="bg-light" th:object="${dossiers}">
+<body th:object="${dossiers}">
 
-<!-- WRAPPER -->
-<div class="d-flex" id="wrapper">
-
-    <!-- SIDEBAR - Included via JS or Server Limit - Here Static -->
-    <div class="bg-white border-end"
-         style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
-        <div class="p-3 border-bottom d-flex align-items-center bg-primary text-white">
-            <i class="bi bi-building-fill-gear fs-4 me-2"></i>
-            <div class="fw-bold">HỆ THỐNG MỘT CỬA</div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-building-fill-gear fs-4 me-3"></i>
+            <div>
+                <div class="fw-bold" style="letter-spacing: 0.5px;">HỆ THỐNG</div>
+                <div style="font-size: 0.8rem; opacity: 0.9;">MỘT CỬA ĐIỆN TỬ</div>
+            </div>
         </div>
-        <div class="list-group list-group-flush p-2">
-            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Nghiệp
-                vụ</small>
-            <a href="officer-dashboard.html"
-               class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
-                    class="bi bi-grid-fill me-2"></i>Bàn làm việc</a>
 
-            <a href="officer-return.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
-                    class="bi bi-check2-circle me-2"></i>Trả kết quả</a>
-            <a href="officer-complaints.html"
-               class="list-group-item list-group-item-action rounded mb-1 border-0 d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-megaphone-fill me-2"></i>Phản ánh</span>
-                <span class="badge bg-danger rounded-pill">1</span>
+        <div class="py-4">
+            <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
+                style="font-size: 0.75rem; letter-spacing: 1px;">Nghiệp vụ</small>
+
+            <a href="officer-dashboard.html" class="list-group-item active border-0 fw-bold nav-link-custom"
+                style="border-radius: 0;">
+                <i class="bi bi-grid-fill"></i>
+                Bàn làm việc
             </a>
 
-            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
-                thống</small>
-            <a href="../06-shared/internal-login.html"
-               class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
-                    class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+            <a th:href="@{/officer/dashboard/return}" class="nav-link-custom">
+                <i class="bi bi-check2-circle"></i>
+                Trả kết quả
+            </a>
+
+            <a href="officer-complaints.html" class="nav-link-custom d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-megaphone-fill"></i>
+                    Phản ánh
+                </div>
+                <span class="badge bg-danger rounded-pill shadow-sm" style="font-size: 0.7rem;">1</span>
+            </a>
+
+            <div class="my-4 border-top mx-4 op-2"></div>
+
+            <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
+                style="font-size: 0.75rem; letter-spacing: 1px;">Hệ thống</small>
+            <a href="../06-shared/internal-login.html" class="nav-link-custom text-danger hover-danger">
+                <i class="bi bi-box-arrow-left"></i>
+                Đăng xuất
+            </a>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="main-content">
 
-        <!-- TOP HEADER -->
-        <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
-            <div class="fw-bold text-primary">UBND Quận Hải Châu - Bộ phận Một cửa</div>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <!-- Notifications -->
-                <!-- User Profile -->
+        <!-- TOP NAVBAR -->
+        <nav class="top-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <span class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle me-3">
+                    <i class="bi bi-bank2"></i>
+                </span>
+                <div>
+                    <div class="fw-bold text-dark">UBND Quận Hải Châu</div>
+                    <small class="text-muted">Bộ phận Một cửa - Tiếp nhận & Trả kết quả</small>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4">
+                <!-- Notifications Example -->
+                <button class="btn btn-light rounded-circle position-relative border-0 shadow-sm"
+                    style="width: 40px; height: 40px;">
+                    <i class="bi bi-bell-fill text-muted"></i>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </button>
+
+                <!-- Profile Dropdown -->
                 <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <span class="me-2 fw-bold">Cán bộ A</span>
-                        <img src="https://ui-avatars.com/api/?name=Can+Bo&background=0d6efd&color=fff"
-                             class="rounded-circle" width="32">
+                    <a href="#"
+                        class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle px-3 py-2 rounded-pill bg-white shadow-sm border"
+                        data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=Can+Bo&background=0f4c81&color=fff"
+                            class="rounded-circle me-2" width="32" height="32">
+                        <div class="d-flex flex-column me-2" style="line-height: 1.1;">
+                            <span class="fw-bold small">Nguyễn Văn A</span>
+                            <small class="text-muted" style="font-size: 0.7rem;">Cán bộ tiếp nhận</small>
+                        </div>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        <li><a class="dropdown-item" href="#">Thông tin tài khoản</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
+                        <li>
+                            <h6 class="dropdown-header">Tài khoản</h6>
+                        </li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Đăng
+                                xuất</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <main class="flex-grow-1 p-4">
+        <!-- DASHBOARD CONTENT -->
+        <main class="p-4 flex-grow-1">
 
-            <!-- 1. CRISIS ALERT (Scenario Complaint) -->
-            <div class="alert alert-danger d-flex align-items-center shadow-sm shake-animation mb-4" role="alert">
-                <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+            <!-- Welcome Banner -->
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1">Xin chào, Cán bộ! 👋</h3>
+                <p class="text-muted">Đây là tổng quan tình hình xử lý hồ sơ hôm nay.</p>
+            </div>
+
+            <!-- CRISIS ALERT (Scenario Complaint) -->
+            <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center p-3 mb-4 rounded-3 alert-pulse"
+                role="alert" style="background: linear-gradient(to right, #fff5f5, #fff);">
+                <div class="bg-danger text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
+                    style="width: 48px; height: 48px;">
+                    <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                </div>
                 <div class="flex-grow-1">
-                    <strong class="fs-5">CẢNH BÁO NÓNG!</strong>
-                    <div>Có <strong>1 đánh giá 1 sao</strong> về thái độ phục vụ chưa được xử lý. Cần giải trình
-                        ngay.
-                    </div>
+                    <h5 class="alert-heading fw-bold mb-1 text-danger">CẢNH BÁO NÓNG!</h5>
+                    <div class="text-dark opacity-75">Có <strong>1 đánh giá 1 sao</strong> về thái độ phục vụ chưa được
+                        xử lý. Cần giải trình gấp.</div>
                 </div>
-                <a href="officer-complaints.html" class="btn btn-danger fw-bold border-white">Xử lý ngay</a>
+                <a href="officer-complaints.html"
+                    class="btn btn-danger btn-sm px-4 py-2 rounded-pill fw-bold shadow-sm">Xử lý ngay <i
+                        class="bi bi-arrow-right ms-1"></i></a>
             </div>
 
-            <!-- 2. KPI CARDS -->
+            <!-- KPI STATS -->
             <div class="row g-4 mb-4">
-                <!-- Card 1: Pending -->
+                <!-- Card 1: Processing -->
                 <div class="col-md-4">
-                    <div class="card card-widget border-0 shadow-sm h-100 card-kpi">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
-                                    <i class="bi bi-inbox-fill fs-4"></i>
+                    <div class="dashboard-card p-4">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="text-muted fw-medium mb-1">Chờ tiếp nhận</p>
+                                <h2 class="fw-bold text-dark mb-0" th:text="${dossiers.totalElements}">0</h2>
+                                <div
+                                    class="mt-2 text-primary small bg-primary bg-opacity-10 px-2 py-1 rounded d-inline-block fw-bold">
+                                    <i class="bi bi-arrow-up-short"></i> Cập nhật mới
                                 </div>
-                                <span class="badge bg-light text-muted">Hôm nay</span>
                             </div>
-                            <h2 class="fw-bold mb-0" th:text="${dossiers.totalElements}"></h2>
-                            <div class="text-muted small">Chờ tiếp nhận</div>
+                            <div class="card-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-inbox-fill"></i>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Card 2: Overdue Warning -->
-                <div class="col-md-4">
-                    <div class="card card-widget shadow h-100 card-kpi"
-                         th:classappend="${nearDueCount > 0} ? 'border-danger border-2 pulse-alarm' : 'border-success'">
-
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="p-2 rounded"
-                                     th:classappend="${nearDueCount > 0} ? 'bg-danger bg-opacity-10 text-danger'
-                                                         : 'bg-success bg-opacity-10 text-success'">
-                                    <i class="bi fs-4"
-                                       th:classappend="${nearDueCount > 0} ? 'bi-alarm-fill' : 'bi-check-circle-fill'">
-                                    </i>
-                                </div>
-
-                                <span class="badge"
-                                      th:classappend="${nearDueCount > 0} ? 'bg-danger' : 'bg-success'"
-                                      th:text="${nearDueCount > 0} ? 'Ưu tiên' : 'Ổn định'">
-                </span>
-                            </div>
-
-                            <h2 class="fw-bold mb-0"
-                                th:classappend="${nearDueCount > 0} ? 'text-danger' : 'text-success'"
-                                th:text="${nearDueCount}">
-                            </h2>
-
-                            <div class="small fw-bold"
-                                 th:classappend="${nearDueCount > 0} ? 'text-danger' : 'text-success'"
-                                 th:text="${nearDueCount > 0} ? 'Sắp quá hạn 6H' : 'Không có hồ sơ sắp quá hạn'">
-                            </div>
+                        <div class="progress mt-4" style="height: 4px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 70%"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 3: Finished -->
+                <!-- Card 2: Overdue/Performance -->
                 <div class="col-md-4">
-                    <div class="card card-widget border-0 shadow-sm h-100 card-kpi">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="bg-success bg-opacity-10 p-2 rounded text-success">
-                                    <i class="bi bi-check-circle-fill fs-4"></i>
+                    <div class="dashboard-card p-4"
+                        th:classappend="${nearDueCount > 0} ? 'border border-danger border-2' : ''">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="text-muted fw-medium mb-1">Trạng thái hồ sơ</p>
+                                <h2 class="fw-bold mb-0"
+                                    th:classappend="${nearDueCount > 0} ? 'text-danger' : 'text-success'"
+                                    th:text="${nearDueCount}">0</h2>
+                                <div class="mt-2 small px-2 py-1 rounded d-inline-block fw-bold"
+                                    th:classappend="${nearDueCount > 0} ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'"
+                                    th:text="${nearDueCount > 0} ? 'Sắp quá hạn 6H' : 'Hoạt động ổn định'">
+                                    Ổn định
                                 </div>
-                                <span class="badge bg-light text-muted">Hôm nay</span>
                             </div>
-                            <h2 class="fw-bold mb-0">50</h2>
-                            <div class="text-muted small">Đã trả kết quả</div>
+                            <div class="card-icon-wrapper"
+                                th:classappend="${nearDueCount > 0} ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'">
+                                <i class="bi"
+                                    th:classappend="${nearDueCount > 0} ? 'bi-alarm-fill' : 'bi-check-circle-fill'"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-4" style="height: 4px;">
+                            <div class="progress-bar" th:classappend="${nearDueCount > 0} ? 'bg-danger' : 'bg-success'"
+                                role="progressbar" th:style="'width: ' + (${nearDueCount > 0} ? '90%' : '100%')"></div>
                         </div>
                     </div>
                 </div>
-                <!-- Card 4: Feedback -->
-                <!--                    <div class="col-md-3">-->
-                <!--                        <div class="card card-widget border-0 shadow-sm h-100 card-kpi">-->
-                <!--                            <div class="card-body">-->
-                <!--                                <div class="d-flex justify-content-between align-items-start mb-3">-->
-                <!--                                    <div class="bg-warning bg-opacity-10 p-2 rounded text-warning">-->
-                <!--                                        <i class="bi bi-star-half fs-4"></i>-->
-                <!--                                    </div>-->
-                <!--                                </div>-->
-                <!--                                <h2 class="fw-bold mb-0">4.8/5</h2>-->
-                <!--                                <div class="text-muted small">Điểm hài lòng trung bình</div>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
+
+                <!-- Card 3: Completed -->
+                <div class="col-md-4">
+                    <div class="dashboard-card p-4">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="text-muted fw-medium mb-1">Đã trả kết quả</p>
+                                <h2 class="fw-bold text-dark mb-0">50</h2>
+                                <div
+                                    class="mt-2 text-success small bg-success bg-opacity-10 px-2 py-1 rounded d-inline-block fw-bold">
+                                    <i class="bi bi-graph-up"></i> +12% hôm nay
+                                </div>
+                            </div>
+                            <div class="card-icon-wrapper bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-4" style="height: 4px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 3. QUEUE TABLE -->
-            <div class="card border-0 shadow-sm">
+            <!-- 3. QUEUE TABLE Card -->
+            <div class="card border-0 shadow-lg-soft rounded-4 overflow-hidden bg-white">
                 <div
-                        class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-list-task me-2"></i>Danh sách Chờ xử lý</h6>
+                    class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">Danh sách chờ xử lý</h6>
+                        <small class="text-muted">Các hồ sơ cần được tiếp nhận và phân loại</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm fw-medium border text-muted"><i class="bi bi-filter"></i>
+                            Lọc</button>
+                        <button class="btn btn-light btn-sm fw-medium border text-muted"><i class="bi bi-download"></i>
+                            Xuất Excel</button>
+                    </div>
                 </div>
+
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                        <tr>
-                            <th class="ps-3 py-3">STT</th>
-                            <th>Mã hồ sơ</th>
-                            <th>Công dân</th>
-                            <th>Thủ tục</th>
-                            <th>Thời gian nộp</th>
-                            <th>Tình trạng</th>
-                            <th class="text-end pe-3">Tác vụ</th>
-                        </tr>
+                    <table class="table custom-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">STT</th>
+                                <th>Mã hồ sơ</th>
+                                <th>Công dân</th>
+                                <th>Thủ tục</th>
+                                <th>Thời gian nộp</th>
+                                <th>Tình trạng</th>
+                                <th class="text-end pe-4">Tác vụ</th>
+                            </tr>
                         </thead>
-                        <tbody><!-- Item 1: Warning Overdue -->
-                        <tr th:each="dossier,i:${dossiers.content}" class="">
-                            <td class="ps-3" th:text="${i.count}"></td>
-                            <td><span class="badge bg-success text-light" th:text="${dossier.dossierCode}"></span></td>
-                            <td th:text="${dossier.applicantFullName}"></td>
-                            <td th:text="${dossier.serviceName}"></td>
-                            <td>
-                                <div class="fw-bold text-primary"
-                                     th:text="${#temporals.format(dossier.submissionDate, 'dd/MM/yyyy HH:mm')}"></div>
-                            </td>
-                            <td><span class="badge bg-warning text-dark" th:text="${dossier.dossierStatus}"></span></td>
-                            <td class="text-end pe-3">
-                                <a th:href="@{/officer/dashboard/reception(id=${dossier.id})}"
-                                   class="btn btn-sm btn-primary fw-bold shadow-sm">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i>Tiếp nhận
-                                </a>
-                            </td>
-                        </tr>
+                        <tbody>
+                            <tr th:each="dossier,i:${dossiers.content}">
+                                <td class="ps-4 text-muted fw-bold" th:text="${i.count}">1</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border fw-bold"
+                                        style="font-family: monospace; font-size: 0.85rem;"
+                                        th:text="${dossier.dossierCode}"></span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold"
+                                            style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                            <span th:text="${#strings.substring(dossier.applicantFullName,0,1)}"></span>
+                                        </div>
+                                        <span class="fw-medium" th:text="${dossier.applicantFullName}"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate" style="max-width: 200px;"
+                                        th:text="${dossier.serviceName}" data-bs-toggle="tooltip"
+                                        th:title="${dossier.serviceName}">Thủ tục hành chính</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="bi bi-clock me-1 small"></i>
+                                        <span
+                                            th:text="${#temporals.format(dossier.submissionDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${dossier.overdue}"
+                                        class="status-badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i>Quá hạn
+                                    </span>
+                                    <span th:if="${!dossier.overdue and dossier.nearDue}"
+                                        class="status-badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
+                                        <i class="bi bi-alarm-fill me-1"></i>Sắp quá hạn
+                                    </span>
+                                    <span th:if="${!dossier.overdue and !dossier.nearDue}"
+                                        class="status-badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+                                        <i class="bi bi-hourglass-split me-1"></i>Chờ xử lý
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a th:href="@{/officer/dashboard/reception(id=${dossier.id})}"
+                                        class="btn btn-primary btn-action btn-sm shadow-sm pe-3">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i> Tiếp nhận
+                                    </a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer bg-white py-3">
+
+                <!-- Footer / Pagination -->
+                <div class="card-footer bg-white border-top-0 py-3">
                     <nav>
                         <ul class="pagination justify-content-center mb-0">
-
                             <li class="page-item" th:classappend="${dossiers.hasPrevious()} ? '' : 'disabled'">
-                                <a class="page-link"
-                                   th:href="@{/officer/dashboard(page=${dossiers.number - 1})}">Trước</a>
+                                <a class="page-link border-0 rounded-circle mx-1 d-flex align-items-center justify-content-center fw-bold"
+                                    style="width: 36px; height: 36px; color: var(--bs-primary);"
+                                    th:href="@{/officer/dashboard(page=${dossiers.number - 1})}"><i
+                                        class="bi bi-chevron-left"></i></a>
                             </li>
                             <li class="page-item"
                                 th:each="pageNumber : ${#numbers.sequence(0, dossiers.totalPages - 1)}"
                                 th:classappend="${pageNumber == dossiers.number} ? 'active' : ''">
-                                <a class="page-link" th:href="@{/officer/dashboard(page=${pageNumber})}"
-                                   th:text="${pageNumber + 1}"></a>
+                                <a class="page-link border-0 rounded-circle mx-1 d-flex align-items-center justify-content-center fw-bold"
+                                    style="width: 36px; height: 36px;"
+                                    th:href="@{/officer/dashboard(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
                             </li>
                             <li class="page-item" th:classappend="${dossiers.hasNext()} ? '' : 'disabled'">
-                                <a class="page-link"
-                                   th:href="@{/officer/dashboard(page=${dossiers.number + 1})}">Sau</a>
+                                <a class="page-link border-0 rounded-circle mx-1 d-flex align-items-center justify-content-center fw-bold"
+                                    style="width: 36px; height: 36px; color: var(--bs-primary);"
+                                    th:href="@{/officer/dashboard(page=${dossiers.number + 1})}"><i
+                                        class="bi bi-chevron-right"></i></a>
                             </li>
                         </ul>
                     </nav>
@@ -292,11 +528,17 @@
 
         </main>
     </div>
-</div>
 
-<!-- JS Logic -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/websocket.js}"></script>
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/websocket.js}"></script>
+    <script>
+        // Init tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
 </body>
 
 </html>
