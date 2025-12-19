@@ -47,11 +47,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return; // Kết thúc
             }
 
-            // Redirect cho Cán bộ (Một cửa, Tư pháp, Địa chính, Kinh tế)
-            if (role.startsWith("ROLE_CANBO_")) {
-                redirectUrl = "/official/dashboard"; // Đã đổi path từ /officer thánh /official
-                break;
-            }
+
 
             // Redirect cho Công dân
             if ("ROLE_CONG_DAN".equals(role) || "ROLE_USER".equals(role)) {
