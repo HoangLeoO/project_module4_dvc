@@ -1,4 +1,4 @@
-package org.example.project_module4_dvc.dto;
+package org.example.project_module4_dvc.dto.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

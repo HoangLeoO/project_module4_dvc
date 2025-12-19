@@ -194,54 +194,63 @@
                         </div>
                         <div class="list-group list-group-flush small">
 
-<!--                            &lt;!&ndash; 1. Hồ sơ quá hạn &ndash;&gt;-->
-<!--                            <div th:each="dossier : ${overdueDossiers}"-->
-<!--                                 class="list-group-item list-group-item-action bg-danger bg-opacity-10 border-0 mb-1 rounded">-->
-<!--                                <div class="d-flex w-100 justify-content-between">-->
-<!--                                    <h6 th:text="${dossier['code'] + ' (Quá hạn ' + dossier['days'] + ' ngày)'}"-->
-<!--                                        class="text-danger"></h6>-->
-<!--                                    <small th:text="${dossier['domain']}">Lĩnh vực</small>-->
-<!--                                </div>-->
-<!--                                <p class="mb-1" th:text="${dossier['description']}">-->
-<!--                                    Mô tả hồ sơ / bước xử lý-->
-<!--                                </p>-->
-<!--                                <small>-->
-<!--                                    <button class="btn btn-xs btn-outline-danger py-0 px-1 mt-1">Xử lý ngay</button>-->
-<!--                                </small>-->
-<!--                            </div>-->
+                            <div th:each="alert : ${alerts.content}"
+                                 class="list-group-item list-group-item-action border-0 mb-1 rounded"
+                                 th:classappend="
+            ${alert.type == 'OVERDUE'} ? 'bg-danger bg-opacity-10' :
+            (${alert.type == 'NEARLY_DUE'} ? 'bg-warning bg-opacity-25' :
+             'bg-warning bg-opacity-10')">
 
-<!--                            &lt;!&ndash; 2. Hồ sơ sắp hết hạn &ndash;&gt;-->
-<!--                            <div th:each="dossier : ${almostDueDossiers}"-->
-<!--                                 class="list-group-item list-group-item-action bg-warning bg-opacity-25 border-0 mb-1 rounded">-->
-<!--                                <div class="d-flex w-100 justify-content-between">-->
-<!--                                    <h6 th:text="${dossier['code'] + ' (Còn ' + dossier['days'] + ' ngày)'}"-->
-<!--                                        class="text-dark"></h6>-->
-<!--                                    <small th:text="${dossier['domain']}">Lĩnh vực</small>-->
-<!--                                </div>-->
-<!--                                <p class="mb-1" th:text="${dossier['description']}">-->
-<!--                                    Mô tả hồ sơ / bước xử lý-->
-<!--                                </p>-->
-<!--                                <small>-->
-<!--                                    <button class="btn btn-xs btn-outline-warning py-0 px-1 mt-1">Kiểm tra</button>-->
-<!--                                </small>-->
-<!--                            </div>-->
+                                <div class="d-flex justify-content-between">
+                                    <h6 th:text="
+                ${alert.type == 'OVERDUE'} ?
+                |${alert.title} (Quá hạn ${alert.days} ngày)| :
+                (${alert.type == 'NEARLY_DUE'} ?
+                |${alert.title} (Còn ${alert.days} ngày)| :
+                |${alert.title} (Chưa trả lời)|)">
+                                    </h6>
 
+                                    <small th:text="${alert.domain ?: 'Góp ý'}"></small>
+                                </div>
 
-<!--                            &lt;!&ndash; 3. Feedback chưa xử lý &ndash;&gt;-->
-<!--                            <div th:each="fb : ${unresolvedFeedbacks}"-->
-<!--                                 class="list-group-item list-group-item-action bg-warning bg-opacity-10 border-0 rounded">-->
-<!--                                <div class="d-flex w-100 justify-content-between">-->
-<!--                                    <h6 class="mb-1 fw-bold text-dark"-->
-<!--                                        th:text="|${fb.title} (Chưa trả lời)|">PA-xxxx (Chưa trả lời)</h6>-->
-<!--                                    <small>Góp ý</small>-->
-<!--                                </div>-->
-<!--                                <p class="mb-1" th:text="${fb.content}">Nội dung phản ánh</p>-->
-<!--                                <small>-->
-<!--                                    <button class="btn btn-xs btn-outline-dark py-0 px-1 mt-1">Xem phản ánh</button>-->
-<!--                                </small>-->
-<!--                            </div>-->
+                                <p class="mb-1" th:text="${alert.description}"></p>
+
+                                <small>
+                                    <button class="btn btn-xs btn-outline-dark py-0 px-1">
+                                        Xem chi tiết
+                                    </button>
+                                </small>
+                            </div>
 
                         </div>
+                        <nav th:if="${alerts.totalPages > 1}">
+                            <ul class="pagination pagination-sm justify-content-center mt-2">
+
+                                <li class="page-item" th:classappend="${alerts.first}? 'disabled'">
+                                    <a class="page-link" th:href="@{/admin/(page=${alerts.number-1})}">
+                                        ‹
+                                    </a>
+                                </li>
+
+                                <li class="page-item"
+                                    th:each="i : ${#numbers.sequence(0, alerts.totalPages-1)}"
+                                    th:classappend="${i==alerts.number}? 'active'">
+                                    <a class="page-link"
+                                       th:text="${i+1}"
+                                       th:href="@{/admin/(page=${i})}">
+                                    </a>
+                                </li>
+
+                                <li class="page-item" th:classappend="${alerts.last}? 'disabled'">
+                                    <a class="page-link" th:href="@{/admin/(page=${alerts.number+1})}">
+                                        ›
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+
+
                     </div>
                 </div>
 

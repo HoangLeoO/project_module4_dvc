@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 
 @Repository
@@ -188,4 +189,49 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             @Param("now") LocalDateTime now,
             @Param("limit") LocalDateTime limit
     );
+
+
+    @Query(value = """
+    SELECT 
+        d.id AS id,
+        d.dossier_code AS code,
+        s.domain AS domain,
+        ABS(DATEDIFF(d.due_date, NOW())) AS days,
+        'OVERDUE' AS type
+    FROM ops_dossiers d
+    JOIN cat_services s ON d.service_id = s.id
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date < NOW()
+    ORDER BY d.due_date ASC
+""",
+            countQuery = """
+    SELECT COUNT(*)
+    FROM ops_dossiers d
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date < NOW()
+""",
+            nativeQuery = true)
+    Page<Map<String, Object>> findOverdueAlerts(Pageable pageable);
+
+    @Query(value = """
+    SELECT 
+        d.id AS id,
+        d.dossier_code AS code,
+        s.domain AS domain,
+        DATEDIFF(d.due_date, NOW()) AS days,
+        'NEARLY_DUE' AS type
+    FROM ops_dossiers d
+    JOIN cat_services s ON d.service_id = s.id
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+    ORDER BY d.due_date ASC
+""",
+            countQuery = """
+    SELECT COUNT(*)
+    FROM ops_dossiers d
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+""",
+            nativeQuery = true)
+    Page<Map<String, Object>> findNearlyDueAlerts(Pageable pageable);
 }
