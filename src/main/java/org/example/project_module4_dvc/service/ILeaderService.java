@@ -3,6 +3,7 @@ package org.example.project_module4_dvc.service;
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 public interface ILeaderService {
     Page<DossierApprovalSummaryDTO> getMyDossiers(Long leaderId, String applicantName, String domain, Pageable pageable);
@@ -14,4 +15,11 @@ public interface ILeaderService {
     long countByCurrentHandler_IdAndDossierStatus(Long currentHandlerId, String dossierStatus);
 
     long countDelegatedDossiers(Long delegateeId, String status);
+    Double getOnTimeRateByDeptId(Long deptId);
+    long countAllDossiersByDept(Long deptId);
+
+    long countOverdueDossiersByDept(Long deptId);
+
+    Double getAverageSatisfactionScoreByDept(Long deptId);
+
 }
