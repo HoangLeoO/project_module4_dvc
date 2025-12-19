@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/official/dashboard")
+@RequestMapping("/officer/dashboard")
 public class DashboardController {
     private final IOfficerService officerService;
 

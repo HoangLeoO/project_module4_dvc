@@ -15,7 +15,6 @@ public class LoginController {
     private ISysUserService userService;
 
 
-
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String landingPage() {
         return "redirect:/login/citizen";
@@ -28,7 +27,13 @@ public class LoginController {
 
     @RequestMapping(value = "login/official", method = RequestMethod.GET)
     public String loginPageOfficial() {
-        return "pages/official-login"; // Trang login mới dành cho cán bộ
+        return "pages/official-login";
+        // Trang login mới dành cho cán bộ
+    }
+
+    @RequestMapping(value = "login/officer", method = RequestMethod.GET)
+    public String loginPageOfficer() {
+        return "pages/official-login";
     }
 
     @RequestMapping(value = "/403", method = RequestMethod.GET)

@@ -77,19 +77,19 @@ public class OpsDossierService implements IOpsDossierService {
     public org.example.project_module4_dvc.dto.ChartDataDTO getChartData() {
         List<String> domains = opsDossierRepository.findAllDomains();
         List<String> statuses = List.of("NEW", "PENDING", "APPROVED", "REJECTED");
-        List<Object[]> raw = opsDossierRepository.countByDomainAndStatus();
+//        List<Object[]> raw = opsDossierRepository.countByDomainAndStatus();
 
         // domain -> status -> count
         Map<String, Map<String, Long>> map = new HashMap<>();
 
-        for (Object[] r : raw) {
-            String domain = (String) r[0];
-            String status = (String) r[1];
-            Long count = (Long) r[2];
-
-            map.computeIfAbsent(domain, k -> new HashMap<>())
-                    .put(status, count);
-        }
+//        for (Object[] r : raw) {
+//            String domain = (String) r[0];
+//            String status = (String) r[1];
+//            Long count = (Long) r[2];
+//
+//            map.computeIfAbsent(domain, k -> new HashMap<>())
+//                    .put(status, count);
+//        }
 
         List<org.example.project_module4_dvc.dto.ChartDatasetDTO> datasets = new java.util.ArrayList<>();
 
