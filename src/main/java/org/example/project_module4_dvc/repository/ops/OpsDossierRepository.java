@@ -11,6 +11,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Repository
 public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
@@ -125,4 +128,19 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             "    current_handler_id = :leader_id " +
             "WHERE id = :dossier_id", nativeQuery = true)
     void updateStatusApprovedDossier(@Param("leader_id") Long leader_id, @Param("dossier_id") Long dossier_id);
+
+    Page<OpsDossier> findOpsDossierByDossierStatus(String dossierStatus, Pageable pageable);
+
+    @Query("""
+    select hs
+    from OpsDossier hs
+    where hs.dueDate > :now
+      and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+""")
+    List<OpsDossier> findNearlyDue(
+            @Param("now") LocalDateTime now,
+            @Param("limit") LocalDateTime limit
+    );
+
+
 }

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xử lý Hồ sơ - Chuyên viên</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/internal.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            overflow: hidden;
+        }
+
+        .navbar-process {
+            height: 60px;
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .viewer-panel {
+            background-color: #525659;
+            /* PDF Viewer dark gray */
+        }
+
+        .nav-tabs-custom {
+            border-bottom: 1px solid #e2e8f0;
+            background: #fff;
+        }
+
+        .nav-tabs-custom .nav-link {
+            border: none;
+            color: #64748b;
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            color: #0f4c81;
+            background: #f8fafc;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            color: #0f4c81;
+            font-weight: 600;
+            border-bottom-color: #0f4c81;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .form-control,
+        .form-select {
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
+            border-color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .list-group-item {
+            border-color: #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .list-group-item:hover {
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column vh-100">
+
+    <!-- HEADER TOP -->
+    <nav class="navbar-process d-flex align-items-center px-4 justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <a href="specialist-worklist.html" class="btn btn-light border btn-sm shadow-sm fw-medium text-muted">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại
+            </a>
+            <div class="vr mx-2"></div>
+            <span class="fw-bold text-dark">HS-2023-009: Đăng ký Khai sinh</span>
+            <span
+                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3">Đang
+                thụ lý</span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-info text-info border-info btn-sm fw-bold shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#kbLookupModal">
+                <i class="bi bi-search me-1"></i>Tra cứu Luật
+            </button>
+        </div>
+    </nav>
+
+    <!-- SPLIT VIEW CONTAINER -->
+    <div class="row g-0 flex-grow-1 overflow-hidden">
+
+        <!-- LEFT: DOC VIEWER -->
+        <div class="col-lg-6 h-100 viewer-panel position-relative d-flex flex-column border-end border-secondary">
+            <!-- Toolbar -->
+            <div class="bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center shadow-sm"
+                style="z-index: 10;">
+                <span class="small fw-medium text-light"><i
+                        class="bi bi-file-earmark-pdf me-2 text-danger"></i>To_Khai_Dang_Ky_Khai_Sinh.pdf</span>
+                <div>
+                    <button class="btn btn-sm btn-dark border-secondary py-0 px-2"><i
+                            class="bi bi-chevron-left"></i></button>
+                    <span class="mx-2 small user-select-none">1 / 2</span>
+                    <button class="btn btn-sm btn-dark border-secondary py-0 px-2"><i
+                            class="bi bi-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Mock PDF Content -->
+            <div class="flex-grow-1 overflow-auto p-4 d-flex justify-content-center bg-secondary bg-opacity-25">
+                <div class="bg-white shadow-lg p-5" style="width: 80%; min-height: 800px; max-width: 800px;">
+                    <h4 class="text-center fw-bold mb-4 font-serif">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+                    <h5 class="text-center fw-bold mb-5 font-serif">TỜ KHAI ĐĂNG KÝ KHAI SINH</h5>
+                    <div class="mb-3 font-serif line-height-lg">
+                        <p class="mb-2"><strong>Kính gửi:</strong> UBND Quận Hải Châu</p>
+                        <p class="mb-2"><strong>Họ và tên người yêu cầu:</strong> Nguyễn Văn A</p>
+                        <p class="mb-2"><strong>Quan hệ với người được khai sinh:</strong> Cha đẻ</p>
+                        <hr class="my-4 border-dark">
+                        <h6 class="fw-bold text-decoration-underline mb-3">Thông tin người được khai sinh:</h6>
+                        <p class="mb-2">Họ tên: <span class="text-primary text-uppercase fw-bold">Nguyễn Văn Kon</span>
+                        </p>
+                        <p>Ngày sinh: 01/01/2025 &nbsp; | &nbsp; Giới tính: Nam</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thumbnails (Floating or Bottom) -->
+            <div class="bg-dark p-2 d-flex gap-2 overflow-auto border-top border-secondary" style="height: 110px;">
+                <div class="border border-primary border-2 p-1 bg-white opacity-100 rounded-1 position-relative"
+                    style="width: 70px; cursor: pointer; min-width: 70px;">
+                    <div class="small text-center text-muted mt-5 pt-2" style="font-size: 8px;">Tờ khai...</div>
+                    <span
+                        class="position-absolute top-0 end-0 badge bg-primary rounded-pill m-1 p-1 d-block border border-white"
+                        style="width: 8px; height: 8px;"></span>
+                </div>
+                <div class="border border-secondary p-1 bg-white opacity-50 rounded-1"
+                    style="width: 70px; cursor: pointer; min-width: 70px;">
+                    <div class="small text-center text-muted mt-5 pt-2" style="font-size: 8px;">Giấy chứng...</div>
+                </div>
+                <div class="border border-secondary p-1 bg-white opacity-50 rounded-1"
+                    style="width: 70px; cursor: pointer; min-width: 70px;">
+                    <div class="small text-center text-muted mt-5 pt-2" style="font-size: 8px;">CCCD Cha</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: WORK AREA -->
+        <div class="col-lg-6 h-100 bg-white d-flex flex-column overflow-hidden position-relative">
+
+            <!-- TABS -->
+            <ul class="nav nav-tabs nav-fill nav-tabs-custom" id="processTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
+                        type="button" role="tab"><i class="bi bi-info-circle me-2"></i>Thông tin & Thẩm định</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="integration-tab" data-bs-toggle="tab" data-bs-target="#integration"
+                        type="button" role="tab"><i class="bi bi-diagram-3 me-2"></i>Liên thông</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="result-tab" data-bs-toggle="tab" data-bs-target="#result" type="button"
+                        role="tab"><i class="bi bi-check2-circle me-2"></i>Kết quả</button>
+                </li>
+            </ul>
+
+            <div class="tab-content flex-grow-1 overflow-auto p-4 bg-light bg-opacity-50">
+
+                <!-- TAB 1: INFO -->
+                <div class="tab-pane fade show active" id="info" role="tabpanel">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-4 text-primary d-flex align-items-center"><span
+                                    class="bg-primary bg-opacity-10 text-primary rounded px-2 py-1 me-2 small">01</span>Thông
+                                tin trích xuất</h6>
+                            <form class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Họ tên con</label>
+                                    <input type="text" class="form-control" value="Nguyễn Văn Kon">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="text" class="form-control" value="01/01/2025">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Giới tính</label>
+                                    <select class="form-select">
+                                        <option>Nam</option>
+                                        <option>Nữ</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-4 text-primary d-flex align-items-center"><span
+                                    class="bg-primary bg-opacity-10 text-primary rounded px-2 py-1 me-2 small">02</span>Thẩm
+                                định điều kiện</h6>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" checked id="check1">
+                                <label class="form-check-label user-select-none" for="check1">Giấy chứng sinh hợp lệ (Có
+                                    chữ ký, mộc đỏ bệnh viện)</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" checked id="check2">
+                                <label class="form-check-label user-select-none" for="check2">Đúng thẩm quyền đăng ký
+                                    (Do cư trú tại địa phương)</label>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-top">
+                                <button class="btn btn-outline-primary btn-sm fw-medium rounded-pill px-3"
+                                    data-bs-toggle="modal" data-bs-target="#mapPlanningModal">
+                                    <i class="bi bi-map me-1"></i>Kiểm tra Quy hoạch (Demo)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: INTEGRATION -->
+                <div class="tab-pane fade" id="integration" role="tabpanel">
+                    <div class="alert alert-info border-0 shadow-sm d-flex align-items-center rounded-3 mb-4">
+                        <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+                        <div>
+                            Dữ liệu được tự động đồng bộ từ các hệ thống liên thông Quốc gia.
+                            <div class="small opacity-75">Vui lòng kiểm tra kỹ trước khi xác nhận.</div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="border-start border-4 border-success p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold text-success mb-0"><i class="bi bi-check-circle-fill me-2"></i>CSDL
+                                    Dân cư (Bộ Công an)</h6>
+                                <span class="badge bg-success bg-opacity-10 text-success">Đã đồng bộ</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div class="text-muted small">Số định danh cá nhân (Mã ĐDCN)</div>
+                                <div class="fw-bold fs-5 text-dark font-monospace">048225000999</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="border-start border-4 border-secondary p-4 bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold text-muted mb-0"><i class="bi bi-circle me-2"></i>Bảo hiểm xã hội
+                                    (Cấp thẻ BHYT)</h6>
+                                <span class="badge bg-light text-muted border">Chưa thực hiện</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="small text-muted">Trạng thái: Chờ xử lý hồ sơ khai sinh</span>
+                                <button class="btn btn-sm btn-primary shadow-sm rounded-pill px-3">Gửi yêu cầu
+                                    ngay</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: RESULT -->
+                <div class="tab-pane fade" id="result" role="tabpanel">
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="fw-bold mb-0 text-dark">Dự thảo Kết quả</h6>
+                                <button class="btn btn-primary btn-sm fw-bold shadow-sm rounded-pill px-3"
+                                    data-bs-toggle="modal" data-bs-target="#editorModal">
+                                    <i class="bi bi-magic me-1"></i>Soạn thảo tự động
+                                </button>
+                            </div>
+
+                            <div class="list-group list-group-flush rounded-3 border">
+                                <div class="list-group-item list-group-item-action d-flex align-items-center p-3">
+                                    <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-3 me-3">
+                                        <i class="bi bi-file-earmark-pdf fs-4"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-bold text-dark">Giấy khai sinh (Bản chính)</h6>
+                                        <small class="text-muted"><i class="bi bi-clock me-1"></i>Tự động tạo lúc 10:30
+                                            12/12/2025</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-light border shadow-sm rounded-circle"
+                                        style="width: 32px; height: 32px;"><i class="bi bi-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ACTION FOOTER -->
+            <div class="bg-white p-3 border-top shadow-lg d-flex gap-3 justify-content-end align-items-center"
+                style="z-index: 20;">
+                <button class="btn btn-outline-danger fw-bold rounded-pill px-4" onclick="showAction('Từ chối')">
+                    Từ chối
+                </button>
+                <button class="btn btn-outline-warning fw-bold text-dark rounded-pill px-4"
+                    onclick="showAction('Yêu cầu bổ sung')">
+                    Yêu cầu bổ sung
+                </button>
+                <div class="vr"></div>
+                <button class="btn btn-success fw-bold px-4 rounded-pill shadow"
+                    onclick="alert('Đã trình lãnh đạo ký duyệt!')">
+                    <i class="bi bi-send-check me-2"></i>Trình lãnh đạo
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modalContainer"></div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load Modals
+        const modals = ['modal-map-planning.html', 'modal-editor.html', 'modal-action.html', 'modal-kb-lookup.html'];
+        modals.forEach(file => {
+            fetch('../../components/modals/' + file)
+                .then(r => r.text())
+                .then(html => document.body.insertAdjacentHTML('beforeend', html));
+        });
+
+        function showAction(type) {
+            const modalEl = document.getElementById('actionModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                document.getElementById('actionModalTitle').innerText = type + " hồ sơ";
+                modal.show();
+            }
+        }
+    </script>
+</body>
+
+</html>
