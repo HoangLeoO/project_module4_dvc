@@ -168,15 +168,22 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     """)
     long countOverdue();
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE ops_dossiers " +
-            "SET " +
-            "    dossier_status = 'APPROVED', " +
-            "    finish_date = NOW(), " +
-            "    current_handler_id = :leader_id " +
-            "WHERE id = :dossier_id", nativeQuery = true)
-    void updateStatusApprovedDossier(@Param("leader_id") Long leader_id, @Param("dossier_id") Long dossier_id);
+    // Biểu đồ: domain + status
+    @Query("""
+        SELECT d.service.domain, d.dossierStatus, COUNT(d)
+        FROM OpsDossier d
+        GROUP BY d.service.domain, d.dossierStatus
+    """)
+    List<Object[]> countByDomainAndStatus();
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE ops_dossiers " +
+//            "SET " +
+//            "    dossier_status = 'APPROVED', " +
+//            "    finish_date = NOW(), " +
+//            "    current_handler_id = :leader_id " +
+//            "WHERE id = :dossier_id", nativeQuery = true)
+//    void updateStatusApprovedDossier(@Param("leader_id") Long leader_id, @Param("dossier_id") Long dossier_id);
 
     Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus,String departmentName, Pageable pageable);
     // Danh sách domain

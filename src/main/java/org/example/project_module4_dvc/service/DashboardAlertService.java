@@ -43,7 +43,7 @@ public class DashboardAlertService implements IDashboardAlertService {
             ));
         });
 
-        // 2. Hồ sơ sắp hết hạn (<=3 ngày)
+//         2. Hồ sơ sắp hết hạn (<=3 ngày)
         opsDossierRepository.findNearlyDue(
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(3)
