@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cá nhân - Dịch vụ công Đà Nẵng</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/portal.css}">
+</head>
+
+<body class="bg-light">
+    <!-- 1. HEADER (Solid style for sub-pages) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm-soft py-3 bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" href="portal-dashboard.html">
+                <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                           th:classappend="${activePage == 'home'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                           href="/citizen/dashboard">Trang chủ</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                           th:classappend="${activePage == 'hoso'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                           th:href="@{/citizen/hoso}">Hồ sơ của tôi</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                           th:classappend="${activePage == 'services'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                           href="/citizen/services">Dịch vụ công</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                           th:classappend="${activePage == 'feedback'} ? 'border-bottom border-2 border-warning text-white' : 'text-white-50'"
+                           href="/citizen/feedback">Phản ánh kiến nghị</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-4 d-flex align-items-center gap-3">
+                    <!-- Notification Bell -->
+                    <div class="position-relative cursor-pointer" id="notiTrigger" tabindex="0">
+                        <i class="bi bi-bell text-white fs-5 opacity-75 hover-white"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                            style="font-size: 0.6rem;">2</span>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=Cong+Dan&background=random"
+                                class="rounded-circle me-2" width="32">
+                            <span>Nguyễn Văn A</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="portal-profile.html"><i
+                                        class="bi bi-person me-2"></i>Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="portal-vault.html"><i class="bi bi-safe me-2"></i>Kho dữ
+                                    liệu số</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="portal-landing.html"><i
+                                        class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 mb-5">
+
+        <!-- 2. WELCOME BANNER -->
+        <div
+            class="card card-modern border-0 shadow-lg-soft d-flex flex-column flex-md-row align-items-center justify-content-between p-4 mb-4 border-start border-5 border-primary">
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary">
+                    <i class="bi bi-person-vcard fs-2"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Xin chào, Nguyễn Văn A</h4>
+                    <span
+                        class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                        <i class="bi bi-shield-check me-1"></i>Tài khoản VNeID Mức 2 (Mock)
+                    </span>
+                </div>
+            </div>
+            <a href="portal-submit-wizard.html" class="btn btn-primary fw-bold shadow-sm px-4 py-2">
+                <i class="bi bi-plus-lg me-2"></i>Nộp hồ sơ mới
+            </a>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- LEFT COLUMN: STATS & LIST -->
+            <div class="col-lg-9">
+
+                <!-- 3. QUICK STATS -->
+                <div class="row g-3 mb-4">
+
+                    <!-- New -->
+                    <div class="col-md-3">
+                        <div class="card card-modern border-0 shadow-sm-soft h-100 hover-lift">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-info bg-opacity-10 p-3 rounded-3 text-info me-3">
+                                    <i class="bi bi-inbox fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0" th:text="${newCount}">0</h3>
+                                    <small class="text-muted">Mới nộp</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing -->
+                    <div class="col-md-3">
+                        <div class="card card-modern border-0 shadow-sm-soft h-100 hover-lift">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-10 p-3 rounded-3 text-warning me-3">
+                                    <i class="bi bi-hourglass-split fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0" th:text="${processingCount}">0</h3>
+                                    <small class="text-muted">Đang xử lý</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supplements Required -->
+                    <div class="col-md-3">
+                        <div class="card card-modern border-0 shadow-sm-soft h-100 hover-lift">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-danger bg-opacity-10 p-3 rounded-3 text-danger me-3">
+                                    <i class="bi bi-exclamation-triangle fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0" th:text="${supplementCount}">0</h3>
+                                    <small class="text-muted">Chờ bổ sung</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed -->
+                    <div class="col-md-3">
+                        <div class="card card-modern border-0 shadow-sm-soft h-100 hover-lift">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                                    <i class="bi bi-check-circle fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0" th:text="${completedCount}">0</h3>
+                                    <small class="text-muted">Đã hoàn thành</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- 4. RECENT DOSSIERS -->
+                <div class="card card-modern border-0 shadow-md-soft">
+                    <div
+                        class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-primary">Hồ sơ gần đây</h6>
+                        <a th:href="@{/citizen/hoso/danh-sach}" class="text-decoration-none small">Xem tất cả <i
+                                class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width:5%" class="py-3">STT</th>
+                                    <th style="width:17%" class="py-3 ps-3"><Mã></Mã> HS</th>
+                                    <th style="width:40%" class="py-3">Thủ tục</th>
+                                    <th style="width:10%" class="py-3">Ngày nộp</th>
+                                    <th style="width:15%" class="py-3">Trạng thái</th>
+                                    <th style="width:13%" class="py-3">Tác vụ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item , status : ${dossiers}">
+                                    <td th:text="${status.count}"></td>
+                                    <td class="ps-3 fw-bold text-primary" th:text="${item.dossierCode}">HS-001</td>
+                                    <td th:text="${item.serviceName}">Tên dịch vụ</td>
+                                    <td th:text="${#temporals.format(item.submissionDate, 'dd/MM/yyyy')}">01/01/2025
+                                    </td>
+                                    <td>
+                                        <span th:if="${item.dossierStatus == 'NEW'}" class="badge bg-info">Mới
+                                            nộp</span>
+                                        <span th:if="${item.dossierStatus == 'PENDING'}"
+                                            class="badge bg-warning text-dark">Đang xử lý</span>
+                                        <span th:if="${item.dossierStatus == 'APPROVED'}" class="badge bg-success">Đã
+                                            hoàn thành</span>
+                                        <span th:if="${item.dossierStatus == 'REJECTED'}" class="badge bg-danger">Bị từ
+                                            chối</span>
+                                    </td>
+                                    <td class="pe-4 text-end">
+                                        <a th:href="@{/citizen/hoso/{id}(id=${item.dossierId})}"
+                                           class="btn btn-sm btn-outline-secondary rounded-pill">
+                                            Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="card-footer bg-white border-0 py-3"
+                        th:if="${dossierPage != null and dossierPage.totalPages > 1}">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                            <small class="text-muted"
+                                th:text="'Hiển thị ' + ${dossierPage.numberOfElements} + ' / ' + ${dossierPage.totalElements} + ' hồ sơ'">
+                                Hiển thị 0 / 0 hồ sơ
+                            </small>
+
+                            <nav aria-label="Dossier pagination">
+                                <ul class="pagination pagination-sm mb-0">
+
+                                    <!-- Prev -->
+                                    <li class="page-item" th:classappend="${dossierPage.first} ? 'disabled'">
+                                        <a class="page-link"
+                                            th:href="@{/citizen/hoso(page=${currentPage - 1},size=${pageSize})}"
+                                            aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Page numbers -->
+                                    <li class="page-item"
+                                        th:each="i : ${#numbers.sequence(0, dossierPage.totalPages - 1)}"
+                                        th:classappend="${i == currentPage} ? 'active'">
+                                        <a class="page-link" th:text="${i + 1}"
+                                            th:href="@{/citizen/hoso(page=${i},size=${pageSize})}">1</a>
+                                    </li>
+
+                                    <!-- Next -->
+                                    <li class="page-item" th:classappend="${dossierPage.last} ? 'disabled'">
+                                        <a class="page-link"
+                                            th:href="@{/citizen/hoso(page=${currentPage+1},size=${pageSize})}"
+                                            aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </nav>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: SIDEBAR NOTIFICATIONS -->
+            <div class="col-lg-3">
+                <div class="card card-modern border-0 shadow-md-soft h-100">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-bell-fill me-2"></i>Thông báo mới</h6>
+                    </div>
+                    <div class="list-group list-group-flush">
+
+                        <a th:each="n, stat : ${notificationsTop3}" th:href="@{/citizen/hoso/{id}(id=${n.dossierId})}"
+                            class="list-group-item list-group-item-action py-3 border-bottom-0 border-start border-4"
+                            th:classappend="
+            ${n.action == 'NEED_SUPPLEMENT'} ? ' border-danger' :
+            (${n.action == 'APPROVED'} ? ' border-success bg-light' :
+            (${n.action == 'PENDING'} ? ' border-warning' :
+             ' border-secondary'))
+       ">
+
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="fw-bold text-dark" th:text="'Hồ sơ ' + ${n.dossierCode}">
+                                    Hồ sơ HS-009
+                                </small>
+
+                                <small class="text-muted" th:text="${#temporals.format(n.createdAt, 'HH:mm dd/MM')}">
+                                    30p trước
+                                </small>
+                            </div>
+
+                            <p class="mb-1 small text-dark" th:text="${n.message}">
+                                Nội dung thông báo
+                            </p>
+
+                        </a>
+
+                    </div>
+                    <div class="card-footer bg-white text-center border-0 py-3">
+                        <a href="#" class="btn btn-sm btn-light w-100 text-muted">Xem lịch sử thông báo</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-footer-dark text-white py-5 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Đơn vị vận hành</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-building fs-1 me-3 opacity-50"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">TRUNG TÂM HÀNH CHÍNH CÔNG</h6>
+                            <p class="mb-0 small opacity-75">Thành phố Đà Nẵng</p>
+                        </div>
+                    </div>
+                    <p class="small opacity-50">Hệ thống cung cấp dịch vụ công trực tuyến mức độ 3, 4 phục vụ người dân
+                        và doanh nghiệp.</p>
+                </div>
+                <div class="col-md-3 offset-md-1">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên kết</h5>
+                    <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Cổng thông tin Tp.</a></li>
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Sở TT & TT</a></li>
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Văn bản quy phạm</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên hệ</h5>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-geo-alt me-2"></i>24 Trần Phú, Hải Châu</p>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-telephone me-2"></i>(0236) 1022</p>
+                    <p class="small opacity-75"><i class="bi bi-envelope me-2"></i>contact@danang.gov.vn</p>
+                </div>
+            </div>
+            <hr class="opacity-10 my-4">
+            <div class="text-center small opacity-50">
+                &copy; 2025 E-Gov Simulation System (Static Prototype Mode)
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        // Mock loading notification popover content
+        document.getElementById('notiTrigger').addEventListener('click', function () {
+            // In a real app, this would toggle the popover component created earlier
+            alert("Mở Popover Thông báo (Component: #notificationPopover)");
+        });
+    </script>
+</body>
+
+</html>
