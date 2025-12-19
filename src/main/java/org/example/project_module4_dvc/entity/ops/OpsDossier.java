@@ -57,6 +57,7 @@ public class OpsDossier {
     @JoinColumn(name = "current_handler_id", referencedColumnName = "id")
     private SysUser currentHandler;
 
+
     // --- Trạng thái & Dữ liệu ---
     @Column(name = "dossier_status", length = 20)
     @Builder.Default
