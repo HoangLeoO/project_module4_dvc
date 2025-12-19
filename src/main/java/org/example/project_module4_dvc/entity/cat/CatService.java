@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.project_module4_dvc.converter.JsonToMapConverter;
+import org.example.project_module4_dvc.entity.sys.SysRole;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -48,4 +49,9 @@ public class CatService {
     @Column(name = "form_schema", columnDefinition = "json")
     @Convert(converter = JsonToMapConverter.class)
     private Map<String, Object> formSchema;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role", referencedColumnName = "id")
+    private SysRole sysRole;
+
 }

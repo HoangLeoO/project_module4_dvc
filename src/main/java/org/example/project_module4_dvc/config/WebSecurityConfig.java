@@ -64,6 +64,8 @@ public class WebSecurityConfig {
                 .deleteCookies("JSESSIONID")
         );
 
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
+
         return http.build();
     }
 
@@ -93,6 +95,9 @@ public class WebSecurityConfig {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
         );
+
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
+
         return http.build();
     }
 
@@ -133,6 +138,8 @@ public class WebSecurityConfig {
                 .deleteCookies("JSESSIONID")
         );
 
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
+
         return http.build();
     }
 
@@ -145,7 +152,7 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/citizen", "/register", "/assets/**").permitAll()
+                .requestMatchers("/", "/login/citizen", "/register", "/assets/**", "/403", "/404").permitAll()
                 .anyRequest().hasRole("CONG_DAN") // Hoặc .authenticated()
         );
 
@@ -163,6 +170,8 @@ public class WebSecurityConfig {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
         );
+
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
 
         return http.build();
     }

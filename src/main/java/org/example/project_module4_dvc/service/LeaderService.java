@@ -1,6 +1,7 @@
 package org.example.project_module4_dvc.service;
 
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
+import org.example.project_module4_dvc.repository.leader.LeaderOpsDossierRepository;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class LeaderService implements ILeaderService{
 
     @Autowired
-    private OpsDossierRepository opsDossierRepository;
+    private LeaderOpsDossierRepository opsDossierRepository;
 
 
     @Override
@@ -28,6 +29,16 @@ public class LeaderService implements ILeaderService{
     @Override
     public void approvedByLeader(Long userId,Long dossiersId) {
         opsDossierRepository.updateStatusApprovedDossier(userId,dossiersId);
+    }
+
+    @Override
+    public long countByCurrentHandler_IdAndDossierStatus(Long currentHandlerId, String dossierStatus) {
+        return opsDossierRepository.countByCurrentHandler_IdAndDossierStatus(currentHandlerId,dossierStatus);
+    }
+
+    @Override
+    public long countDelegatedDossiers(Long delegateeId, String status) {
+        return opsDossierRepository.countDelegatedDossiers(delegateeId,status);
     }
 
 
