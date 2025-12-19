@@ -142,6 +142,8 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
         """, nativeQuery = true)
     long countDelegatedDossiers(@Param("delegateeId") Long delegateeId,
                                 @Param("status") String status);
+
+
     @Query(value = """
         SELECT 
             ROUND(SUM(CASE WHEN dos.finish_date <= dos.due_date THEN 1 ELSE 0 END) * 100.0 / COUNT(dos.id), 2)
@@ -154,10 +156,28 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
         """, nativeQuery = true)
     Double getOnTimeRateByDeptId(@Param("deptId") Long deptId);
 
+
     @Query("""
     SELECT COUNT(dos) 
     FROM OpsDossier dos 
     WHERE dos.receivingDept.id = :deptId
     """)
     long countAllDossiersByDept(@Param("deptId") Long deptId);
+    @Query("""
+    SELECT COUNT(dos) 
+    FROM OpsDossier dos 
+    WHERE dos.receivingDept.id = :deptId
+      AND dos.dossierStatus NOT IN ('APPROVED', 'REJECTED')
+      AND dos.dueDate < CURRENT_TIMESTAMP
+    """)
+    long countOverdueDossiersByDept(@Param("deptId") Long deptId);
+
+    @Query("""
+    SELECT COALESCE(AVG(f.rating), 0.0)
+    FROM ModFeedback f
+    WHERE f.dossierId IN (
+        SELECT d.id FROM OpsDossier d WHERE d.receivingDept.id = :deptId
+    )
+    """)
+    Double getAverageSatisfactionScoreByDept(@Param("deptId") Long deptId);
 }

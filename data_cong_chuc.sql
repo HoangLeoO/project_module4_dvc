@@ -280,29 +280,29 @@ VALUES
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('admin', '$2a$10$admin', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
+    ('admin', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
 
 
 # PHƯỜNG HẢI CHÂU (dept_id = 2)
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('hc_ct',  '$2a$10$hc_ct',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
-    ('hc_pct', '$2a$10$hc_pct', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
-    ('hc_mc',  '$2a$10$hc_mc',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
-    ('hc_tp',  '$2a$10$hc_tp',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
-    ('hc_dc',  '$2a$10$hc_dc',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
-    ('hc_kt',  '$2a$10$hc_kt',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
+    ('hc_ct',  '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
+    ('hc_pct', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
+    ('hc_mc',  '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
+    ('hc_tp',  '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
+    ('hc_dc',  '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
+    ('hc_kt',  '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_01', '$2a$10$cd1', 'Nguyễn Văn An',  'CITIZEN', 1),
-    ('cd_02', '$2a$10$cd2', 'Trần Thị Bình',  'CITIZEN', 2),
-    ('cd_03', '$2a$10$cd3', 'Lê Văn Cường',   'CITIZEN', 3),
-    ('cd_04', '$2a$10$cd4', 'Phạm Thị Dung',  'CITIZEN', 4),
-    ('cd_05', '$2a$10$cd5', 'Hoàng Văn Em',   'CITIZEN', 5),
-    ('cd_06', '$2a$10$cd6', 'Ngô Thị Hạnh',   'CITIZEN', 6);
+    ('cd_01', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Nguyễn Văn An',  'CITIZEN', 1),
+    ('cd_02', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Trần Thị Bình',  'CITIZEN', 2),
+    ('cd_03', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Lê Văn Cường',   'CITIZEN', 3),
+    ('cd_04', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Phạm Thị Dung',  'CITIZEN', 4),
+    ('cd_05', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Hoàng Văn Em',   'CITIZEN', 5),
+    ('cd_06', '$2a$10$.IHWO7qqprMIe7A6cFu1FuyF4RxRxPG.vR9BQ8vipJjbDIi2ZeDTO', 'Ngô Thị Hạnh',   'CITIZEN', 6);
 
 # PHƯỜNG THANH KHÊ (dept_id = 4)
 

@@ -36,10 +36,42 @@ public class LeaderController {
     public String showDashboard(Model model, Principal principal){
         try {
             SysUser sysUser = userService.findByUsername(principal.getName());
+            
+            // 1. Delegated Count
             long delegatedCount = leaderService.countDelegatedDossiers(sysUser.getId(), "VERIFIED");
             model.addAttribute("delegatedCount", delegatedCount);
+
+            // 2. Pending Approval Count (My Dossiers)
+            long pendingCount = leaderService.countByCurrentHandler_IdAndDossierStatus(sysUser.getId(), "VERIFIED");
+            model.addAttribute("pendingCount", pendingCount);
+
+            // 3. On-time Rate
+            Double onTimeRate = 0.0;
+            if (sysUser.getDepartment() != null) {
+                Long deptId = sysUser.getDepartment().getId();
+                onTimeRate = leaderService.getOnTimeRateByDeptId(deptId);
+                
+                // 4. Overdue Count
+                long overdueCount = leaderService.countOverdueDossiersByDept(deptId);
+                model.addAttribute("overdueCount", overdueCount);
+
+                // 5. Satisfaction Score
+                Double satisfactionScore = leaderService.getAverageSatisfactionScoreByDept(deptId);
+                // Round to 1 decimal place
+                satisfactionScore = Math.round(satisfactionScore * 10.0) / 10.0;
+                model.addAttribute("satisfactionScore", satisfactionScore);
+            } else {
+                 model.addAttribute("overdueCount", 0);
+                 model.addAttribute("satisfactionScore", 0.0);
+            }
+            // Handle null if no data
+            if (onTimeRate == null) onTimeRate = 100.0; 
+            model.addAttribute("onTimeRate", onTimeRate);
+
         } catch (Exception e) {
             model.addAttribute("delegatedCount", 0);
+            model.addAttribute("pendingCount", 0);
+            model.addAttribute("onTimeRate", 100.0);
         }
         return "pages/04-leader/leader-dashboard";
     }
@@ -86,15 +118,18 @@ public class LeaderController {
             @RequestParam(name = "page",required = false,defaultValue = "0") int page,
             @RequestParam(name = "domain",required = false) String domain,
             @RequestParam(name = "applicantName",required = false) String applicantName,
-            Model model
+            Model model,
+            Principal principal
     ){
         // Xử lý chuỗi rỗng thành null
         if (domain != null && domain.trim().isEmpty()) domain = null;
         if (applicantName != null && applicantName.trim().isEmpty()) applicantName = null;
 
         Pageable pageable = PageRequest.of(page,size);
-        // ID 3L là mock cho Lãnh đạo hiện tại
-        Page<DossierApprovalSummaryDTO> dossiers = leaderService.getDelegatedDossiers(3L, applicantName, domain, pageable);
+        SysUser sysUser = userService.findByUsername(principal.getName());
+        Long leaderId = sysUser.getId();
+
+        Page<DossierApprovalSummaryDTO> dossiers = leaderService.getDelegatedDossiers(leaderId, applicantName, domain, pageable);
         
         model.addAttribute("dossiers", dossiers);
         model.addAttribute("catServices", catServiceService.findAll());

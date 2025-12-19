@@ -41,5 +41,24 @@ public class LeaderService implements ILeaderService{
         return opsDossierRepository.countDelegatedDossiers(delegateeId,status);
     }
 
+    @Override
+    public Double getOnTimeRateByDeptId(Long deptId) {
+        return opsDossierRepository.getOnTimeRateByDeptId(deptId);
+    }
 
+    @Override
+    public long countAllDossiersByDept(Long deptId) {
+        return opsDossierRepository.countAllDossiersByDept(deptId);
+    }
+
+
+    @Override
+    public long countOverdueDossiersByDept(Long deptId) {
+        return opsDossierRepository.countOverdueDossiersByDept(deptId);
+    }
+
+    @Override
+    public Double getAverageSatisfactionScoreByDept(Long deptId) {
+        return opsDossierRepository.getAverageSatisfactionScoreByDept(deptId);
+    }
 }
