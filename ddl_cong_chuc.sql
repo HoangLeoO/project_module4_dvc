@@ -308,6 +308,17 @@ CREATE TABLE ops_dossier_logs
     comments    TEXT COMMENT 'Ghi chú/ý kiến của cán bộ xử lý',
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm xảy ra hành động',
     CONSTRAINT fk_dl_dossier FOREIGN KEY (dossier_id) REFERENCES ops_dossiers (id) ON DELETE CASCADE
+) ENGINE = InnoDB COMMENT ='Nhật ký xử lý chi tiết Hồ sơ';CREATE TABLE ops_dossier_logs
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của nhật ký',
+    dossier_id  BIGINT      NOT NULL COMMENT 'ID của Hồ sơ liên quan',
+    actor_id    BIGINT      NOT NULL COMMENT 'ID của người thực hiện hành động (sys_users.id)',
+    action      VARCHAR(50) NOT NULL COMMENT 'Loại hành động (VD: CHUYEN_BUOC, THAM_DINH, PHE_DUYET)',
+    prev_status VARCHAR(20) COMMENT 'Trạng thái hồ sơ trước khi hành động',
+    next_status VARCHAR(20) COMMENT 'Trạng thái hồ sơ sau khi hành động',
+    comments    TEXT COMMENT 'Ghi chú/ý kiến của cán bộ xử lý',
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm xảy ra hành động',
+    CONSTRAINT fk_dl_dossier FOREIGN KEY (dossier_id) REFERENCES ops_dossiers (id) ON DELETE CASCADE
 ) ENGINE = InnoDB COMMENT ='Nhật ký xử lý chi tiết Hồ sơ';
 
 -- 20. Kết quả (Operations Dossier Results)
