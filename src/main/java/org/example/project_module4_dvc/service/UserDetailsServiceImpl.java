@@ -30,8 +30,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         SysUser user = sysUserRepository.findByUsername(username);
-        if (user == null){
-            System.out.println("User not found " + username );
+        if (user == null) {
+            System.out.println("User not found " + username);
             throw new UsernameNotFoundException("User " + username + " was not found in the database");
         }
         System.out.println("Found User: " + user);
@@ -47,14 +47,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         }
         String deptName = (user.getDepartment() != null) ? user.getDepartment().getDeptName() : "UBND TP. Đà Nẵng";
+        Long citizenId = (user.getCitizen() != null) ? user.getCitizen().getId() : null;
+
 
         UserDetails userDetails = new org.example.project_module4_dvc.config.CustomUserDetails(
+                user.getId(),
                 user.getUsername(),
                 user.getPasswordHash(),
                 grantList,
                 user.getFullName(),
-                deptName
-        );
+                deptName,
+                citizenId);
 
         return userDetails;
     }

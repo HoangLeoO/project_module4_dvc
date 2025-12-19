@@ -16,4 +16,5 @@ public class CatServiceDTO {
     private String domain;
     private Integer slaHours;
     private BigDecimal feeAmount;
+    private java.util.List<org.example.project_module4_dvc.dto.timeline.IWorkflowStepProjectionDTO> steps;
 }

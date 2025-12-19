@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head th:replace="~{citizen/layout/fragments :: head('Dashboard')}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('hoso')}"></nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 mb-5">
+
+        <!-- 2. WELCOME BANNER -->
+        <div
+            class="card card-modern border-0 shadow-lg-soft d-flex flex-column flex-md-row align-items-center justify-content-between p-4 mb-4 border-start border-5 border-primary">
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary">
+                    <i class="bi bi-person-vcard fs-2"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Xin chào, <span sec:authentication="principal.fullName">Nguyễn
+                            Văn A</span></h4>
+                    <span
+                        class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                        <i class="bi bi-shield-check me-1"></i>Đã định danh điện tử
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/citizen/services}" class="btn btn-primary fw-bold shadow-sm rounded-pill px-4">
+                    <i class="bi bi-plus-lg me-2"></i>NỘP HỒ SƠ MỚI
+                </a>
+            </div>
+        </div>
+
+        <!-- 3. STATS OVERVIEW -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card card-modern border-0 shadow-sm p-3 border-bottom border-4 border-primary hover-lift">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-3">
+                            <i class="bi bi-file-earmark-plus fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold text-dark mb-0" th:text="${newCount}">0</h3>
+                            <span class="text-muted small fw-medium">Hồ sơ mới nộp</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-modern border-0 shadow-sm p-3 border-bottom border-4 border-info hover-lift">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-3 text-info me-3">
+                            <i class="bi bi-hourglass-split fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold text-dark mb-0" th:text="${processingCount}">0</h3>
+                            <span class="text-muted small fw-medium">Đang xử lý</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-modern border-0 shadow-sm p-3 border-bottom border-4 border-warning hover-lift">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-3 text-warning me-3">
+                            <i class="bi bi-exclamation-triangle fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold text-dark mb-0" th:text="${supplementCount}">0</h3>
+                            <span class="text-muted small fw-medium">Chờ bổ sung</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-modern border-0 shadow-sm p-3 border-bottom border-4 border-success hover-lift">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                            <i class="bi bi-check2-all fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold text-dark mb-0" th:text="${completedCount}">0</h3>
+                            <span class="text-muted small fw-medium">Đã hoàn tất</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- 4. RECENT DOSSIERS -->
+            <div class="col-lg-8">
+                <div class="card card-modern border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold text-dark mb-0">Hồ sơ gần đây</h5>
+                        <a th:href="@{/citizen/hoso/danh-sach}"
+                            class="text-primary text-decoration-none small fw-bold">Xem tất cả <i
+                                class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light text-muted">
+                                    <tr>
+                                        <th class="border-0 small ps-4">Mã hồ sơ / Dịch vụ</th>
+                                        <th class="border-0 small">Ngày nộp</th>
+                                        <th class="border-0 small">Trạng thái</th>
+                                        <th class="border-0 small pe-4 text-end">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="d : ${dossiers}">
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark" th:text="${d.dossierCode}">G01-2405001</div>
+                                            <div class="small text-muted text-truncate" style="max-width: 250px;"
+                                                th:text="${d.serviceName}">Đăng ký khai sinh</div>
+                                        </td>
+                                        <td class="small text-muted"
+                                            th:text="${#temporals.format(d.submissionDate, 'dd/MM/yyyy HH:mm')}">
+                                            15/05/2024</td>
+                                        <td>
+                                            <span th:if="${d.dossierStatus == 'NEW'}"
+                                                class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-1 rounded-pill small">Mới
+                                                nộp</span>
+                                            <span th:if="${d.dossierStatus == 'PENDING'}"
+                                                class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-1 rounded-pill small">Đang
+                                                class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-1 rounded-pill small">Đang
+                                                xử lý</span>
+                                            <span th:if="${d.dossierStatus == 'NEED_SUPPLEMENT'}"
+                                                class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-1 rounded-pill small">Cần
+                                                bổ sung</span>
+                                            <span th:if="${d.dossierStatus == 'APPROVED'}"
+                                                class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1 rounded-pill small">Đã
+                                                duyệt</span>
+                                            <span th:if="${d.dossierStatus == 'REJECTED'}"
+                                                class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-1 rounded-pill small">Từ
+                                                chối</span>
+                                        </td>
+                                        <td class="pe-4 text-end">
+                                            <a th:href="@{/citizen/hoso/{id}(id=${d.dossierId})}"
+                                                class="btn btn-sm btn-outline-primary fw-bold">Chi tiết</a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${dossiers == null or dossiers.isEmpty()}">
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            Bạn chưa có hồ sơ nào. <a th:href="@{/citizen/services}"
+                                                class="text-primary fw-bold">Nộp ngay!</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. NOTIFICATIONS -->
+            <div class="col-lg-4">
+                <div class="card card-modern border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="fw-bold text-dark mb-0">Thông báo từ hệ thống</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="notification-list">
+                            <div th:each="n : ${notificationsTop3}"
+                                class="notification-item p-3 rounded-3 mb-3 hover-light bg-primary bg-opacity-10 border-start border-4 border-primary">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-bold text-dark" th:text="${n.action}">Cập nhật hồ sơ</span>
+                                    <span class="small text-muted"
+                                        th:text="${#temporals.format(n.createdAt, 'dd/MM')}">15/05</span>
+                                </div>
+                                <p class="small text-muted mb-0">
+                                    <span class="fw-bold" th:text="${n.dossierCode}">G01</span>:
+                                    <span th:text="${n.message}">Hồ sơ đã được tiếp nhận.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div th:if="${notificationsTop3 == null or notificationsTop3.isEmpty()}"
+                            class="text-center py-4 text-muted small">
+                            Không có thông báo mới.
+                        </div>
+                        <button class="btn btn-light w-100 fw-bold small mt-2">Xem tất cả thông báo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>

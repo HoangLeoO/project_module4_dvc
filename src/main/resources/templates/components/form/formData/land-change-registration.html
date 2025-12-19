@@ -1,0 +1,48 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="form-label small text-muted fw-bold text-uppercase">1. Thông tin thửa đất</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Số chứng chỉ đất</label>
+                <input type="text" class="form-control fw-bold" th:value="${formData.landCertificateNumber}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số thửa đất</label>
+                <input type="text" class="form-control" th:value="${formData.landPlotNumber}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số tờ bản đồ</label>
+                <input type="text" class="form-control" th:value="${formData.landMapSheet}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin chủ sở hữu</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Chủ sở hữu hiện tại</label>
+                <input type="text" class="form-control" th:value="${formData.currentOwner}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">3. Thông tin thay đổi</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Loại thay đổi</label>
+                <input type="text" class="form-control" th:value="${formData.changeType}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Lý do thay đổi</label>
+                <input type="text" class="form-control" th:value="${formData.changeReason}" readonly>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label small">Chủ sở hữu mới</label>
+                <input type="text" class="form-control" th:value="${formData.newOwner}" readonly>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>
+

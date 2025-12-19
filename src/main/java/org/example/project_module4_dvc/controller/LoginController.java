@@ -1,5 +1,6 @@
 package org.example.project_module4_dvc.controller;
 
+
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,21 +14,34 @@ public class LoginController {
     @Autowired
     private ISysUserService userService;
 
-
-
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String landingPage() {
-        return "redirect:/login/citizen";
+        return "citizen/home";
     }
 
     @RequestMapping(value = "/login/citizen", method = RequestMethod.GET)
     public String loginPageCitizen() {
-        return "pages/login"; // Trang login hiện tại (dành cho công dân)
+        return "citizen/login";
     }
 
-    @RequestMapping(value = "/login/official", method = RequestMethod.GET)
+    @RequestMapping(value = "login/official", method = RequestMethod.GET)
     public String loginPageOfficial() {
-        return "pages/official-login"; // Trang login mới dành cho cán bộ
+        return "pages/official-login";
+        // Trang login mới dành cho cán bộ
     }
 
+    @RequestMapping(value = "login/officer", method = RequestMethod.GET)
+    public String loginPageOfficer() {
+        return "pages/official-login";
+    }
+
+    @RequestMapping(value = "/403", method = RequestMethod.GET)
+    public String accessDenied() {
+        return "pages/403";
+    }
+
+    @RequestMapping(value = "/404", method = RequestMethod.GET)
+    public String notFound() {
+        return "pages/404";
+    }
 }

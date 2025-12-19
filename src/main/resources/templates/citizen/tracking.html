@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Tra cứu hồ sơ')}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('tracking')}"></nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 pt-4 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card card-modern border-0 shadow-lg-soft p-5 text-center mb-4">
+                    <div class="mb-4">
+                        <i class="bi bi-search text-primary display-3 shadow-sm-soft p-3 rounded-circle bg-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-2">Tra cứu tiến độ hồ sơ</h3>
+                    <p class="text-muted mb-4">Nhập mã số hồ sơ được in trên phiếu hẹn để xem trạng thái xử lý hiện tại.
+                    </p>
+
+                    <form class="text-start">
+                        <div class="input-group input-group-lg mb-4 shadow-sm">
+                            <span class="input-group-text bg-white border-end-0"><i
+                                    class="bi bi-hash text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" placeholder="Ví dụ: G01-2405001"
+                                style="font-weight: 600; letter-spacing: 1px;">
+                            <button class="btn btn-primary px-4 fw-bold" type="button">TRA CỨU</button>
+                        </div>
+
+                        <div class="alert alert-warning border-0 small d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill fs-5 me-3"></i>
+                            <div>Dành cho hồ sơ nộp trực tuyến hoặc tại Trung tâm Hành chính công.</div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Empty state result (Example) -->
+                <div class="text-center py-5 opacity-25">
+                    <i class="bi bi-file-earmark-text display-1 d-block mb-3"></i>
+                    <p class="fw-medium">Kết quả tra cứu sẽ hiển thị tại đây</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>

@@ -348,22 +348,21 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="dossier,i:${dossiers.content}">
-                                        <td class="ps-4 fw-bold text-primary" th:text="${dossier.dossierCode}"></td>
-                                        <td th:text="${dossier.decisionNumber}">
-                                        </td>
-                                        <td class="fw-medium" th:text="${dossier.applicantFullName}"></td>
+                                        <td class="ps-4 fw-bold text-primary" th:text="${dossier?.dossierCode}"></td>
+                                        <td th:text="${dossier?.decisionNumber}"></td>
+                                        <td class="fw-medium" th:text="${dossier?.applicantFullName}"></td>
                                         <td class="text-muted"
-                                            th:text="${#temporals.format(dossier.finishDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                            th:text="${dossier?.finishDate != null ? #temporals.format(dossier.finishDate, 'dd/MM/yyyy HH:mm') : ''}"></td>
                                         <td>
                                             <a href="#"
                                                 class="text-decoration-none d-flex align-items-center text-muted hover-primary">
                                                 <i class="bi bi-file-earmark-text text-danger me-2"></i>
-                                                <span th:text="${dossier.eFileUrl}">View</span>
+                                                <span th:text="${dossier?.eFileUrl}">View</span>
                                             </a>
                                         </td>
                                         <td class="text-end pe-4">
                                             <button class="btn btn-success btn-action btn-sm text-white shadow-sm"
-                                                th:onclick="'selectDossier(\'' + ${dossier.dossierCode} + '\', \'' + ${dossier.applicantFullName} + '\')'">
+                                                >
                                                 <i class="bi bi-check-lg me-1"></i>Trả KQ
                                             </button>
                                         </td>

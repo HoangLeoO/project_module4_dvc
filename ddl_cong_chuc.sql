@@ -207,10 +207,12 @@ CREATE TABLE cat_services
     id           BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của dịch vụ',
     service_code VARCHAR(50)  NOT NULL UNIQUE COMMENT 'Mã dịch vụ công (Duy nhất)',
     service_name VARCHAR(255) NOT NULL COMMENT 'Tên đầy đủ của dịch vụ công',
+    id_role      BIGINT       NOT NULL COMMENT 'ID của vai trò cần thiết để thực hiện dịch vụ',
     domain       VARCHAR(50)  NOT NULL COMMENT 'Lĩnh vực/Ngành của dịch vụ (VD: Đất đai, Hộ tịch)',
     sla_hours    INT            DEFAULT 24 COMMENT 'Thời gian xử lý cam kết (Service Level Agreement) tính bằng giờ',
     fee_amount   DECIMAL(15, 2) DEFAULT 0 COMMENT 'Mức phí/lệ phí phải nộp',
-    form_schema  JSON COMMENT 'Cấu trúc JSON Schema của biểu mẫu nộp hồ sơ'
+    form_schema  JSON COMMENT 'Cấu trúc JSON Schema của biểu mẫu nộp hồ sơ',
+        CONSTRAINT fk_sr_role FOREIGN KEY (id_role) REFERENCES sys_roles (id)
 ) ENGINE = InnoDB COMMENT ='Danh sách Dịch vụ công';
 
 -- 14. Quy trình (Catalog Workflow Steps)

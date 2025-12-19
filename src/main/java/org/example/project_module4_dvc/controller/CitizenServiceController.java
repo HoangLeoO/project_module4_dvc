@@ -39,7 +39,7 @@ public class CitizenServiceController {
         model.addAttribute("activePage", "services");
         model.addAttribute("keyword", keyword);
         model.addAttribute("domain", domain);
-        return "pages/01-citizen-portal/portal-services";
+        return "citizen/services/list";
     }
 
     @GetMapping("/service-detail")
@@ -47,7 +47,7 @@ public class CitizenServiceController {
         var service = catServiceService.getServiceByCode(code);
         model.addAttribute("s", service);
         model.addAttribute("activePage", "services");
-        return "pages/01-citizen-portal/portal-service-detail";
+        return "citizen/services/detail";
     }
 
     @GetMapping("/submit-wizard")
@@ -57,6 +57,6 @@ public class CitizenServiceController {
             model.addAttribute("s", service);
         }
         model.addAttribute("activePage", "services");
-        return "pages/01-citizen-portal/portal-submit-wizard";
+        return "citizen/services/submit";
     }
 }

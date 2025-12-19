@@ -1,0 +1,45 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="form-label small text-muted fw-bold text-uppercase">1. Thông tin người yêu cầu</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên</label>
+                <input type="text" class="form-control fw-bold" th:value="${formData.requesterFullName}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Ngày sinh</label>
+                <input type="date" class="form-control" th:value="${#temporals.format(data.dateOfBirth, 'yyyy-MM-dd')}"
+                       readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Số CCCD/CMND</label>
+                <input type="text" class="form-control" th:value="${formData.idNumber}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin hôn nhân</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Tình trạng hôn nhân hiện tại</label>
+                <input type="text" class="form-control" th:value="${formData.currentMaritalStatus}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Thời gian xác nhận</label>
+                <input type="text" class="form-control" th:value="${formData.confirmationPeriod}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">3. Mục đích sử dụng</h6>
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label class="form-label small">Mục đích sử dụng giấy chứng nhận</label>
+                <textarea class="form-control" th:value="${formData.purposeOfUse}" readonly></textarea>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>
+

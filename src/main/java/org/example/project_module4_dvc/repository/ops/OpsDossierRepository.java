@@ -1,28 +1,27 @@
 package org.example.project_module4_dvc.repository.ops;
 
+import jakarta.transaction.Transactional;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.CitizenNotificationProjection;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
-import jakarta.transaction.Transactional;
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -169,14 +168,17 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     """)
     long countOverdue();
 
-    // Biểu đồ: domain + status
-    @Query("""
-        SELECT d.service.domain, d.dossierStatus, COUNT(d)
-        FROM OpsDossier d
-        GROUP BY d.service.domain, d.dossierStatus
-    """)
-    List<Object[]> countByDomainAndStatus();
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ops_dossiers " +
+            "SET " +
+            "    dossier_status = 'APPROVED', " +
+            "    finish_date = NOW(), " +
+            "    current_handler_id = :leader_id " +
+            "WHERE id = :dossier_id", nativeQuery = true)
+    void updateStatusApprovedDossier(@Param("leader_id") Long leader_id, @Param("dossier_id") Long dossier_id);
 
+    Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus,String departmentName, Pageable pageable);
     // Danh sách domain
     @Query("""
         SELECT DISTINCT d.service.domain
@@ -198,10 +200,12 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     from OpsDossier hs
     where hs.dueDate > :now
       and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+      and hs.receivingDept.deptName = :departmentName
 """)
     List<OpsDossier> findNearlyDue(
             @Param("now") LocalDateTime now,
-            @Param("limit") LocalDateTime limit
+            @Param("limit") LocalDateTime limit,
+            @Param("departmentName") String departmentName
     );
 
 
@@ -365,7 +369,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
               WHERE d.applicant_id = :currentUserId
             """, nativeQuery = true)
     Page<CitizenNotificationProjection> findAllNotificationsByApplicant(@Param("currentUserId") Long currentUserId,
-            Pageable pageable);
+                                                                        Pageable pageable);
 
 
     // lấy phân trang cảnh báo hồ sơ quá hạn và sắp đến hạn

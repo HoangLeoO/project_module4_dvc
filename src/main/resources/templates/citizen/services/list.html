@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Danh mục Dịch vụ công')}"></head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary">Danh mục Thủ tục Hành chính</h2>
+            <p class="text-muted">Tìm kiếm và nộp hồ sơ trực tuyến nhanh chóng, tiện lợi.</p>
+        </div>
+
+        <!-- 2. SEARCH & FILTER BAR -->
+        <div class="card card-modern shadow-md-soft p-4 mb-5">
+            <form th:action="@{/citizen/services}" method="get">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="keyword" class="form-control bg-light border-start-0"
+                                id="searchInput" th:value="${keyword}"
+                                placeholder="Nhập tên thủ tục (VD: Khai sinh, Đất đai...)">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-lg bg-light" name="domain" id="domainSelect"
+                            onchange="this.form.submit()">
+                            <option value="ALL" th:selected="${domain == 'ALL' or domain == null or domain == ''}">Tất
+                                cả lĩnh vực</option>
+                            <option value="HỘ TỊCH" th:selected="${domain == 'HỘ TỊCH'}">Hộ tịch</option>
+                            <option value="ĐẤT ĐAI" th:selected="${domain == 'ĐẤT ĐAI'}">Đất đai</option>
+                            <option value="KINH DOANH" th:selected="${domain == 'KINH DOANH'}">Kinh doanh</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 3. FEATURED SERVICES (TOP) -->
+        <div class="mb-5"
+            th:if="${(keyword == null or keyword == '') and (domain == null or domain == '' or domain == 'ALL')}">
+            <h5 class="fw-bold text-dark mb-3 border-start border-4 border-primary ps-3">Dịch vụ nộp nhiều nhất</h5>
+            <div class="row g-4">
+                <div class="col-md-4" th:each="fs : ${featuredServices}">
+                    <div class="card card-modern h-100 hover-lift border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-3">
+                                    <i class="bi bi-file-earmark-text fs-3"></i>
+                                </div>
+                                <div class="ms-auto text-end">
+                                    <span
+                                        class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 small fw-bold d-block mb-1">Nổi
+                                        bật</span>
+                                    <span class="text-muted smallest" style="font-size: 0.75rem;">
+                                        <i class="bi bi-clock me-1"></i>[[${fs.slaHours / 24}]] ngày
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-light text-primary border smallest" style="font-size: 0.7rem;"
+                                    th:text="${fs.domain}">Hộ tịch</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2" th:text="${fs.serviceName}">Cấp bản sao trích lục hộ tịch
+                            </h6>
+                            <p class="text-muted small mb-4 line-clamp-2">Cung cấp bản sao từ sổ gốc cho các loại giấy
+                                tờ hộ tịch.</p>
+                            <a th:href="@{/citizen/service-detail(code=${fs.serviceCode})}"
+                                class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. ALL SERVICES LIST (Grid) -->
+        <h5 class="fw-bold text-dark mb-3 border-start border-4 border-primary ps-3"
+            th:text="${(keyword != null and keyword != '') or (domain != null and domain != '' and domain != 'ALL')} ? 'Kết quả tìm kiếm' : 'Tất cả dịch vụ công'">
+            Tất cả dịch vụ công
+        </h5>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" th:each="s : ${allServices}">
+                <div class="card card-modern h-100 border-0 shadow-sm-soft p-2">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-light text-primary rounded-pill px-3 py-1 border small"
+                                th:text="${s.domain}">Hộ tịch</span>
+                            <span class="text-muted small">
+                                <i class="bi bi-clock me-1"></i>
+                                <span th:text="${(s.slaHours / 24) + ' ngày'}">3 ngày</span>
+                            </span>
+                        </div>
+                        <h6 class="fw-bold text-dark service-title mb-3" th:text="${s.serviceName}">Đăng ký khai sinh
+                            lưu động</h6>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a th:href="@{/citizen/service-detail(code=${s.serviceCode})}"
+                                class="btn btn-light btn-sm flex-grow-1 fw-bold">Chi tiết</a>
+                            <a th:href="@{/citizen/submit-wizard(code=${s.serviceCode})}"
+                                class="btn btn-primary btn-sm flex-grow-1 fw-bold">Nộp hồ sơ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-center py-5" th:if="${allServices.empty}">
+                <div class="mb-4">
+                    <i class="bi bi-search text-muted opacity-25" style="font-size: 5rem;"></i>
+                </div>
+                <h4 class="text-muted fw-light">Không tìm thấy dịch vụ nào phù hợp</h4>
+                <p class="text-muted px-4">Thử thay đổi từ khóa hoặc bộ lọc để có kết quả chính xác hơn.</p>
+                <a th:href="@{/citizen/services}" class="btn btn-outline-primary rounded-pill px-4 fw-bold mt-3">Xem tất
+                    cả dịch vụ</a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>

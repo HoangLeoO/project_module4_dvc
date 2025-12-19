@@ -1,3 +1,4 @@
+-- drop database egov_db;
 use egov_db;
 
 -- Thêm cấp 1: Thành phố
@@ -5,12 +6,15 @@ INSERT INTO sys_departments (dept_code, dept_name, level)
 VALUES ('CITY-001', 'Thành phố Đà Nẵng', 1);
 
 -- Thêm cấp 2: Phường/Xã
+-- Lấy ID của Thành phố (đảm bảo không fix cứng là 1)
+SET @city_id = (SELECT id FROM sys_departments WHERE dept_code = 'CITY-001');
+
 INSERT INTO sys_departments (dept_code, dept_name, parent_id, level)
-VALUES ('WARD-001', 'Phường Hải Châu', 1, 2),
-       ('WARD-002', 'Phường Hòa Cường', 1, 2),
-       ('WARD-003', 'Phường Thanh Khê', 1, 2),
-       ('WARD-004', 'Phường An Khê', 1, 2),
-       ('WARD-005', 'Xã Bà Nà', 1, 2);
+VALUES ('WARD-001', 'Phường Hải Châu', @city_id, 2),
+       ('WARD-002', 'Phường Hòa Cường', @city_id, 2),
+       ('WARD-003', 'Phường Thanh Khê', @city_id, 2),
+       ('WARD-004', 'Phường An Khê', @city_id, 2),
+       ('WARD-005', 'Xã Bà Nà', @city_id, 2);
 
 -- Thêm các role cơ bản
 INSERT INTO sys_roles (role_name, description)
@@ -31,10 +35,9 @@ VALUES
  'Cán bộ Địa chính - Tài nguyên Môi trường - Đất đai, xây dựng, môi trường'),
 -- Kinh tế
 ('CANBO_KINH_TE',
- 'Cán bộ Kinh tế - Cấp phép kinh doanh, hộ kinh doanh, chợ');
- --Admin
- ('ADMIN',
- 'Admin - Quyền cao nhất')
+ 'Cán bộ Kinh tế - Cấp phép kinh doanh, hộ kinh doanh, chợ'),
+('ADMIN',
+ 'Admin - Quyền cao nhất');
 
 INSERT INTO mock_citizens
 (cccd, full_name, dob, gender, hometown, ethnic_group, religion,
@@ -275,54 +278,71 @@ VALUES
  'Phường Hải Châu, TP Đà Nẵng',
  'Phần mềm, dịch vụ CNTT');
 
- INSERT INTO sys_users
+INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('admin', '$2a$10$admin', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
+    ('admin', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
 
 
 # PHƯỜNG HẢI CHÂU (dept_id = 2)
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('hc_ct',  '$2a$10$hc_ct',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
-    ('hc_pct', '$2a$10$hc_pct', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
-    ('hc_mc',  '$2a$10$hc_mc',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
-    ('hc_tp',  '$2a$10$hc_tp',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
-    ('hc_dc',  '$2a$10$hc_dc',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
-    ('hc_kt',  '$2a$10$hc_kt',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
+    ('hc_ct',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
+    ('hc_pct', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
+    ('hc_mc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
+    ('hc_tp',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
+    ('hc_dc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
+    ('hc_kt',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_01', '$2a$10$cd1', 'Nguyễn Văn An',  'CITIZEN', 1),
-    ('cd_02', '$2a$10$cd2', 'Trần Thị Bình',  'CITIZEN', 2),
-    ('cd_03', '$2a$10$cd3', 'Lê Văn Cường',   'CITIZEN', 3),
-    ('cd_04', '$2a$10$cd4', 'Phạm Thị Dung',  'CITIZEN', 4),
-    ('cd_05', '$2a$10$cd5', 'Hoàng Văn Em',   'CITIZEN', 5),
-    ('cd_06', '$2a$10$cd6', 'Ngô Thị Hạnh',   'CITIZEN', 6);
+    ('cd_01', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Nguyễn Văn An',  'CITIZEN', 1),
+    ('cd_02', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Trần Thị Bình',  'CITIZEN', 2),
+    ('cd_03', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Lê Văn Cường',   'CITIZEN', 3),
+    ('cd_04', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Phạm Thị Dung',  'CITIZEN', 4),
+    ('cd_05', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Hoàng Văn Em',   'CITIZEN', 5),
+    ('cd_06', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Ngô Thị Hạnh',   'CITIZEN', 6);
 
 # PHƯỜNG THANH KHÊ (dept_id = 4)
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('tk_ct',  '$2a$10$tk_ct',  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
-    ('tk_pct', '$2a$10$tk_pct', 'Đỗ Thị Ngọc',    'OFFICIAL', 10, 4),
-    ('tk_mc',  '$2a$10$tk_mc',  'Phan Văn Long',  'OFFICIAL', 13, 4),
-    ('tk_tp',  '$2a$10$tk_tp',  'Trương Thị Quỳnh','OFFICIAL',12,4),
-    ('tk_dc',  '$2a$10$tk_dc',  'Võ Thị Lan',     'OFFICIAL',8,4),
-    ('tk_kt',  '$2a$10$tk_kt',  'Lương Văn Quân', 'OFFICIAL',19,4);
+    ('tk_ct',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
+    ('tk_pct', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Đỗ Thị Ngọc',    'OFFICIAL', 10, 4),
+    ('tk_mc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Phan Văn Long',  'OFFICIAL', 13, 4),
+    ('tk_tp',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Trương Thị Quỳnh','OFFICIAL',12,4),
+    ('tk_dc',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Võ Thị Lan',     'OFFICIAL',8,4),
+    ('tk_kt',  '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy',  'Lương Văn Quân', 'OFFICIAL',19,4);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_07', '$2a$10$cd7', 'Bùi Văn Minh',    'CITIZEN', 9),
-    ('cd_08', '$2a$10$cd8', 'Đỗ Thị Ngọc',     'CITIZEN', 10),
-    ('cd_09', '$2a$10$cd9', 'Phan Văn Long',   'CITIZEN', 13),
-    ('cd_10', '$2a$10$cd10','Trương Thị Quỳnh','CITIZEN',12),
-    ('cd_11', '$2a$10$cd11','Võ Thị Lan',      'CITIZEN',8),
-    ('cd_12', '$2a$10$cd12','Lương Văn Quân',  'CITIZEN',19);
+    ('cd_07', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Bùi Văn Minh',    'CITIZEN', 9),
+    ('cd_08', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Đỗ Thị Ngọc',     'CITIZEN', 10),
+    ('cd_09', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy', 'Phan Văn Long',   'CITIZEN', 13),
+    ('cd_10', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Trương Thị Quỳnh','CITIZEN',12),
+    ('cd_11', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Võ Thị Lan',      'CITIZEN',8),
+    ('cd_12', '$2a$10$IsXAT8SmnO.BpWCeF2yfxOQDRMSdUge7QQuSDW95q2FGYg/iWQMVy','Lương Văn Quân',  'CITIZEN',19);
+
+-- Gán role ADMIN cho user admin
+INSERT INTO sys_user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM sys_users u
+JOIN sys_roles r ON r.role_name = 'ADMIN'
+WHERE u.username = 'admin';
+
+-- Thêm role CONG_DAN
+INSERT INTO sys_roles (role_name, description) VALUES ('CONG_DAN', 'Công dân - Người sử dụng dịch vụ công');
+
+-- Gán role CONG_DAN cho tất cả user type CITIZEN
+INSERT INTO sys_user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM sys_users u
+JOIN sys_roles r ON r.role_name = 'CONG_DAN'
+WHERE u.user_type = 'CITIZEN';
 
 # Gán role cho PHƯỜNG HẢI CHÂU
 INSERT INTO sys_user_roles (user_id, role_id)
@@ -720,18 +740,18 @@ VALUES
     ('HS-HT02-0003',
      (SELECT id FROM cat_services WHERE service_code = 'HT02_XACNHANHN'),
      (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'),
-     (SELECT id FROM sys_users WHERE username = 'cd_04'),
+     (SELECT id FROM sys_users WHERE username = 'cd_11'),
      (SELECT id FROM sys_users WHERE username = 'hc_pct'),
      'VERIFIED',
      DATE_SUB(NOW(), INTERVAL 2 DAY),
      DATE_ADD(NOW(), INTERVAL 1 DAY),
-     '{"requesterFullName": "Phạm Thị Dung", "purposeOfUse": "Vay vốn ngân hàng"}'
+     '{"requesterFullName": "Võ Thị Lan", "purposeOfUse": "Vay vốn ngân hàng"}'
     );
 
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT02-0003'),
-     (SELECT id FROM sys_users WHERE username = 'cd_04'),
+     (SELECT id FROM sys_users WHERE username = 'cd_11'),
      'NOP_HO_SO', NULL, 'NEW', NULL),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT02-0003'),
      (SELECT id FROM sys_users WHERE username = 'hc_mc'),
@@ -866,6 +886,111 @@ FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0001';
 INSERT INTO ops_dossier_files (dossier_id, file_name, file_url, file_type)
 SELECT id, 'so_do_ban_chinh.pdf', '/uploads/sodo.pdf', 'PDF'
 FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0002';
+
+
+-- =======================================================
+-- ADDED: 5 HỒ SƠ CHỜ PHÊ DUYỆT (VERIFIED) CHO CHỦ TỊCH (hc_ct)
+-- =======================================================
+
+-- 1. HS-HK01-0020: Khai sinh (VERIFIED)
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES (
+           'HS-HK01-0020',
+           (SELECT id FROM cat_services WHERE service_code = 'HK01_TRE'),
+           (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'),
+           (SELECT id FROM sys_users WHERE username = 'cd_06'),
+           (SELECT id FROM sys_users WHERE username = 'hc_ct'),
+           'VERIFIED',
+           DATE_SUB(NOW(), INTERVAL 2 DAY),
+           DATE_ADD(NOW(), INTERVAL 3 DAY),
+           '{"childFullName": "Ngô Văn G", "dateOfBirth": "2023-11-20", "gender": "MALE", "placeOfBirth": "Trạm y tế phường"}'
+       );
+-- Log
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0020'), (SELECT id FROM sys_users WHERE username = 'cd_06'), 'NOP_HO_SO', NULL, 'NEW', 'Nộp hồ sơ trực tuyến'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0020'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0020'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đã thẩm định thông tin khai sinh, trình ký');
+
+-- 2. HS-DD01-0021: Biến động đất đai (VERIFIED)
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES (
+           'HS-DD01-0021',
+           (SELECT id FROM cat_services WHERE service_code = 'DD01_BIENDONG'),
+           (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'),
+           (SELECT id FROM sys_users WHERE username = 'cd_07'),
+           (SELECT id FROM sys_users WHERE username = 'hc_ct'),
+           'VERIFIED',
+           DATE_SUB(NOW(), INTERVAL 5 DAY),
+           DATE_ADD(NOW(), INTERVAL 10 DAY),
+           '{"landCertificateNumber": "GCN-DN-0007", "changeType": "Thừa kế", "newOwner": "Bùi Văn Minh muốn sang tên"}'
+       );
+-- Log
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0021'), (SELECT id FROM sys_users WHERE username = 'cd_07'), 'NOP_HO_SO', NULL, 'NEW', 'Nộp hồ sơ biến động'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0021'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0021'), (SELECT id FROM sys_users WHERE username = 'hc_dc'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đất không tranh chấp, đủ điều kiện sang tên');
+
+-- 3. HS-KD01-0022: Đăng ký kinh doanh (VERIFIED)
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES (
+           'HS-KD01-0022',
+           (SELECT id FROM cat_services WHERE service_code = 'KD01_HKD'),
+           (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'),
+           (SELECT id FROM sys_users WHERE username = 'cd_08'),
+           (SELECT id FROM sys_users WHERE username = 'hc_ct'),
+           'VERIFIED',
+           DATE_SUB(NOW(), INTERVAL 1 DAY),
+           DATE_ADD(NOW(), INTERVAL 2 DAY),
+           '{"businessName": "Cửa hàng hoa tươi Ngọc", "registeredCapital": 30000000}'
+       );
+-- Log
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0022'), (SELECT id FROM sys_users WHERE username = 'cd_08'), 'NOP_HO_SO', NULL, 'NEW', 'Nộp hồ sơ ĐKKD'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0022'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0022'), (SELECT id FROM sys_users WHERE username = 'hc_kt'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Địa điểm kinh doanh hợp lệ');
+
+-- 4. HS-HT01-0023: Kết hôn (VERIFIED)
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES (
+           'HS-HT01-0023',
+           (SELECT id FROM cat_services WHERE service_code = 'HT01_KETHON'),
+           (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'),
+           (SELECT id FROM sys_users WHERE username = 'cd_09'),
+           (SELECT id FROM sys_users WHERE username = 'hc_ct'),
+           'VERIFIED',
+           DATE_SUB(NOW(), INTERVAL 3 DAY),
+           DATE_ADD(NOW(), INTERVAL 1 DAY),
+           '{"husbandFullName": "Phan Văn Long", "wifeFullName": "Lê Thị Hồng", "intendedMarriageDate": "2023-12-25"}'
+       );
+-- Log
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0023'), (SELECT id FROM sys_users WHERE username = 'cd_09'), 'NOP_HO_SO', NULL, 'NEW', 'Đăng ký kết hôn'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0023'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0023'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Hai bên đủ điều kiện kết hôn');
+
+-- 5. HS-HK02-0024: Khai tử (VERIFIED)
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES (
+           'HS-HK02-0024',
+           (SELECT id FROM cat_services WHERE service_code = 'HK02_KAITU'),
+           (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'),
+           (SELECT id FROM sys_users WHERE username = 'cd_10'),
+           (SELECT id FROM sys_users WHERE username = 'hc_ct'),
+           'VERIFIED',
+           DATE_SUB(NOW(), INTERVAL 2 DAY),
+           DATE_ADD(NOW(), INTERVAL 5 DAY),
+           '{"deceasedFullName": "Trương Văn Cụ", "dateOfDeath": "2023-12-15", "placeOfDeath": "Tại nhà"}'
+       );
+-- Log
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0024'), (SELECT id FROM sys_users WHERE username = 'cd_10'), 'NOP_HO_SO', NULL, 'NEW', 'Báo tử'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0024'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0024'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đã kiểm tra giấy báo tử, hợp lệ');
 
 
 

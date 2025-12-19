@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface OpsDossierMapper {
     @Mapping(source = "applicant.fullName", target = "applicantFullName")
     @Mapping(source = "service.serviceName", target = "serviceName")
+    @Mapping(source = "service.id", target = "serviceId")
     @Mapping(source = "applicant.citizen.cccd", target = "cccd")
     NewDossierDTO toDTO(OpsDossier opsDossier);
 

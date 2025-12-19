@@ -5,8 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ILeaderService {
-    Page<DossierApprovalSummaryDTO> getMyDossiers(Long leaderId,String applicantName, String domain, Pageable pageable);
-    Page<DossierApprovalSummaryDTO> getDelegatedDossiers(Long leaderId,String applicantName, String domain, Pageable pageable);
+    Page<DossierApprovalSummaryDTO> getMyDossiers(Long leaderId, String applicantName, String domain, Pageable pageable);
 
-    void approvedByLeader(Long deptId,Long dossiersId);
+    Page<DossierApprovalSummaryDTO> getDelegatedDossiers(Long leaderId, String applicantName, String domain, Pageable pageable);
+
+    void approvedByLeader(Long deptId, Long dossiersId);
+
+    long countByCurrentHandler_IdAndDossierStatus(Long currentHandlerId, String dossierStatus);
+
+    long countDelegatedDossiers(Long delegateeId, String status);
 }
