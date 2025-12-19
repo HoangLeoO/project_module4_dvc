@@ -116,7 +116,6 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/officer/file/pdf").permitAll() // Ưu tiên tuyệt đối cho PDF
                 .requestMatchers("/login/officer", "/process-login-official","/css/**", "/js/**").permitAll()
                 .requestMatchers("/officer/**").hasAnyRole("CHUYEN_VIEN","CANBO_MOTCUA","CANBO_TU_PHAP","CANBO_DIA_CHINH","CANBO_KINH_TE")
                 .anyRequest().authenticated()

@@ -1,8 +1,10 @@
 package org.example.project_module4_dvc.repository.ops;
 
+import jakarta.transaction.Transactional;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.CitizenNotificationProjection;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
+import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 
 import org.springframework.data.domain.Page;
