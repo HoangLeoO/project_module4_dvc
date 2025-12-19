@@ -1,0 +1,78 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="form-label small text-muted fw-bold text-uppercase">1. Thông tin thửa đất</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Số chứng chỉ đất</label>
+                <input type="text" class="form-control fw-bold" th:value="${formData.landCertificateNumber}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số thửa đất</label>
+                <input type="text" class="form-control" th:value="${formData.landPlotNumber}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số tờ bản đồ</label>
+                <input type="text" class="form-control" th:value="${formData.mapSheetNumber}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Diện tích ban đầu (m²)</label>
+                <input type="text" class="form-control" th:value="${formData.originalAreaM2}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin tách/hợp nhất</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Số thửa đất sẽ được tạo</label>
+                <input type="text" class="form-control" th:value="${formData.numberOfNewPlots}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Lý do tách/hợp nhất</label>
+                <input type="text" class="form-control" th:value="${formData.splitReason}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">3. Diện tích yêu cầu</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-12">
+                <label class="form-label small">Các diện tích yêu cầu (m²)</label>
+                <div th:if="${formData.requestedSplitAreas != null && data.requestedSplitAreas.size() > 0}">
+                    <table class="table table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>STT</th>
+                                <th>Diện tích (m²)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="area, iterStat : ${formData.requestedSplitAreas}">
+                                <td th:text="${iterStat.index + 1}"></td>
+                                <td th:text="${area}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${formData.requestedSplitAreas == null || data.requestedSplitAreas.size() == 0}">
+                    <p class="text-muted">Không có dữ liệu</p>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">4. Xác nhận</h6>
+        <div class="row g-3">
+            <div class="col-md-12">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" th:checked="${formData.surveyCompleted}" disabled>
+                    <label class="form-check-label fw-semibold text-dark">
+                        Đã hoàn tất khảo sát
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>
+

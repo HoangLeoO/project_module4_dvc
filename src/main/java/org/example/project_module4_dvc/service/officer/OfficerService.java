@@ -35,14 +35,14 @@ public class OfficerService implements IOfficerService {
 
     //ho so vua tao
     @Override
-    public Page<NewDossierDTO> findAll(String dossierStatus, Pageable pageable) {
-        return opsDossierRepository.findOpsDossierByDossierStatus(dossierStatus, pageable).map(opsDossierMapper::toDTO);
+    public Page<NewDossierDTO> findAll(String dossierStatus,String departmentName, Pageable pageable) {
+        return opsDossierRepository.findOpsDossierByDossierStatusAndReceivingDept_DeptName(dossierStatus,departmentName, pageable).map(opsDossierMapper::toDTO);
     }
 
     //kq tra ve
     @Override
-    public Page<ResultDossierDTO> findAllResult(String dossierStatus, Pageable pageable) {
-        return opsDossierResultRepository.findOpsDossierResultByDossierDossierStatus(dossierStatus, pageable).map(opsDossierResultMapper::toDTO);
+    public Page<ResultDossierDTO> findAllResult(String dossierStatus,String departmentName, Pageable pageable) {
+        return opsDossierResultRepository.findOpsDossierResultByDossier_DossierStatusAndDossier_ReceivingDept_DeptName(dossierStatus, departmentName,pageable).map(opsDossierResultMapper::toDTO);
     }
 
     @Override
@@ -56,10 +56,10 @@ public class OfficerService implements IOfficerService {
     }
 
     @Override
-    public List<NewDossierDTO> findNearlyDue() {
+    public List<NewDossierDTO> findNearlyDue(String departmentName) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime limit = now.plusHours(6);
-        return opsDossierRepository.findNearlyDue(now, limit).stream().map(opsDossierMapper::toDTO).toList();
+        return opsDossierRepository.findNearlyDue(now, limit,departmentName).stream().map(opsDossierMapper::toDTO).toList();
     }
 
     @Override

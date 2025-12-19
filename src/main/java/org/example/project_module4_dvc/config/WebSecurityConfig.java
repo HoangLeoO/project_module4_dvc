@@ -105,35 +105,35 @@ public class WebSecurityConfig {
     @Bean
     @Order(3)
     public SecurityFilterChain officialCommonFilterChain(HttpSecurity http) throws Exception {
-        // Chain này quản lý thư mục /official VÀ các URL đăng nhập/xử lý chung cho cán bộ
         http.securityMatcher(
-                "/official/**",
-                "/login/official",
+                "/officer/**",
+                "/login/officer",
                 "/process-login-official",
-                "/logout/official",
-                "/css/**", "/js/**" // Tài nguyên tĩnh cho trang admin
+                "/logout/officer",
+                "/css/**", "/js/**"
         );
 
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/official", "/css/**", "/js/**").permitAll()
-                // Admin và Lãnh đạo cũng có thể vào xem trang của chuyên viên nếu cần
-                .requestMatchers("/official/**").hasAnyRole("CHUYEN_VIEN", "ADMIN", "CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
+                .requestMatchers("/login/officer", "/process-login-official","/css/**", "/js/**").permitAll()
+                .requestMatchers("/officer/**").hasAnyRole("CHUYEN_VIEN","CANBO_MOTCUA","CANBO_TU_PHAP","CANBO_DIA_CHINH","CANBO_KINH_TE")
                 .anyRequest().authenticated()
         );
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         http.formLogin(form -> form
-                .loginPage("/login/official")
+                .loginPage("/login/officer")
                 .loginProcessingUrl("/process-login-official")
                 .successHandler(successHandler)
+                .failureUrl("/login/officer?error=true")
                 .usernameParameter("username")
                 .passwordParameter("password")
         );
 
         http.logout(form -> form
-                .logoutUrl("/logout/official")
-                .logoutSuccessUrl("/login/official?logout")
+                .logoutUrl("/logout/officer")
+                .logoutSuccessUrl("/login/officer")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
         );
@@ -147,7 +147,8 @@ public class WebSecurityConfig {
     @Bean
     @Order(4)
     public SecurityFilterChain citizenFilterChain(HttpSecurity http) throws Exception {
-        // Không dùng securityMatcher cụ thể -> Mặc định bắt tất cả những gì còn lại (/**)
+        // Chỉ bắt URL không bắt đầu bằng /admin, /leader, /officer để tránh trùng với các chain khác
+        http.securityMatcher("/", "/login/**", "/register", "/assets/**");
 
         http.csrf(AbstractHttpConfigurer::disable);
 

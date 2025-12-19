@@ -1,0 +1,52 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">1. Thông tin Chồng</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên</label>
+                <input type="text" class="form-control" th:value="${formData.husbandFullName}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Ngày sinh</label>
+                <input type="date" class="form-control" th:value="${formData.husbandDob != null ? #temporals.format(formData.husbandDob, 'yyyy-MM-dd') : ''}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Số CCCD/CMND</label>
+                <input type="text" class="form-control" th:value="${formData.husbandIdNumber}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin Vợ</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên</label>
+                <input type="text" class="form-control" th:value="${formData.wifeFullName}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Ngày sinh</label>
+                <input type="date" class="form-control" th:value="${formData.wifeDob != null ? #temporals.format(formData.wifeDob, 'yyyy-MM-dd') : ''}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Số CCCD/CMND</label>
+                <input type="text" class="form-control" th:value="${formData.wifeIdNumber}" readonly>
+            </div>
+        </div>
+
+        <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">3. Thông tin hôn nhân</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Ngày dự kiến kết hôn</label>
+                <input type="date" class="form-control" th:value="${formData.intendedMarriageDate != null ? #temporals.format(formData.intendedMarriageDate, 'yyyy-MM-dd') : ''}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Nơi đăng ký</label>
+                <input type="text" class="form-control" th:value="${formData.registeredPlace}" readonly>
+            </div>
+        </div>
+
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>
