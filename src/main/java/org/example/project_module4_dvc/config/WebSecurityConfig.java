@@ -173,6 +173,12 @@ public class WebSecurityConfig {
                 .usernameParameter("username")
                 .passwordParameter("password")
         );
+        http.logout(form -> form
+                .logoutUrl("/logout/citizen")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+        );
 
         return http.build();
     }
