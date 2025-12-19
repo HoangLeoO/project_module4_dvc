@@ -1,5 +1,6 @@
 package org.example.project_module4_dvc.controller;
 
+
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class LoginController {
         return "pages/login"; // Trang login hiện tại (dành cho công dân)
     }
 
-    @RequestMapping(value = "/login/official", method = RequestMethod.GET)
+    @RequestMapping(value = "login/official", method = RequestMethod.GET)
     public String loginPageOfficial() {
         return "pages/official-login"; // Trang login mới dành cho cán bộ
     }

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OpsDossierResultRepository extends JpaRepository<OpsDossierResult, Long> {
-    Page<OpsDossierResult> findOpsDossierResultByDossierDossierStatus(String dossierStatus, Pageable pageable);
+    Page<OpsDossierResult> findOpsDossierResultByDossier_DossierStatusAndDossier_ReceivingDept_DeptName(String dossierStatus,String departmentName, Pageable pageable);
 
 }

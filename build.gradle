@@ -26,6 +26,13 @@ repositories {
 
 dependencies {
 
+    //itext java to pdf
+    // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
+    implementation("com.itextpdf:itextpdf:5.5.13.4")
+
+    // https://mvnrepository.com/artifact/tools.jackson.datatype/jackson-datatype-jsr310
+    implementation("tools.jackson.datatype:jackson-datatype-jsr310:3.0.0-rc2")
+
 
     // 2. MAPSTRUCT
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'

@@ -1,0 +1,23 @@
+<div th:fragment="form-detail">
+    <form th:if="${formData != null}">
+        <h6 class="form-label small text-muted fw-bold text-uppercase">Thông tin đăng ký cư trú</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small">Họ và tên</label>
+                <input type="text" class="form-control fw-bold" th:value="${formData.fullName}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small">Số CCCD/CMND</label>
+                <input type="text" class="form-control" th:value="${formData.idNumber}" readonly>
+            </div>
+            <div class="col-md-12">
+                <label class="form-label small">Địa chỉ đăng ký</label>
+                <input type="text" class="form-control" th:value="${formData.address}" readonly>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${formData == null}" class="alert alert-warning">
+        Không có dữ liệu chi tiết cho tờ khai này.
+    </div>
+</div>

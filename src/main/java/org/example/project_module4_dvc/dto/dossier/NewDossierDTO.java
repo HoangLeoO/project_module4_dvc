@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 public class NewDossierDTO {
     Long id;
+    BigInteger serviceId;
     String dossierCode;
     String dossierStatus;
     LocalDateTime submissionDate;
@@ -21,6 +23,8 @@ public class NewDossierDTO {
     String applicantFullName;
     String serviceName;
     String cccd;
+    private Map<String, Object> formData;
+
     public boolean isOverdue() {
         return dueDate != null && dueDate.isBefore(LocalDateTime.now());
     }
