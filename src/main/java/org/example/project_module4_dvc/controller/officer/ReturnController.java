@@ -1,8 +1,10 @@
 package org.example.project_module4_dvc.controller.officer;
 
+import org.example.project_module4_dvc.config.CustomUserDetails;
 import org.example.project_module4_dvc.service.officer.IOfficerService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +20,9 @@ public class ReturnController {
     }
 
     @GetMapping("")
-    public String getReturnForm(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        model.addAttribute("dossiers", officerService.findAllResult("APPROVED",pageable));
+    public String getReturnForm(Model model, @PageableDefault(size = 5) Pageable pageable,
+                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        model.addAttribute("dossiers", officerService.findAllResult("APPROVED",userDetails.getDepartmentName(),pageable));
         return "pages/officer/officer-return";
     }
 }

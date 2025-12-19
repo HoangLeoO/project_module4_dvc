@@ -1,10 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
-$END$
+
+<div th:fragment="assignModal" class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-person-check-fill me-2"></i>Phân công xử lý
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form th:action="@{/officer/dashboard/reception/confirm}" method="post">
+        <div class="modal-body p-4">
+          <div class="text-center mb-4">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 text-primary mb-2">
+              <i class="bi bi-file-earmark-person fs-1"></i>
+            </div>
+            <p class="text-muted">Chọn chuyên viên thụ lý hồ sơ này để tiếp tục quy trình.</p>
+          </div>
+
+          <input type="hidden" name="dossierId" th:value="${dossier.id}">
+
+          <div class="mb-3">
+            <label class="form-label fw-bold text-muted small text-uppercase">Chọn chuyên viên</label>
+            <select class="form-select form-select-lg" name="specialistId" required>
+              <option value="" selected disabled>-- Chọn chuyên viên --</option>
+<!--              <option th:each="staff : ${specialists}"-->
+<!--                      th:value="${staff.id}"-->
+<!--                      th:text="${staff.fullName} + ' - ' + ${staff.departmentName}">-->
+<!--              </option>-->
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold text-muted small text-uppercase">Ghi chú (Tùy chọn)</label>
+            <textarea class="form-control" name="note" rows="3" placeholder="Nhập ghi chú bàn giao..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary fw-bold px-4">
+            <i class="bi bi-send-check me-2"></i>Xác nhận & In phiếu
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
