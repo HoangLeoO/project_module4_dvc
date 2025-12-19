@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Dịch vụ công TP. Đà Nẵng (Mô phỏng)</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+<!-- 1. HEADER (Transparent style for landing) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 py-3" style="z-index: 100;">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center fw-bold fs-4" href="#">
+            <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="landingNav">
+            <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active fw-bold border-bottom border-2 border-warning"
+                                        href="#">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium" href="portal-services.html">Dịch vụ công</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium" href="#">Hướng dẫn</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium" href="portal-feedback.html">Phản ánh kiến
+                    nghị</a></li>
+            </ul>
+            <div class="ms-lg-4 d-flex gap-2">
+                <button class="btn btn-outline-light fw-bold shadow-sm px-3" data-bs-toggle="modal"
+                        data-bs-target="#registerModal">
+                    Đăng ký
+                </button>
+                <button class="btn btn-warning fw-bold shadow-sm px-3" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">
+                    <i class="bi bi-person-circle me-2"></i>Đăng nhập
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- 2. HERO SECTION (Centered Layout) -->
+<section class="hero-section bg-gradient-primary d-flex align-items-center position-relative text-white"
+         style="min-height: 100vh;">
+    <div class="container position-relative py-5 pt-lg-5 mt-5">
+        <div class="row align-items-center justify-content-center">
+            <!-- Center Content: Title & Search -->
+            <div class="col-lg-10 text-center">
+                    <span
+                            class="badge bg-white bg-opacity-25 text-white mb-3 px-3 py-2 rounded-pill fw-light border border-white border-opacity-25">
+                        <i class="bi bi-star-fill me-2 text-warning"></i>Cổng Dịch vụ công Quốc gia
+                    </span>
+                <h1 class="display-3 fw-bolder mb-3" style="letter-spacing: -1px;">HỆ THỐNG MỘT CỬA<br>ĐIỆN TỬ ĐÀ
+                    NẴNG</h1>
+                <p class="lead mb-5 opacity-90 fw-light">Nền tảng hành chính công hiện đại - Minh bạch - Phục vụ
+                    người dân 24/7</p>
+
+                <!-- Modern Two-Tab Search -->
+                <div class="card card-modern border-0 shadow-lg-soft p-2 overflow-hidden mx-auto"
+                     style="max-width: 600px;">
+                    <div class="d-flex border-bottom mb-2">
+                        <button
+                                class="btn btn-white w-50 fw-bold border-bottom border-3 border-primary rounded-0 text-primary">
+                            <i class="bi bi-search me-2"></i>Tra cứu Thủ tục
+                        </button>
+                        <button
+                                class="btn btn-light w-50 fw-bold border-bottom border-3 border-transparent rounded-0 text-muted">
+                            <i class="bi bi-file-earmark-text me-2"></i>Tra cứu Hồ sơ
+                        </button>
+                    </div>
+                    <div class="p-2">
+                        <div class="input-group">
+                                <span class="input-group-text bg-transparent border-0"><i
+                                        class="bi bi-search text-primary fs-5"></i></span>
+                            <input type="text" class="form-control border-0 shadow-none fs-5"
+                                   placeholder="Nhập từ khóa (VD: Khai sinh)...">
+                            <button class="btn btn-primary rounded-3 px-4 fw-bold">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 small opacity-75 d-flex gap-3 justify-content-center">
+                    <span><i class="bi bi-graph-up-arrow me-1"></i>Phổ biến:</span>
+                    <a href="#" class="text-white text-decoration-underline">Khai sinh</a>
+                    <a href="#" class="text-white text-decoration-underline">Đất đai</a>
+                    <a href="#" class="text-white text-decoration-underline">Chứng thực</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wave decoration bottom -->
+    <div style="position: absolute; bottom: 0; left: 0; width: 100%; overflow: hidden; line-height: 0;">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none"
+             style="position: relative; display: block; width: calc(100% + 1.3px); height: 60px;">
+            <path
+                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                    fill="#f8faff"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- 4. STATS LIVE COUNTER -->
+<section class="py-5" style="margin-top: -2rem; position: relative; z-index: 10;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
+                    <div class="mb-3 text-primary bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle">
+                        <i class="bi bi-file-earmark-check fs-2"></i>
+                    </div>
+                    <h3 class="fw-bolder mb-1 text-dark">1.2K</h3>
+                    <div class="text-muted small fw-medium">Hồ sơ đã nộp</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
+                    <div class="mb-3 text-success bg-success bg-opacity-10 d-inline-block p-3 rounded-circle">
+                        <i class="bi bi-clock-history fs-2"></i>
+                    </div>
+                    <h3 class="fw-bolder mb-1 text-dark">98%</h3>
+                    <div class="text-muted small fw-medium">Đúng hạn</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
+                    <div class="mb-3 text-warning bg-warning bg-opacity-10 d-inline-block p-3 rounded-circle">
+                        <i class="bi bi-people fs-2"></i>
+                    </div>
+                    <h3 class="fw-bolder mb-1 text-dark">2.5K</h3>
+                    <div class="text-muted small fw-medium">Công dân số</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
+                    <div class="mb-3 text-info bg-info bg-opacity-10 d-inline-block p-3 rounded-circle">
+                        <i class="bi bi-grid-fill fs-2"></i>
+                    </div>
+                    <h3 class="fw-bolder mb-1 text-dark">150</h3>
+                    <div class="text-muted small fw-medium">Dịch vụ công</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-footer-dark text-white py-5 mt-auto">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-5">
+                <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Đơn vị vận hành</h5>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-building fs-1 me-3 opacity-50"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1">TRUNG TÂM HÀNH CHÍNH CÔNG</h6>
+                        <p class="mb-0 small opacity-75">Thành phố Đà Nẵng</p>
+                    </div>
+                </div>
+                <p class="small opacity-50">Hệ thống cung cấp dịch vụ công trực tuyến mức độ 3, 4 phục vụ người dân
+                    và doanh nghiệp.</p>
+            </div>
+            <div class="col-md-3 offset-md-1">
+                <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên kết</h5>
+                <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                    <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                            class="bi bi-chevron-right me-2"></i>Cổng thông tin Tp.</a></li>
+                    <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                            class="bi bi-chevron-right me-2"></i>Sở TT & TT</a></li>
+                    <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                            class="bi bi-chevron-right me-2"></i>Văn bản quy phạm</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên hệ</h5>
+                <p class="small opacity-75 mb-1"><i class="bi bi-geo-alt me-2"></i>24 Trần Phú, Hải Châu</p>
+                <p class="small opacity-75 mb-1"><i class="bi bi-telephone me-2"></i>(0236) 1022</p>
+                <p class="small opacity-75"><i class="bi bi-envelope me-2"></i>contact@danang.gov.vn</p>
+            </div>
+        </div>
+        <hr class="opacity-10 my-4">
+        <div class="text-center small opacity-50">
+            &copy; 2025 E-Gov Simulation System (Static Prototype Mode)
+        </div>
+    </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content overflow-hidden border-0 shadow-lg">
+            <div class="card auth-card border-0 mb-0 shadow-none">
+                <!-- HEADER -->
+                <div class="auth-header-logo">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="mb-2">
+                        <i class="bi bi-shield-check" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-0 text-uppercase">Tài khoản Định danh</h4>
+                    <small class="opacity-75">Cục Cảnh sát QLHC về TTXH</small>
+                </div>
+
+                <div class="card-body p-4 pt-4">
+                    <!-- TABS -->
+                    <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1 border" id="modalAuthTab"
+                        role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill small fw-bold" id="modal-qr-tab"
+                                    data-bs-toggle="pill" data-bs-target="#modal-qr-pane" type="button" role="tab"
+                                    aria-selected="true">
+                                <i class="bi bi-qr-code-scan me-2"></i>Quét QR
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill small fw-bold" id="modal-account-tab"
+                                    data-bs-toggle="pill" data-bs-target="#modal-account-pane" type="button" role="tab"
+                                    aria-selected="false">
+                                <i class="bi bi-person-fill me-2"></i>Tài khoản
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="modalAuthTabContent">
+                        <!-- TAB 1: QR CODE -->
+                        <div class="tab-pane fade show active" id="modal-qr-pane" role="tabpanel">
+                            <div class="text-center py-2">
+                                <div class="qr-placeholder" onclick="window.location.href='portal-dashboard.html'"
+                                     title="Click để đăng nhập nhanh">
+                                    <i class="bi bi-qr-code-scan text-danger" style="font-size: 4rem;"></i>
+                                </div>
+                                <p class="text-muted small mt-3 mb-0">
+                                    Sử dụng ứng dụng <strong>VNeID</strong> để quét mã
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: FORM -->
+                        <div class="tab-pane fade" id="modal-account-pane" role="tabpanel">
+                            <form action="portal-dashboard.html">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" placeholder="Số định danh cá nhân"
+                                           value="048090000123">
+                                    <label>Số Định danh / CCCD</label>
+                                </div>
+                                <div class="form-floating mb-4">
+                                    <input type="password" class="form-control" placeholder="Mật khẩu"
+                                           value="password">
+                                    <label>Mật khẩu</label>
+                                </div>
+                                <button type="submit" class="btn btn-vneid btn-lg w-100 fw-bold shadow-sm">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>ĐĂNG NHẬP
+                                </button>
+                            </form>
+                            <div class="text-center mt-3 small">
+                                <a href="portal-forgot-pass.html"
+                                   class="text-secondary text-decoration-none hover-primary">
+                                    Quên mật khẩu? <span class="text-primary fw-bold ms-1">Lấy lại</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4 mb-2 small">
+                        <a href="#" class="text-secondary text-decoration-none hover-primary" data-bs-toggle="modal"
+                           data-bs-target="#registerModal">
+                            Chưa có tài khoản? <span class="text-primary fw-bold">Đăng ký ngay</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content overflow-hidden border-0 shadow-lg">
+            <div class="card auth-card border-0 mb-0 shadow-none">
+                <!-- HEADER -->
+                <div class="auth-header-logo">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="mb-2">
+                        <i class="bi bi-person-plus" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-0 text-uppercase">Đăng ký Tài khoản</h4>
+                    <small class="opacity-75">Cổng Dịch vụ công Quốc gia</small>
+                </div>
+
+                <div class="card-body p-4 pt-4">
+                    <form action="portal-dashboard.html">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" placeholder="Họ và tên" required>
+                            <label>Họ và tên</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" placeholder="Số định danh / CCCD" required>
+                            <label>Số định danh / CCCD</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" placeholder="Số điện thoại" required>
+                            <label>Số điện thoại</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" placeholder="Mật khẩu" required>
+                            <label>Mật khẩu</label>
+                        </div>
+                        <button type="submit" class="btn btn-vneid btn-lg w-100 fw-bold shadow-sm">
+                            <i class="bi bi-person-plus-fill me-2"></i>ĐĂNG KÝ
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 mb-2 small">
+                        <a href="#" class="text-secondary text-decoration-none hover-primary" data-bs-toggle="modal"
+                           data-bs-target="#loginModal">
+                            Đã có tài khoản? <span class="text-primary fw-bold">Đăng nhập ngay</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS Logic -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

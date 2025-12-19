@@ -15,78 +15,78 @@
 <body class="bg-light">
 
     <!-- WRAPPER -->
-    <div class="d-flex" id="wrapper">
+    <div class="d-flex" id="wrapper" th:with="currentPage='approval'">
 
         <!-- SIDEBAR -->
-        <div class="bg-white border-end"
-            style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
-            <div class="p-3 border-bottom d-flex align-items-center bg-danger text-white">
-                <i class="bi bi-briefcase-fill fs-4 me-2"></i>
-                <div class="fw-bold">LÃNH ĐẠO ĐƠN VỊ</div>
-            </div>
-            <div class="list-group list-group-flush p-2">
-                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Điều
-                    hành</small>
-                <a href="leader-dashboard.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
-                        class="bi bi-speedometer2 me-2"></i>Tổng quan (Cockpit)</a>
-                <a href="leader-approval.html"
-                    class="list-group-item list-group-item-action active rounded mb-1 border-0 fw-bold"><i
-                        class="bi bi-pen-fill me-2"></i>Duyệt & Ký số <span
-                        class="badge bg-danger ms-auto">15</span></a>
-                <a href="leader-reports.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
-                        class="bi bi-bar-chart-line-fill me-2"></i>Báo cáo số liệu</a>
-                <a href="leader-delegation.html" class="list-group-item list-group-item-action rounded mb-1 border-0"><i
-                        class="bi bi-person-fill-gear me-2"></i>Ủy quyền ký</a>
-
-                <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Hệ
-                    thống</small>
-                <a href="../06-shared/internal-login.html"
-                    class="list-group-item list-group-item-action rounded mb-1 border-0 text-danger"><i
-                        class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
-            </div>
-        </div>
+        <div th:replace="~{pages/04-leader/fragments/leader-layout :: sidebar}"></div>
 
         <!-- MAIN CONTENT -->
         <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
 
             <!-- HEADER -->
-            <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="leader-dashboard.html">Lãnh đạo</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Trình ký</li>
-                    </ol>
-                </nav>
-            </nav>
+            <nav th:replace="~{pages/04-leader/fragments/leader-layout :: header}"></nav>
 
             <main class="flex-grow-1 p-4">
+
+                <div th:if="${mess}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong th:text="${mess}"></strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
                 <!-- TABS -->
                 <ul class="nav nav-tabs mb-4">
                     <li class="nav-item">
-                        <a class="nav-link active fw-bold" href="#">Hồ sơ của tôi (12)</a>
+                        <a class="nav-link fw-bold"
+                            th:classappend="${viewType == 'mine'} ? 'active text-primary' : 'text-secondary'"
+                            href="/leader/my-dossiers">Hồ sơ của tôi</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bold text-secondary" href="#"><i
-                                class="bi bi-shield-lock-fill me-2"></i>Hồ sơ được Ủy quyền (3)</a>
+                        <a class="nav-link fw-bold"
+                            th:classappend="${viewType == 'delegated'} ? 'active text-primary' : 'text-secondary'"
+                            href="/leader/delegated-dossiers"><i class="bi bi-shield-lock-fill me-2"></i>Hồ sơ được Ủy
+                            quyền</a>
                     </li>
                 </ul>
 
-                <!-- TOOLBAR -->
-                <div
-                    class="bg-white p-3 border rounded shadow-sm mb-3 d-flex justify-content-between align-items-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleBatchBtn()">
-                        <label class="form-check-label fw-bold" for="selectAll">Chọn tất cả</label>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-funnel"></i> Lọc thủ
-                            tục</button>
-                        <button id="batchSignBtn" class="btn btn-primary fw-bold" disabled onclick="startBatchSign(5)">
-                            <i class="bi bi-pen-fill me-2"></i>Ký duyệt hàng loạt (<span id="selectedCount">0</span>)
+                <!-- TOOLBAR & FILTER -->
+                <!-- Dynamic Action based on viewType -->
+                <form th:action="@{${viewType == 'delegated' ? '/leader/delegated-dossiers' : '/leader/my-dossiers'}}"
+                    method="get"
+                    class="bg-white p-3 border rounded shadow-sm mb-3 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                    <!-- Batch Actions -->
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleBatchBtn()">
+                            <label class="form-check-label fw-bold cursor-pointer" for="selectAll">Chọn tất cả</label>
+                        </div>
+                        <button type="button" id="batchSignBtn" class="btn btn-primary fw-bold btn-sm" disabled
+                            onclick="startBatchSign(5)">
+                            <i class="bi bi-pen-fill me-2"></i>Ký duyệt (<span id="selectedCount">0</span>)
                         </button>
                     </div>
-                </div>
+
+                    <!-- Filter Inputs -->
+                    <div class="d-flex gap-2">
+                        <select name="domain" class="form-select form-select-sm" style="max-width: 180px;">
+                            <option value="">-- Tất cả lĩnh vực --</option>
+                            <option th:each="c : ${catServices}" th:value="${c.domain}" th:text="${c.domain}"
+                                th:selected="${c.domain == param.domain}">
+                            </option>
+                        </select>
+
+                        <input type="text" name="applicantName" class="form-control form-control-sm"
+                            placeholder="Tên người nộp..." th:value="${param.applicantName}" style="max-width: 200px;">
+
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <a th:href="@{${viewType == 'delegated' ? '/leader/delegated-dossiers' : '/leader/my-dossiers'}}"
+                            class="btn btn-outline-secondary btn-sm" title="Xóa lọc">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    </div>
+                </form>
 
                 <!-- TABLE -->
                 <div class="card border-0 shadow-sm">
@@ -95,61 +95,52 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th style="width: 50px;">#</th>
-                                    <th>Trích yếu nội dung</th>
-                                    <th>Thủ tục</th>
-                                    <th>Người trình</th>
+                                    <th>Mã hồ sơ</th>
+                                    <th>Người nộp</th>
+                                    <th>Lĩnh vực</th>
+                                    <th th:text="${viewType == 'delegated'} ? 'Người ủy quyền' : 'Người xử lý'">Người xử
+                                        lý</th>
                                     <th>Độ khẩn / Hạn</th>
                                     <th class="text-end pe-3">Tác vụ</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Item 1 -->
-                                <tr class="cursor-pointer">
-                                    <td class="text-center"><input class="form-check-input doc-check" type="checkbox"
-                                            onchange="updateCount()"></td>
-                                    <td onclick="openSignModal()">
-                                        <div class="fw-bold text-primary">V/v Cấp giấy khai sinh cho Nguyễn Văn Kon
+                                <!-- Item Loop -->
+                                <tr class="cursor-pointer" th:each="d : ${dossiers.content}">
+                                    <td class="text-center">
+                                        <input class="form-check-input doc-check" type="checkbox"
+                                            onchange="updateCount()" th:value="${d.id}">
+                                    </td>
+                                    <td class="cursor-pointer" th:data-id="${d.id}" th:data-domain="${d.domain}"
+                                        onclick="openSignModal(this.getAttribute('data-id'), this.getAttribute('data-domain'))">
+                                        <div class="fw-bold text-primary" th:text="${d.dossierCode}">HS-2023-009</div>
+                                    </td>
+                                    <td class="fw-bold" th:text="${d.applicantName}">Nguyễn Văn A</td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" th:title="${d.domain}"
+                                            th:text="${d.domain}">
+                                            Đăng ký khai sinh
                                         </div>
-                                        <small class="text-muted">Mã HS: HS-2023-009</small>
                                     </td>
-                                    <td>Đăng ký khai sinh</td>
-                                    <td>Chuyên viên A</td>
-                                    <td><span class="badge bg-danger animate-pulse">GẤP (Còn 2h)</span></td>
+                                    <td th:text="${d.currentHandlerName}">Chuyên viên A</td>
+                                    <td>
+                                        <span class="badge bg-danger animate-pulse" th:if="${d.daysLeft <= 2}">
+                                            GẤP (Còn <span th:text="${d.daysLeft}">2</span> ngày)
+                                        </span>
+                                        <span class="badge bg-light text-dark border" th:unless="${d.daysLeft <= 2}">
+                                            Trong hạn
+                                        </span>
+                                    </td>
                                     <td class="text-end pe-3">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openSignModal()">Xem &
-                                            Ký</button>
+                                        <button class="btn btn-sm btn-outline-primary" th:data-id="${d.id}"
+                                            th:data-domain="${d.domain}"
+                                            onclick="openSignModal(this.getAttribute('data-id'), this.getAttribute('data-domain'))">Xem
+                                            & Ký</button>
                                     </td>
                                 </tr>
-                                <!-- Item 2 -->
-                                <tr>
-                                    <td class="text-center"><input class="form-check-input doc-check" type="checkbox"
-                                            onchange="updateCount()"></td>
-                                    <td onclick="openSignModal()">
-                                        <div class="fw-bold">V/v Cấp trích lục kết hôn</div>
-                                        <small class="text-muted">Mã HS: HS-2023-010</small>
-                                    </td>
-                                    <td>Hộ tịch</td>
-                                    <td>Chuyên viên B</td>
-                                    <td><span class="badge bg-light text-dark border">Trong hạn</span></td>
-                                    <td class="text-end pe-3">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openSignModal()">Xem &
-                                            Ký</button>
-                                    </td>
-                                </tr>
-                                <!-- Repeat Items (Mock) -->
-                                <tr>
-                                    <td class="text-center"><input class="form-check-input doc-check" type="checkbox"
-                                            onchange="updateCount()"></td>
-                                    <td onclick="openSignModal()">
-                                        <div class="fw-bold">V/v Xác nhận tình trạng hôn nhân</div>
-                                        <small class="text-muted">Mã HS: HS-2023-012</small>
-                                    </td>
-                                    <td>Hộ tịch</td>
-                                    <td>Chuyên viên A</td>
-                                    <td><span class="badge bg-light text-dark border">Trong hạn</span></td>
-                                    <td class="text-end pe-3">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openSignModal()">Xem &
-                                            Ký</button>
+                                <!-- Empty State -->
+                                <tr th:if="${dossiers == null or dossiers.isEmpty()}">
+                                    <td colspan="7" class="text-center py-4 text-muted">Không có hồ sơ nào cần duyệt.
                                     </td>
                                 </tr>
                             </tbody>
@@ -157,26 +148,309 @@
                     </div>
                 </div>
 
+                <!-- Pagination -->
+                <br>
+                <nav aria-label="Page navigation" th:if="${dossiers.totalPages > 1}" class="mt-4"
+                    th:with="baseUrl=${viewType == 'delegated' ? '/leader/delegated-dossiers' : '/leader/my-dossiers'}">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous -->
+                        <li class="page-item" th:classappend="${dossiers.first} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{${baseUrl}(page=${dossiers.number - 1}, size=${dossiers.size}, domain=${param.domain}, applicantName=${param.applicantName})}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, dossiers.totalPages - 1)}"
+                            th:classappend="${i == dossiers.number} ? 'active'">
+                            <a class="page-link"
+                                th:href="@{${baseUrl}(page=${i}, size=${dossiers.size}, domain=${param.domain}, applicantName=${param.applicantName})}"
+                                th:text="${i + 1}">1</a>
+                        </li>
+
+                        <!-- Next -->
+                        <li class="page-item" th:classappend="${dossiers.last} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{${baseUrl}(page=${dossiers.number + 1}, size=${dossiers.size}, domain=${param.domain}, applicantName=${param.applicantName})}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
             </main>
         </div>
     </div>
 
     <!-- Modals Container -->
-    <div id="modalContainer"></div>
+    <div id="modalContainer">
+        <!-- Hidden Form for Approval -->
+        <form id="approvalForm" method="post" style="display: none;"></form>
+
+        <!-- Modal Digital Sign -->
+        <div class="modal fade" id="digitalSignModal" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-pen-fill me-2"></i>Ký số & Phát hành Hồ sơ</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body row">
+
+                        <!-- PDF Preview -->
+                        <div
+                            class="col-lg-8 border-end bg-secondary bg-opacity-10 d-flex justify-content-center align-items-center position-relative overflow-hidden">
+                            <div class="bg-white shadow p-4"
+                                style="width: 80%; height: 500px; transform: scale(0.9); overflow-y: auto;">
+
+                                <!-- TEMPLATE: CIVIL (Hộ tịch) -->
+                                <div id="preview-civil" class="preview-template">
+                                    <div class="text-center mt-4">
+                                        <h6 class="fw-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+                                        <div class="small fw-bold text-decoration-underline">Độc lập - Tự do - Hạnh phúc
+                                        </div>
+                                        <h4 class="fw-bold text-danger mt-4">GIẤY KHAI SINH</h4>
+                                        <div class="text-start mt-4 px-4">
+                                            <p>Họ và tên: <strong class="text-uppercase text-primary">Nguyễn Văn
+                                                    Kon</strong></p>
+                                            <p>Ngày sinh: 01/01/2025</p>
+                                            <p>Nơi sinh: Bệnh viện Phụ sản Đà Nẵng</p>
+                                            <p>Cha: Nguyễn Văn An - Mẹ: Trần Thị Bình</p>
+                                        </div>
+                                        <div class="text-end mt-5 px-4 position-relative">
+                                            <p class="fst-italic">Đà Nẵng, ngày 18 tháng 12 năm 2025</p>
+                                            <p class="fw-bold">NGƯỜI KÝ</p>
+                                            <div class="my-5"></div>
+                                            <p class="fw-bold">Chủ tịch UBND</p>
+                                            <!-- Stamp Anchor -->
+                                            <div class="stamp-anchor position-absolute" style="top: 60px; right: 20px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TEMPLATE: LAND (Đất đai) -->
+                                <div id="preview-land" class="preview-template d-none">
+                                    <div class="text-center mt-2 border border-2 border-danger p-2 mb-2">
+                                        <h6 class="fw-bold text-danger mb-0">GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT</h6>
+                                    </div>
+                                    <div class="text-start px-3 small">
+                                        <p><strong>I. Người sử dụng đất:</strong></p>
+                                        <p class="ms-3">Ông/Bà: <strong class="text-uppercase">Trần Văn Phát</strong>
+                                        </p>
+                                        <p><strong>II. Thửa đất:</strong></p>
+                                        <ul class="ms-2">
+                                            <li>Thửa đất số: <strong>102</strong> - Tờ bản đồ số: <strong>08</strong>
+                                            </li>
+                                            <li>Địa chỉ: Phường An Khê, TP Đà Nẵng</li>
+                                            <li>Diện tích: <strong>120.5 m2</strong></li>
+                                            <li>Mục đích sử dụng: <span
+                                                    class="text-decoration-line-through text-muted">Đất trồng cây lâu
+                                                    năm</span> <i class="bi bi-arrow-right"></i> <strong
+                                                    class="text-danger">Đất ở tại đô thị</strong></li>
+                                        </ul>
+                                        <div class="text-end mt-4 position-relative">
+                                            <p class="fst-italic">Đà Nẵng, ngày 18 tháng 12 năm 2025</p>
+                                            <p class="fw-bold">TM. UBND QUẬN</p>
+                                            <div class="my-5"></div>
+                                            <p class="fw-bold">Chủ tịch</p>
+                                            <!-- Stamp Anchor -->
+                                            <div class="stamp-anchor position-absolute" style="top: 50px; right: 10px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TEMPLATE: BUSINESS (Kinh doanh) -->
+                                <div id="preview-business" class="preview-template d-none">
+                                    <div class="text-center mt-4">
+                                        <h6 class="fw-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+                                        <div class="small fw-bold text-decoration-underline">Độc lập - Tự do - Hạnh phúc
+                                        </div>
+                                        <h4 class="fw-bold text-primary mt-4">GIẤY CHỨNG NHẬN<br>ĐĂNG KÝ HỘ KINH DOANH
+                                        </h4>
+                                        <div class="text-start mt-4 px-4">
+                                            <p>Tên hộ kinh doanh: <strong class="text-uppercase">HKD MINH AN</strong>
+                                            </p>
+                                            <p>Địa điểm kinh doanh: 123 Trần Phú, Hải Châu, Đà Nẵng</p>
+                                            <p>Ngành nghề: Bán lẻ tạp hóa, văn phòng phẩm</p>
+                                            <p>Vốn kinh doanh: <strong>200.000.000 VNĐ</strong></p>
+                                            <p>Chủ hộ: <strong>NGUYỄN VĂN AN</strong></p>
+                                        </div>
+                                        <div class="text-end mt-5 px-4 position-relative">
+                                            <p class="fst-italic">Đà Nẵng, ngày 18 tháng 12 năm 2025</p>
+                                            <p class="fw-bold">TRƯỞNG PHÒNG TÀI CHÍNH - KẾ HOẠCH</p>
+                                            <div class="my-5"></div>
+                                            <p class="fw-bold">Đã ký</p>
+                                            <!-- Stamp Anchor -->
+                                            <div class="stamp-anchor position-absolute" style="top: 60px; right: 20px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Shared Stamp (This moves to the active anchor) -->
+                                <div id="stampPreview" class="position-absolute d-none animate-stamp"
+                                    style="z-index: 10;">
+                                    <div class="border border-danger border-4 rounded px-3 py-2 text-danger fw-bold text-center"
+                                        style="transform: rotate(-15deg); opacity: 0.9; background: rgba(255,255,255,0.8);">
+                                        <div class="small">KÝ SỐ BỞI</div>
+                                        <div class="text-uppercase">UBND QUẬN HẢI CHÂU</div>
+                                        <div class="small" style="font-size: 10px;">18/12/2025</div>
+                                    </div>
+                                    <i
+                                        class="bi bi-patch-check-fill text-success position-absolute bottom-0 end-0 fs-4"></i>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Sign Controls -->
+                        <div class="col-lg-4 p-4">
+                            <h6 class="fw-bold mb-3 border-bottom pb-2">Thiết bị Ký số (Token)</h6>
+
+                            <div class="alert alert-success d-flex align-items-center mb-4">
+                                <i class="bi bi-usb-drive-fill fs-3 me-3"></i>
+                                <div>
+                                    <strong>Đã kết nối USB Token</strong>
+                                    <div class="small">Bit4ID - Seri: 54321...</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Nhập Mã PIN</label>
+                                <input type="password" class="form-control form-control-lg text-center letter-spacing-2"
+                                    placeholder="******" value="123456">
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-lg fw-bold shadow" onclick="performSign(event)">
+                                    <i class="bi bi-vector-pen me-2"></i>Ký duyệt & Phát hành
+                                </button>
+                                <button class="btn btn-outline-danger fw-bold" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle me-2"></i>Hủy bỏ
+                                </button>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h6 class="fw-bold text-muted small mb-2">Tác vụ khác</h6>
+                            <button class="btn btn-outline-secondary w-100 mb-2 text-start"
+                                onclick="alert('Đã chuyển trả chuyên viên bổ sung!')">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Trả lại chuyên viên
+                            </button>
+                            <button class="btn btn-outline-danger w-100 text-start"
+                                onclick="alert('Đã từ chối hồ sơ!')">
+                                <i class="bi bi-slash-circle me-2"></i>Từ chối hồ sơ
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- JS Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Start Load Modals
-        const modals = ['modal-digital-sign.html', 'modal-batch-sign.html', 'modal-action.html'];
-        modals.forEach(file => {
-            fetch('../../components/modals/' + file)
-                .then(r => r.text())
-                .then(html => document.body.insertAdjacentHTML('beforeend', html));
-        });
 
-        function openSignModal() {
-            var myModal = new bootstrap.Modal(document.getElementById('digitalSignModal'));
+    <script>
+        const modalElement = document.getElementById('digitalSignModal');
+        const signBtn = modalElement.querySelector('button.btn-primary'); // Initial selector
+
+        // Give the button an ID for easier access if not already
+        // But better is to just query inside the function or use a consistent ID.
+        // Let's assume the button structure is stable.
+
+        function performSign(event) {
+            const stamp = document.getElementById('stampPreview');
+            const btn = event.target.closest('button');
+
+            // Simulate processing
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang ký...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                stamp.classList.remove('d-none');
+                btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Đã ký thành công';
+                btn.classList.replace('btn-primary', 'btn-success');
+
+                setTimeout(() => {
+                    // Submit the form
+                    document.getElementById('approvalForm').submit();
+                }, 1000);
+            }, 1000);
+        }
+
+        function openSignModal(id, domain) {
+            // Update form action
+            document.getElementById('approvalForm').action = '/leader/approval/' + id;
+
+            // Reset UI state
+            const stamp = document.getElementById('stampPreview');
+            stamp.classList.add('d-none');
+
+            // 1. Hide all templates
+            document.querySelectorAll('.preview-template').forEach(el => el.classList.add('d-none'));
+
+            // 2. Determine which template to show
+            let templateId = 'preview-civil'; // Default
+            if (domain) {
+                const d = domain.toUpperCase();
+                if (d.includes('ĐẤT ĐAI')) {
+                    templateId = 'preview-land';
+                } else if (d.includes('KINH DOANH')) {
+                    templateId = 'preview-business';
+                }
+            }
+
+            // 3. Show selected template
+            const selectedTemplate = document.getElementById(templateId);
+            selectedTemplate.classList.remove('d-none');
+
+            // 4. Move Stamp to the correct anchor in the selected template
+            const anchor = selectedTemplate.querySelector('.stamp-anchor');
+            if (anchor) {
+                // We append the stamp element to the anchor's parent, positioned relative to it
+                // Or simply set top/right of stamp based on anchor?
+                // Easiest is to append the stamp *inside* the template's relative container if possible, 
+                // but stamp is absolute. Let's just manually position or append it.
+                // For simplicity in this mock, let's just make sure the stamp is visible effectively.
+                // Actually, let's loop the stamp to be a child of the current template's relative container if we want perfect positioning.
+                // BUT, our stamp is currently outside. Let's keep it simple:
+                // We will rely on CSS positioning relative to the shared container, 
+                // but differnt templates might need different positions.
+                // Hack: Just set specific top/right on the stamp based on template type?
+                if (templateId === 'preview-land') {
+                    stamp.style.top = '70%';
+                    stamp.style.right = '30px';
+                } else {
+                    stamp.style.top = 'auto'; // relative to bottom block? No, it's absolute
+                    // Re-check HTML structure. stampPreview is absolute inside .bg-white wrapper.
+                    // The templates push content down.
+                    // Let's just hardcode reasonable positions.
+                    stamp.style.top = 'auto';
+                    stamp.style.bottom = '100px';
+                    stamp.style.right = '50px';
+                }
+            }
+
+            // Find the sign button and reset it
+            const btn = modalElement.querySelector('button[onclick^="performSign"]');
+            if (btn) {
+                btn.innerHTML = '<i class="bi bi-vector-pen me-2"></i>Ký duyệt & Phát hành';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+                btn.disabled = false;
+            }
+
+            // Show modal using getOrCreateInstance to prevent duplicates
+            const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
             myModal.show();
         }
 
