@@ -37,17 +37,84 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
+    // --- 1. ADMIN CHAIN (Ưu tiên cao nhất) ---
     @Bean
     @Order(1)
-    public SecurityFilterChain officialFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/admin/**", "/leader/**", "/official/**", "/login/official", "/process-login-official", "/logout/official", "/css/**", "/js/**", "/images/**", "/assets/**", "/fonts/**");
+    public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/admin/**"); // Chỉ bắt các URL bắt đầu bằng /admin/
 
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/official", "/css/**", "/js/**", "/images/**", "/assets/**", "/fonts/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/leader/**").hasAnyRole("CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
+                .anyRequest().hasRole("ADMIN") // Bắt buộc phải là ADMIN
+        );
+
+        http.formLogin(form -> form
+                .loginPage("/login/official")
+                .loginProcessingUrl("/process-login-official")
+                .successHandler(successHandler)
+                .usernameParameter("username")
+                .passwordParameter("password")
+        );
+
+        http.logout(form -> form
+                .logoutUrl("/logout/official")
+                .logoutSuccessUrl("/login/official?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+        );
+
+        return http.build();
+    }
+
+    // --- 2. LEADER CHAIN (Lãnh đạo UBND) ---
+    @Bean
+    @Order(2)
+    public SecurityFilterChain leaderFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/leader/**"); // Chỉ bắt các URL bắt đầu bằng /leader/
+
+        http.csrf(AbstractHttpConfigurer::disable);
+
+        http.authorizeHttpRequests(auth -> auth
+                .anyRequest().hasAnyRole("CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
+        );
+
+        http.formLogin(form -> form
+                .loginPage("/login/official")
+                .loginProcessingUrl("/process-login-official")
+                .successHandler(successHandler)
+                .usernameParameter("username")
+                .passwordParameter("password")
+        );
+
+        http.logout(form -> form
+                .logoutUrl("/logout/official")
+                .logoutSuccessUrl("/login/official?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+        );
+        return http.build();
+    }
+
+    // --- 3. OFFICIAL & COMMON LOGIN CHAIN (Chuyên viên + Xử lý đăng nhập chung) ---
+    @Bean
+    @Order(3)
+    public SecurityFilterChain officialCommonFilterChain(HttpSecurity http) throws Exception {
+        // Chain này quản lý thư mục /official VÀ các URL đăng nhập/xử lý chung cho cán bộ
+        http.securityMatcher(
+                "/official/**",
+                "/login/official",
+                "/process-login-official",
+                "/logout/official",
+                "/css/**", "/js/**" // Tài nguyên tĩnh cho trang admin
+        );
+
+        http.csrf(AbstractHttpConfigurer::disable);
+
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login/official", "/css/**", "/js/**").permitAll()
+                // Admin và Lãnh đạo cũng có thể vào xem trang của chuyên viên nếu cần
+                .requestMatchers("/official/**").hasAnyRole("CHUYEN_VIEN", "ADMIN", "CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
                 .anyRequest().authenticated()
         );
 
@@ -69,15 +136,17 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    // --- 4. CITIZEN CHAIN (Người dân - Cuối cùng) ---
     @Bean
-    @Order(2)
+    @Order(4)
     public SecurityFilterChain citizenFilterChain(HttpSecurity http) throws Exception {
-        // Chain mặc định cho công dân ("/**")
+        // Không dùng securityMatcher cụ thể -> Mặc định bắt tất cả những gì còn lại (/**)
+
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/citizen", "/register", "/css/**", "/js/**", "/images/**", "/assets/**", "/fonts/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/", "/login/citizen", "/register", "/assets/**").permitAll()
+                .anyRequest().hasRole("CONG_DAN") // Hoặc .authenticated()
         );
 
         http.formLogin(form -> form
