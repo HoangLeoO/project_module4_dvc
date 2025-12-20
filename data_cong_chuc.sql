@@ -277,54 +277,56 @@ VALUES
  'Phường Hải Châu, TP Đà Nẵng',
  'Phần mềm, dịch vụ CNTT');
 
+set @password_hash = '$2a$10$Ln3qLLnFm.qeHaMK2kUuhuyLCtPvWS2dWApggINgZSLSL7lfRk5YO';
+
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('admin', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
+    ('admin', @password_hash, 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
 
 
 # PHƯỜNG HẢI CHÂU (dept_id = 2)
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('hc_ct',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
-    ('hc_pct', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Trần Thị Bình',     'OFFICIAL', 2, 2),
-    ('hc_mc',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Lê Văn Cường',      'OFFICIAL', 3, 2),
-    ('hc_tp',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
-    ('hc_dc',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
-    ('hc_kt',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
+    ('hc_ct',  @password_hash,  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
+    ('hc_pct', @password_hash, 'Trần Thị Bình',     'OFFICIAL', 2, 2),
+    ('hc_mc',  @password_hash,  'Lê Văn Cường',      'OFFICIAL', 3, 2),
+    ('hc_tp',  @password_hash,  'Phạm Thị Dung',     'OFFICIAL', 4, 2),
+    ('hc_dc',  @password_hash,  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
+    ('hc_kt',  @password_hash,  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_01', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Nguyễn Văn An',  'CITIZEN', 1),
-    ('cd_02', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Trần Thị Bình',  'CITIZEN', 2),
-    ('cd_03', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Lê Văn Cường',   'CITIZEN', 3),
-    ('cd_04', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Phạm Thị Dung',  'CITIZEN', 4),
-    ('cd_05', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Hoàng Văn Em',   'CITIZEN', 5),
-    ('cd_06', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Ngô Thị Hạnh',   'CITIZEN', 6);
+    ('cd_01', @password_hash, 'Nguyễn Văn An',  'CITIZEN', 1),
+    ('cd_02', @password_hash, 'Trần Thị Bình',  'CITIZEN', 2),
+    ('cd_03', @password_hash, 'Lê Văn Cường',   'CITIZEN', 3),
+    ('cd_04', @password_hash, 'Phạm Thị Dung',  'CITIZEN', 4),
+    ('cd_05', @password_hash, 'Hoàng Văn Em',   'CITIZEN', 5),
+    ('cd_06', @password_hash, 'Ngô Thị Hạnh',   'CITIZEN', 6);
 
 # PHƯỜNG THANH KHÊ (dept_id = 4)
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
-    ('tk_ct',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
-    ('tk_pct', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Đỗ Thị Ngọc',    'OFFICIAL', 10, 4),
-    ('tk_mc',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Phan Văn Long',  'OFFICIAL', 13, 4),
-    ('tk_tp',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Trương Thị Quỳnh','OFFICIAL',12,4),
-    ('tk_dc',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Võ Thị Lan',     'OFFICIAL',8,4),
-    ('tk_kt',  '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui',  'Lương Văn Quân', 'OFFICIAL',19,4);
+    ('tk_ct',  @password_hash,  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
+    ('tk_pct', @password_hash, 'Đỗ Thị Ngọc',    'OFFICIAL', 10, 4),
+    ('tk_mc',  @password_hash,  'Phan Văn Long',  'OFFICIAL', 13, 4),
+    ('tk_tp',  @password_hash,  'Trương Thị Quỳnh','OFFICIAL',12,4),
+    ('tk_dc',  @password_hash,  'Võ Thị Lan',     'OFFICIAL',8,4),
+    ('tk_kt',  @password_hash,  'Lương Văn Quân', 'OFFICIAL',19,4);
 
 INSERT INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
-    ('cd_07', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Bùi Văn Minh',    'CITIZEN', 9),
-    ('cd_08', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Đỗ Thị Ngọc',     'CITIZEN', 10),
-    ('cd_09', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui', 'Phan Văn Long',   'CITIZEN', 13),
-    ('cd_10', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui','Trương Thị Quỳnh','CITIZEN',12),
-    ('cd_11', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui','Võ Thị Lan',      'CITIZEN',8),
-    ('cd_12', '$2a$10$BzndqIppF6aDC/8iGPsdkuCigE.vzx28.QO/Om3PstJ9qaBQpLVui','Lương Văn Quân',  'CITIZEN',19);
+    ('cd_07', @password_hash, 'Bùi Văn Minh',    'CITIZEN', 9),
+    ('cd_08', @password_hash, 'Đỗ Thị Ngọc',     'CITIZEN', 10),
+    ('cd_09', @password_hash, 'Phan Văn Long',   'CITIZEN', 13),
+    ('cd_10', @password_hash,'Trương Thị Quỳnh','CITIZEN',12),
+    ('cd_11', @password_hash,'Võ Thị Lan',      'CITIZEN',8),
+    ('cd_12', @password_hash,'Lương Văn Quân',  'CITIZEN',19);
 
 
 -- Gán role ADMIN cho user admin

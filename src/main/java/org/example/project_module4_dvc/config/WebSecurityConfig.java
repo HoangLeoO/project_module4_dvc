@@ -84,13 +84,13 @@ public class WebSecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain leaderFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/leader/**", "/login/official", "/process-login-official", "/logout/official");
+//        http.securityMatcher("/leader/**", "/login/official", "/process-login-official", "/logout/official");
 
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login/official", "/register", "/assets/**", "/403", "/404").permitAll()
-                .anyRequest().hasAnyRole("CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
+                .requestMatchers("/leader/**", "/login/official", "/process-login-official", "/logout/official").hasAnyRole("CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
         );
 
         http.formLogin(form -> form
