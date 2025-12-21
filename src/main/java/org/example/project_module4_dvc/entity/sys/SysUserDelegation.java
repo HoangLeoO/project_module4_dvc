@@ -51,6 +51,12 @@ public class SysUserDelegation {
     @Size(max = 255, message = "Ghi chú không được vượt quá 255 ký tự")
     private String notes;
 
+    @Column(name = "status")
+    private Integer status;
+
+    @OneToMany(mappedBy = "delegation", fetch = FetchType.LAZY)
+    private java.util.List<SysDelegationScope> delegationScopes;
+
     /*
      * Lưu ý Logic nghiệp vụ (Nên xử lý ở tầng Service hoặc Custom Validator):
      * 1. fromUser phải khác toUser (Không tự ủy quyền cho chính mình).
