@@ -33,32 +33,41 @@
                     <div class="col-lg-7">
                         <h5 class="fw-bold mb-3">Danh sách Ủy quyền đang hiệu lực</h5>
                         <div class="list-group border-0 shadow-sm">
-                            <div class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                            <div th:each="d : ${delegations}"
+                                class="list-group-item p-3 d-flex justify-content-between align-items-center">
                                 <div>
                                     <div class="d-flex align-items-center mb-1">
                                         <i class="bi bi-arrow-right-circle-fill text-primary me-2"></i>
-                                        <span class="fw-bold">Phó CT: Nguyễn Văn Phó</span>
+                                        <span class="fw-bold" th:text="'Người nhận: ' + ${d.toUser.fullName}">Phó CT:
+                                            Nguyễn Văn Phó</span>
                                     </div>
                                     <div class="small text-muted mb-1">
-                                        Lĩnh vực: <span class="badge bg-light text-dark border">Hộ tịch</span>
-                                        <span class="badge bg-light text-dark border">Chứng thực</span>
+                                        <div th:if="${d.delegationScopes == null or d.delegationScopes.isEmpty()}">
+                                            <span class="badge bg-success">Toàn quyền</span>
+                                        </div>
+                                        <div th:if="${d.delegationScopes != null and !d.delegationScopes.isEmpty()}">
+                                            Phạm vi:
+                                            <span th:each="s : ${d.delegationScopes}"
+                                                class="badge bg-light text-dark border me-1"
+                                                th:text="${s.scopeValue}">Hộ tịch</span>
+                                        </div>
                                     </div>
-                                    <div class="small text-muted"><i class="bi bi-calendar-event me-1"></i>01/12/2025 -
-                                        31/12/2025 (Còn 20 ngày)</div>
+                                    <div class="small text-muted">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        <span th:text="${#temporals.format(d.startTime, 'dd/MM/yyyy')}"></span> -
+                                        <span th:text="${#temporals.format(d.endTime, 'dd/MM/yyyy')}"></span>
+                                    </div>
                                 </div>
-                                <button class="btn btn-outline-danger btn-sm">Thu hồi</button>
+                                <form th:action="@{/leader/delegation/revoke/{id}(id=${d.id})}" method="post"
+                                    onsubmit="return confirm('Bạn có chắc chắn muốn thu hồi ủy quyền này?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Thu hồi</button>
+                                </form>
                             </div>
 
-                            <div
-                                class="list-group-item p-3 d-flex justify-content-between align-items-center bg-light opacity-75">
-                                <div>
-                                    <div class="d-flex align-items-center mb-1">
-                                        <i class="bi bi-clock-history text-secondary me-2"></i>
-                                        <span class="fw-bold text-decoration-line-through">Phó CT: Trần Văn B</span>
-                                        <span class="badge bg-secondary ms-2">Đã hết hạn</span>
-                                    </div>
-                                    <div class="small text-muted">Lĩnh vực: Đất đai</div>
-                                </div>
+                            <!-- Empty State -->
+                            <div th:if="${delegations == null or delegations.isEmpty()}"
+                                class="text-center py-4 text-muted">
+                                Chưa có ủy quyền nào đang hiệu lực.
                             </div>
                         </div>
                     </div>
@@ -70,55 +79,80 @@
                                 <i class="bi bi-plus-circle-fill me-2"></i>Thiết lập Ủy quyền Mới
                             </div>
                             <div class="card-body">
+                                <form th:action="@{/leader/delegation/create}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Người nhận ủy quyền</label>
+                                        <select class="form-select" name="delegateeId" required>
+                                            <option value="" selected disabled>-- Chọn Lãnh đạo cấp phó --</option>
+                                            <option th:each="u : ${delegatees}" th:value="${u.id}"
+                                                th:text="${u.fullName} + ' (' + ${u.username} + ')'"></option>
+                                        </select>
+                                    </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Người nhận ủy quyền</label>
-                                    <select class="form-select">
-                                        <option selected disabled>Chọn Lãnh đạo cấp phó...</option>
-                                        <option>Nguyễn Văn Phó (PCT Văn xã)</option>
-                                        <option>Trần Văn B (PCT Đô thị)</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Phạm vi ủy quyền</label>
-                                    <div class="border rounded p-2 bg-light">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="checkAll">
-                                            <label class="form-check-label fw-bold" for="checkAll">Toàn quyền (Chủ tài
-                                                khoản)</label>
-                                        </div>
-                                        <hr class="my-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox">
-                                            <label class="form-check-label">Ký giấy khai sinh, kết hôn</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" checked>
-                                            <label class="form-check-label">Ký Sổ đỏ, Giấy tờ nhà đất</label>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Phạm vi ủy quyền</label>
+                                        <div class="border rounded p-2 bg-light"
+                                            style="max-height: 200px; overflow-y: auto;">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="checkAll"
+                                                    name="isFullWith" onchange="toggleScopes(this)" checked>
+                                                <label class="form-check-label fw-bold text-primary" for="checkAll">
+                                                    Toàn quyền quản lý (Tất cả lĩnh vực)
+                                                </label>
+                                            </div>
+                                            <hr class="my-2">
+                                            <div id="scopeList" class="opacity-50" style="pointer-events: none;">
+                                                <!-- Loop unique Domains -->
+                                                <div th:each="d : ${domains}">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input scope-check" type="checkbox"
+                                                            name="selectedScopes" th:value="'DOMAIN:' + ${d}">
+                                                        <label class="form-check-label"
+                                                            th:text="'Lĩnh vực: ' + ${d}">Lĩnh vực</label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row mb-4">
-                                    <div class="col-6">
-                                        <label class="form-label fw-bold">Từ ngày</label>
-                                        <input type="date" class="form-control" value="2025-12-12">
+                                    <div class="row mb-4">
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold">Từ ngày</label>
+                                            <input type="date" class="form-control" name="fromDate" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold">Đến ngày</label>
+                                            <input type="date" class="form-control" name="toDate" required>
+                                        </div>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-label fw-bold">Đến ngày</label>
-                                        <input type="date" class="form-control">
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary fw-bold">Lưu cấu hình</button>
                                     </div>
-                                </div>
-
-                                <div class="d-grid">
-                                    <button class="btn btn-primary fw-bold">Lưu cấu hình</button>
-                                </div>
-
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <script>
+                    function toggleScopes(checkbox) {
+                        const scopeList = document.getElementById('scopeList');
+                        const checkboxes = scopeList.querySelectorAll('.scope-check');
+
+                        if (checkbox.checked) {
+                            scopeList.classList.add('opacity-50');
+                            scopeList.style.pointerEvents = 'none';
+                            checkboxes.forEach(cb => cb.checked = false);
+                        } else {
+                            scopeList.classList.remove('opacity-50');
+                            scopeList.style.pointerEvents = 'auto';
+                        }
+                    }
+
+                    // Set default FromDate to today
+                    document.querySelector('input[name="fromDate"]').valueAsDate = new Date();
+                </script>
 
             </main>
         </div>
