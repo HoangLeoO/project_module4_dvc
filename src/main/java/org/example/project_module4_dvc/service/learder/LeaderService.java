@@ -1,8 +1,7 @@
-package org.example.project_module4_dvc.service;
+package org.example.project_module4_dvc.service.learder;
 
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.repository.leader.LeaderOpsDossierRepository;
-import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class LeaderService implements ILeaderService{
+public class LeaderService implements ILeaderService {
 
     @Autowired
     private LeaderOpsDossierRepository opsDossierRepository;

@@ -1,9 +1,9 @@
-package org.example.project_module4_dvc.controller;
+package org.example.project_module4_dvc.controller.leader;
 
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.example.project_module4_dvc.service.cat.ICatServiceService;
-import org.example.project_module4_dvc.service.ILeaderService;
+import org.example.project_module4_dvc.service.learder.ILeaderService;
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

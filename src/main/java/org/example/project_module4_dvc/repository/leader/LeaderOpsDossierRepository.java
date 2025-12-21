@@ -81,11 +81,39 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
         WHERE d.dossier_status = 'VERIFIED' 
           
           -- ĐIỀU KIỆN: Người giữ hồ sơ nằm trong danh sách những người đã ủy quyền cho tôi
-          AND d.current_handler_id IN (
-                SELECT dlg.from_user_id 
+          -- VÀ thỏa mãn phạm vi ủy quyền (nếu có)
+          AND EXISTS (
+                SELECT 1 
                 FROM sys_user_delegations dlg
-                WHERE dlg.to_user_id = :leaderId      -- Tôi là người nhận ủy quyền
-                  AND NOW() BETWEEN dlg.start_time AND dlg.end_time -- Còn hiệu lực
+                WHERE dlg.from_user_id = d.current_handler_id -- Người đang giữ hồ sơ là người ủy quyền
+                  AND dlg.to_user_id = :leaderId              -- Tôi là người nhận
+                  AND NOW() BETWEEN dlg.start_time AND dlg.end_time
+                  
+                  -- CHECK SCOPE
+                  AND (
+                      -- Trường hợp 1: Không có scope nào (Ủy quyền toàn bộ)
+                      NOT EXISTS (SELECT 1 FROM sys_delegation_scopes sc WHERE sc.delegation_id = dlg.id)
+                      
+                      OR 
+                      
+                      -- Trường hợp 2: Có scope khớp với DOMAIN
+                      EXISTS (
+                          SELECT 1 FROM sys_delegation_scopes sc 
+                          WHERE sc.delegation_id = dlg.id 
+                            AND sc.scope_type = 'DOMAIN' 
+                            AND sc.scope_value = s.domain
+                      )
+                      
+                      OR
+                      
+                      -- Trường hợp 3: Có scope khớp với SERVICE_CODE
+                      EXISTS (
+                          SELECT 1 FROM sys_delegation_scopes sc 
+                          WHERE sc.delegation_id = dlg.id 
+                            AND sc.scope_type = 'SERVICE' 
+                            AND sc.scope_value = s.service_code
+                      )
+                  )
           )
           
           -- Bộ lọc
@@ -99,11 +127,29 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
         JOIN cat_services s ON d.service_id = s.id
         JOIN sys_users u_applicant ON d.applicant_id = u_applicant.id
         WHERE d.dossier_status = 'VERIFIED'
-          AND d.current_handler_id IN (
-                SELECT dlg.from_user_id 
+          AND EXISTS (
+                SELECT 1 
                 FROM sys_user_delegations dlg
-                WHERE dlg.to_user_id = :leaderId
+                WHERE dlg.from_user_id = d.current_handler_id
+                  AND dlg.to_user_id = :leaderId
                   AND NOW() BETWEEN dlg.start_time AND dlg.end_time
+                  AND (
+                      NOT EXISTS (SELECT 1 FROM sys_delegation_scopes sc WHERE sc.delegation_id = dlg.id)
+                      OR 
+                      EXISTS (
+                          SELECT 1 FROM sys_delegation_scopes sc 
+                          WHERE sc.delegation_id = dlg.id 
+                            AND sc.scope_type = 'DOMAIN' 
+                            AND sc.scope_value = s.domain
+                      )
+                      OR
+                      EXISTS (
+                          SELECT 1 FROM sys_delegation_scopes sc 
+                          WHERE sc.delegation_id = dlg.id 
+                            AND sc.scope_type = 'SERVICE' 
+                            AND sc.scope_value = s.service_code
+                      )
+                  )
           )
           AND (:applicantName IS NULL OR u_applicant.full_name LIKE CONCAT('%', :applicantName, '%'))
           AND (:domain IS NULL OR s.domain = :domain)
@@ -133,12 +179,37 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
      * @param status Trạng thái hồ sơ (ví dụ: 'VERIFIED')
      */
     @Query(value = """
-        SELECT COUNT(*) 
+        SELECT COUNT(d.id) 
         FROM ops_dossiers d
+        JOIN cat_services s ON d.service_id = s.id
         JOIN sys_user_delegations del ON d.current_handler_id = del.from_user_id
         WHERE del.to_user_id = :delegateeId
-          AND CURRENT_TIMESTAMP BETWEEN del.start_time AND del.end_time
+          AND NOW() BETWEEN del.start_time AND del.end_time
           AND d.dossier_status = :status
+          AND (
+              -- Trường hợp 1: Không có scope nào (Ủy quyền toàn bộ)
+              NOT EXISTS (SELECT 1 FROM sys_delegation_scopes sc WHERE sc.delegation_id = del.id)
+              
+              OR 
+              
+              -- Trường hợp 2: Có scope khớp với DOMAIN
+              EXISTS (
+                  SELECT 1 FROM sys_delegation_scopes sc 
+                  WHERE sc.delegation_id = del.id 
+                    AND sc.scope_type = 'DOMAIN' 
+                    AND sc.scope_value = s.domain
+              )
+              
+              OR
+              
+              -- Trường hợp 3: Có scope khớp với SERVICE_CODE
+              EXISTS (
+                  SELECT 1 FROM sys_delegation_scopes sc 
+                  WHERE sc.delegation_id = del.id 
+                    AND sc.scope_type = 'SERVICE' 
+                    AND sc.scope_value = s.service_code
+              )
+          )
         """, nativeQuery = true)
     long countDelegatedDossiers(@Param("delegateeId") Long delegateeId,
                                 @Param("status") String status);
