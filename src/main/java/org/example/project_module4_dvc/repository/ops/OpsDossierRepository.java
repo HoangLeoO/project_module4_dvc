@@ -1,17 +1,12 @@
 package org.example.project_module4_dvc.repository.ops;
 
-import jakarta.transaction.Transactional;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.CitizenNotificationProjection;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierDetailDTO;
 import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
-import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
-
-import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,38 +16,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import java.time.LocalDateTime;
-
-
-
-
 
 @Repository
 public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
-    Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus,String departmentName, Pageable pageable);
+    Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus, String departmentName, Pageable pageable);
 
     Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndCurrentHandler_Id(String dossierStatus, String receivingDeptDeptName, Long currentHandlerId, Pageable pageable);
+
     @Query("""
-    select hs
-    from OpsDossier hs
-    where hs.dueDate > :now
-      and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
-      and hs.receivingDept.deptName = :departmentName
-""")
+                select hs
+                from OpsDossier hs
+                where hs.dueDate > :now
+                  and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+                  and hs.receivingDept.deptName = :departmentName
+            """)
     List<OpsDossier> findNearlyDue(
             @Param("now") LocalDateTime now,
             @Param("limit") LocalDateTime limit,
             @Param("departmentName") String departmentName
     );
 
+    @Query("""
+                select hs
+                from OpsDossier hs
+                where hs.dueDate > :now
+                  and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+                  and hs.receivingDept.deptName = :departmentName
+                              and  hs.currentHandler.id = :specialistId
+            """)
+    List<OpsDossier> findNearlyDueSpecialist(
+            @Param("now") LocalDateTime now,
+            @Param("limit") LocalDateTime limit,
+            @Param("departmentName") String departmentName,
+            @Param("specialistId") Long specialistId
+    );
+
     // Tổng hồ sơ trong tháng
     @Query("""
-        SELECT COUNT(d)
-        FROM OpsDossier d
-        WHERE MONTH(d.submissionDate) = MONTH(CURRENT_DATE)
-          AND YEAR(d.submissionDate) = YEAR(CURRENT_DATE)
-    """)
+                SELECT COUNT(d)
+                FROM OpsDossier d
+                WHERE MONTH(d.submissionDate) = MONTH(CURRENT_DATE)
+                  AND YEAR(d.submissionDate) = YEAR(CURRENT_DATE)
+            """)
     long countThisMonth();
 
     // Đếm theo trạng thái
@@ -60,54 +66,56 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
     // Đếm hồ sơ quá hạn
     @Query("""
-        SELECT COUNT(d)
-        FROM OpsDossier d
-        WHERE d.dossierStatus NOT IN ('APPROVED', 'REJECTED')
-          AND d.dueDate < CURRENT_TIMESTAMP
-    """)
+                SELECT COUNT(d)
+                FROM OpsDossier d
+                WHERE d.dossierStatus NOT IN ('APPROVED', 'REJECTED')
+                  AND d.dueDate < CURRENT_TIMESTAMP
+            """)
     long countOverdue();
 
     // Biểu đồ: domain + status
     @Query("""
-        SELECT d.service.domain, d.dossierStatus, COUNT(d)
-        FROM OpsDossier d
-        GROUP BY d.service.domain, d.dossierStatus
-    """)
+                SELECT d.service.domain, d.dossierStatus, COUNT(d)
+                FROM OpsDossier d
+                GROUP BY d.service.domain, d.dossierStatus
+            """)
     List<Object[]> countByDomainAndStatus();
 
     // Danh sách domain
     @Query("""
-        SELECT DISTINCT d.service.domain
-        FROM OpsDossier d
-        ORDER BY d.service.domain
-    """)
+                SELECT DISTINCT d.service.domain
+                FROM OpsDossier d
+                ORDER BY d.service.domain
+            """)
     List<String> findAllDomains();
+
     // Danh sách hồ sơ quá hạn
     @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus NOT IN ('APPROVED','REJECTED') AND d.dueDate < CURRENT_TIMESTAMP")
     List<OpsDossier> findOverdueDossiers();
+
     // Danh sách hồ sơ không ở trong trạng thái cho trước
     List<OpsDossier> findByDossierStatusNotIn(List<String> statusList);
+
     // Phân trang theo trạng thái
     Page<OpsDossier> findOpsDossierByDossierStatus(String dossierStatus, Pageable pageable);
 
     // Tìm hồ sơ gần đến hạn (trạng thái NEW)
     @Query("""
-    select hs
-    from OpsDossier hs
-    where hs.dueDate > :now
-      and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
-""")
+                select hs
+                from OpsDossier hs
+                where hs.dueDate > :now
+                  and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+            """)
     List<OpsDossier> findNearlyDue(
             @Param("now") LocalDateTime now,
             @Param("limit") LocalDateTime limit
     );
 
 
-
     /**
      * CÁCH 1: Constructor-based Projection với JPQL
      * Lấy thông tin chi tiết hồ sơ từ nhiều bảng
-     *
+     * <p>
      * Ưu điểm:
      * - Chỉ SELECT các field cần thiết (không load toàn bộ entity)
      * - Hiệu suất tốt
@@ -203,21 +211,21 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
     /**
      * đã xong/
-     *
+     * <p>
      * //----------------------------------------------------------------------------------------------------//
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
      * /**
      * Tìm hồ sơ theo cán bộ thụ lý
      */
@@ -227,7 +235,6 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     // ORDER BY l.createdAt ASC
     // """)
     // List<OpsDossierLog> findLogsByDossierId(@Param("dossierId") Long dossierId);
-
     @Query(value = """
                 SELECT
                     d.id AS dossierId,
@@ -265,93 +272,95 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
     // lấy phân trang cảnh báo hồ sơ quá hạn và sắp đến hạn
     @Query(value = """
-    SELECT 
-        d.id AS id,
-        d.dossier_code AS code,
-        s.domain AS domain,
-        ABS(DATEDIFF(d.due_date, NOW())) AS days,
-        'OVERDUE' AS type
-    FROM ops_dossiers d
-    JOIN cat_services s ON d.service_id = s.id
-    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-      AND d.due_date < NOW()
-    ORDER BY d.due_date ASC
-""",
+                SELECT 
+                    d.id AS id,
+                    d.dossier_code AS code,
+                    s.domain AS domain,
+                    ABS(DATEDIFF(d.due_date, NOW())) AS days,
+                    'OVERDUE' AS type
+                FROM ops_dossiers d
+                JOIN cat_services s ON d.service_id = s.id
+                WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+                  AND d.due_date < NOW()
+                ORDER BY d.due_date ASC
+            """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM ops_dossiers d
-    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-      AND d.due_date < NOW()
-""",
+                        SELECT COUNT(*)
+                        FROM ops_dossiers d
+                        WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+                          AND d.due_date < NOW()
+                    """,
             nativeQuery = true)
     Page<Map<String, Object>> findOverdueAlerts(Pageable pageable);
 
     // lấy phân trang cảnh báo hồ sơ sắp đến hạn
     @Query(value = """
-    SELECT 
-        d.id AS id,
-        d.dossier_code AS code,
-        s.domain AS domain,
-        DATEDIFF(d.due_date, NOW()) AS days,
-        'NEARLY_DUE' AS type
-    FROM ops_dossiers d
-    JOIN cat_services s ON d.service_id = s.id
-    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-      AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
-    ORDER BY d.due_date ASC
-""",
+                SELECT 
+                    d.id AS id,
+                    d.dossier_code AS code,
+                    s.domain AS domain,
+                    DATEDIFF(d.due_date, NOW()) AS days,
+                    'NEARLY_DUE' AS type
+                FROM ops_dossiers d
+                JOIN cat_services s ON d.service_id = s.id
+                WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+                  AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+                ORDER BY d.due_date ASC
+            """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM ops_dossiers d
-    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-      AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
-""",
+                        SELECT COUNT(*)
+                        FROM ops_dossiers d
+                        WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+                          AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+                    """,
             nativeQuery = true)
     Page<Map<String, Object>> findNearlyDueAlerts(Pageable pageable);
+
     // đem số hồ sơ hoàn thành
     @Query("""
-    SELECT COUNT(d)
-    FROM OpsDossier d
-    WHERE d.dossierStatus = 'COMPLETED'
-      AND d.finishDate IS NOT NULL
-""")
+                SELECT COUNT(d)
+                FROM OpsDossier d
+                WHERE d.dossierStatus = 'COMPLETED'
+                  AND d.finishDate IS NOT NULL
+            """)
     long countCompleted();
+
     // đêm số hồ sơ hoàn thành đúng hạn
     @Query("""
-    SELECT COUNT(d)
-    FROM OpsDossier d
-    WHERE d.dossierStatus = 'COMPLETED'
-      AND d.finishDate IS NOT NULL
-      AND d.dueDate IS NOT NULL
-      AND d.finishDate <= d.dueDate
-""")
+                SELECT COUNT(d)
+                FROM OpsDossier d
+                WHERE d.dossierStatus = 'COMPLETED'
+                  AND d.finishDate IS NOT NULL
+                  AND d.dueDate IS NOT NULL
+                  AND d.finishDate <= d.dueDate
+            """)
     long countCompletedOnTime();
 
     // đếm tổng số hồ sơ
     @Query("""
-    SELECT COUNT(d)
-    FROM OpsDossier d
-    WHERE d.dossierStatus <> 'REJECTED'
-""")
+                SELECT COUNT(d)
+                FROM OpsDossier d
+                WHERE d.dossierStatus <> 'REJECTED'
+            """)
     long countTotalForKpi();
 
     // đếm số hồ sơ hoàn thành đúng hạn
     @Query("""
-    SELECT COUNT(d)
-    FROM OpsDossier d
-    WHERE
-        (
-            d.dossierStatus = 'COMPLETED'
-            AND d.finishDate IS NOT NULL
-            AND d.dueDate IS NOT NULL
-            AND d.finishDate <= d.dueDate
-        )
-        OR
-        (
-            d.dossierStatus <> 'COMPLETED'
-            AND d.dueDate IS NOT NULL
-            AND d.dueDate >= CURRENT_TIMESTAMP
-        )
-""")
+                SELECT COUNT(d)
+                FROM OpsDossier d
+                WHERE
+                    (
+                        d.dossierStatus = 'COMPLETED'
+                        AND d.finishDate IS NOT NULL
+                        AND d.dueDate IS NOT NULL
+                        AND d.finishDate <= d.dueDate
+                    )
+                    OR
+                    (
+                        d.dossierStatus <> 'COMPLETED'
+                        AND d.dueDate IS NOT NULL
+                        AND d.dueDate >= CURRENT_TIMESTAMP
+                    )
+            """)
     long countOnTimeForKpi();
 }

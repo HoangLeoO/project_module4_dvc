@@ -19,6 +19,18 @@ public class DossierApprovalSummaryDTO {
     private String dossierStatus;
     private LocalDateTime finishDate;
     private Long daysLeft; // Changed to Long for calculation flexibility
+    private java.util.Map<String, Object> formData;
+
+    public String getFormDataJson() {
+        if (formData == null) return "{}";
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
+                    .writeValueAsString(formData);
+        } catch (Exception e) {
+            return "{}";
+        }
+    }
 
     // Constructor for JPQL (Finish Date can be null, Days Left calculation logic can be handled here or in query)
     public DossierApprovalSummaryDTO(Long id, String dossierCode, String applicantName, String service_name, String domain, String deptName, String currentHandlerName, String dossierStatus, LocalDateTime finishDate) {
@@ -34,7 +46,7 @@ public class DossierApprovalSummaryDTO {
     }
     
     // Constructor matching the fields used in JPQL
-    public DossierApprovalSummaryDTO(Long id, String dossierCode, String applicantName, String service_name, String domain, String deptName, String currentHandlerName, String dossierStatus, LocalDateTime finishDate, Long daysLeft) {
+    public DossierApprovalSummaryDTO(Long id, String dossierCode, String applicantName, String service_name, String domain, String deptName, String currentHandlerName, String dossierStatus, LocalDateTime finishDate, Long daysLeft, java.util.Map<String, Object> formData) {
         this.id = id;
         this.dossierCode = dossierCode;
         this.applicantName = applicantName;
@@ -45,5 +57,6 @@ public class DossierApprovalSummaryDTO {
         this.dossierStatus = dossierStatus;
         this.finishDate = finishDate;
         this.daysLeft = daysLeft;
+        this.formData = formData;
     }
 }

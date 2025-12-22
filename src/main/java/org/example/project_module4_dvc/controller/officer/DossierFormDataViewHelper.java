@@ -12,20 +12,18 @@ public class DossierFormDataViewHelper {
             return "components/form/formData/birth-registration :: form-detail";
         } else if (serviceId.equals(BigInteger.valueOf(2))) { // Mã thủ tục Kết hôn
             return "components/form/formData/marriage-registration :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(3))) { // Mã thủ tục Đất đai - Đăng ký thay đổi
-            return "components/form/formData/land-change-registration :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(4))) { // Mã thủ tục Cư trú
-            return "components/form/formData/residence-registration :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(5))) { // Mã thủ tục Đất đai - Thay đổi mục đích
-            return "components/form/formData/land-purpose-change :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(6))) { // Mã thủ tục Đất đai - Tách/Hợp nhất
-            return "components/form/formData/land-split-merge :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(7))) { // Mã thủ tục Tử vong
+        } else if (serviceId.equals(BigInteger.valueOf(3))) {
             return "components/form/formData/death-registration :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(8))) { // Mã thủ tục Kinh doanh hộ gia đình
-            return "components/form/formData/household-business-registration :: form-detail";
-        } else if (serviceId.equals(BigInteger.valueOf(9))) { // Mã thủ tục Giấy chứng nhận tình trạng hôn nhân
+        } else if (serviceId.equals(BigInteger.valueOf(4))) {
             return "components/form/formData/marital-status-certificate :: form-detail";
+        } else if (serviceId.equals(BigInteger.valueOf(5))) {
+            return "components/form/formData/land-registration :: form-detail";
+        } else if (serviceId.equals(BigInteger.valueOf(6))) {
+            return "components/form/formData/land-purpose-change :: form-detail";
+        } else if (serviceId.equals(BigInteger.valueOf(7))) {
+            return "components/form/formData/land-split-merge :: form-detail";
+        } else if (serviceId.equals(BigInteger.valueOf(8))) {
+            return "components/form/formData/household-business-registration :: form-detail";
         }
         return "components/forms/default-form :: form-detail";
     }

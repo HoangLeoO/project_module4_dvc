@@ -4,19 +4,19 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Số chứng chỉ đất</label>
-                <input type="text" class="form-control fw-bold" th:value="${formData.landCertificateNumber}" readonly>
+                <input type="text" class="form-control fw-bold" th:value="${formData.landCertificateNumber ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số thửa đất</label>
-                <input type="text" class="form-control" th:value="${formData.landPlotNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.landPlotNumber ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số tờ bản đồ</label>
-                <input type="text" class="form-control" th:value="${formData.mapSheetNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.mapSheetNumber ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Diện tích (m²)</label>
-                <input type="text" class="form-control" th:value="${formData.landAreaM2}" readonly>
+                <input type="text" class="form-control" th:value="${formData.landAreaM2 ?: ''}" readonly>
             </div>
         </div>
 
@@ -24,11 +24,11 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Mục đích sử dụng hiện tại</label>
-                <input type="text" class="form-control" th:value="${formData.currentLandPurpose}" readonly>
+                <input type="text" class="form-control" th:value="${formData.currentLandPurpose ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Mục đích sử dụng yêu cầu</label>
-                <input type="text" class="form-control" th:value="${formData.requestedLandPurpose}" readonly>
+                <input type="text" class="form-control" th:value="${formData.requestedLandPurpose ?: ''}" readonly>
             </div>
         </div>
 
@@ -36,11 +36,11 @@
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label small">Lý do thay đổi</label>
-                <textarea class="form-control" th:value="${formData.reasonForChange}" readonly></textarea>
+                <textarea class="form-control" th:value="${formData.reasonForChange ?: ''}" readonly></textarea>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Cam kết</label>
-                <textarea class="form-control" th:value="${formData.commitment}" readonly></textarea>
+                <textarea class="form-control" th:value="${formData.commitment ?: ''}" readonly></textarea>
             </div>
         </div>
     </form>

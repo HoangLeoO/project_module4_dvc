@@ -5,7 +5,7 @@
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên</label>
                 <input type="text" class="form-control fw-bold"
-                       th:value="${formData.childFullName}" readonly>
+                       th:value="${formData.childFullName ?: ''}" readonly>
             </div>
 
             <div class="col-md-3">
@@ -22,7 +22,7 @@
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Nơi sinh</label>
-                <input type="text" class="form-control" th:value="${formData.placeOfBirth}" readonly>
+                <input type="text" class="form-control" th:value="${formData.placeOfBirth ?: ''}" readonly>
             </div>
         </div>
 
@@ -30,11 +30,11 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên mẹ</label>
-                <input type="text" class="form-control" th:value="${formData.motherFullName}" readonly>
+                <input type="text" class="form-control" th:value="${formData.motherFullName ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số CCCD/CMND</label>
-                <input type="text" class="form-control" th:value="${formData.motherIdNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.motherIdNumber ?: ''}" readonly>
             </div>
         </div>
 
@@ -42,11 +42,11 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên cha</label>
-                <input type="text" class="form-control" th:value="${formData.fatherFullName}" readonly>
+                <input type="text" class="form-control" th:value="${formData.fatherFullName ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số CCCD/CMND</label>
-                <input type="text" class="form-control" th:value="${formData.fatherIdNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.fatherIdNumber ?: ''}" readonly>
             </div>
         </div>
 
@@ -54,7 +54,7 @@
         <div class="row g-3">
             <div class="col-md-12 mb-3">
                 <label class="form-label small">Địa chỉ đăng ký thường trú</label>
-                <input type="text" class="form-control" th:value="${formData.registeredAddress}" readonly>
+                <input type="text" class="form-control" th:value="${formData.registeredAddress ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <div class="form-check form-switch">

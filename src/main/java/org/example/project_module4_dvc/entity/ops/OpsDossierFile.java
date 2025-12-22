@@ -40,8 +40,8 @@ public class OpsDossierFile {
     @Size(max = 500, message = "Đường dẫn tệp không được vượt quá 500 ký tự")
     private String fileUrl;
 
-    @Column(name = "file_type", nullable = false, length = 20)
+    @Column(name = "file_type", nullable = false, length = 100)
     @NotBlank(message = "Loại tệp không được để trống")
-    @Size(max = 20, message = "Loại tệp không được vượt quá 20 ký tự")
+    @Size(max = 100, message = "Loại tệp không được vượt quá 100 ký tự")
     private String fileType; // PDF, DOCX, JPG...
 }

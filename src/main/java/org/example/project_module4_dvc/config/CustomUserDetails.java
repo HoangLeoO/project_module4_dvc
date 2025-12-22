@@ -11,9 +11,11 @@ public class CustomUserDetails extends User {
     private final String fullName;
     private final String departmentName;
 
+
+
     public CustomUserDetails(Long userId, String username, String password,
-            Collection<? extends GrantedAuthority> authorities, String fullName, String departmentName,
-            Long citizenId) {
+                             Collection<? extends GrantedAuthority> authorities, String fullName, String departmentName,
+                             Long citizenId) {
         super(username, password, authorities);
         this.userId = userId;
         this.fullName = fullName;
@@ -36,4 +38,6 @@ public class CustomUserDetails extends User {
     public String getDepartmentName() {
         return departmentName;
     }
+
+
 }
