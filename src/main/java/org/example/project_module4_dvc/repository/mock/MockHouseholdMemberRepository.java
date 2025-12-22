@@ -9,5 +9,8 @@ import java.util.List;
 @Repository
 public interface MockHouseholdMemberRepository extends JpaRepository<MockHouseholdMember, Long> {
     List<MockHouseholdMember> findByCitizen_IdAndStatus(Long citizenId, Integer status);
+
     List<MockHouseholdMember> findByCitizen_CccdAndStatus(String cccd, Integer status);
+
+    List<MockHouseholdMember> findByHousehold_IdAndStatus(Long householdId, Integer status);
 }

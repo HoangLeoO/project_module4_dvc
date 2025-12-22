@@ -77,6 +77,88 @@
                     </div>
                 </div>
 
+                <!-- Form Data Display (Added) -->
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4"
+                    th:if="${d.serviceCode == 'HK01_TRE' && d.formData != null}">
+                    <h5 class="fw-bold text-dark mb-4 border-start border-4 border-success ps-3">Thông tin đăng ký khai
+                        sinh
+                    </h5>
+
+                    <div class="row g-3">
+                        <!-- Child Info -->
+                        <div class="col-12">
+                            <h6 class="text-primary fw-bold mb-3"><i class="bi bi-person-badge me-2"></i>Thông tin Trẻ
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-muted d-block">Họ và tên</label>
+                                    <span class="fw-bold" th:text="${d.formData['childFullName']}">---</span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="small text-muted d-block">Giới tính</label>
+                                    <span class="fw-bold" th:switch="${d.formData['gender']}">
+                                        <span th:case="'MALE'">Nam</span>
+                                        <span th:case="'FEMALE'">Nữ</span>
+                                        <span th:case="*">---</span>
+                                    </span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="small text-muted d-block">Ngày sinh</label>
+                                    <span class="fw-bold" th:if="${d.formData['dateOfBirth'] != null}"
+                                        th:with="dobStr=${d.formData['dateOfBirth'].toString()}"
+                                        th:text="${dobStr.contains('-') ? #strings.substring(dobStr,8,10) + '/' + #strings.substring(dobStr,5,7) + '/' + #strings.substring(dobStr,0,4) : dobStr}">---</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-muted d-block">Dân tộc</label>
+                                    <span class="fw-bold" th:text="${d.formData['childEthnicity']}">---</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-muted d-block">Nơi sinh</label>
+                                    <span class="fw-bold" th:text="${d.formData['placeOfBirth']}">---</span>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="small text-muted d-block">Nơi đăng ký khai sinh</label>
+                                    <span class="fw-bold" th:text="${d.formData['registeredAddress']}">---</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parents Info -->
+                        <div class="col-12">
+                            <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-people me-2"></i>Thông
+                                tin Cha Mẹ</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="bg-light p-3 rounded h-100">
+                                        <div class="fw-bold mb-2 text-dark">THÔNG TIN CHA</div>
+                                        <div class="mb-1">
+                                            <span class="small text-muted">Họ tên:</span>
+                                            <span class="fw-bold" th:text="${d.formData['fatherFullName']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">CCCD:</span>
+                                            <span class="fw-bold" th:text="${d.formData['fatherIdNumber']}">---</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bg-light p-3 rounded h-100">
+                                        <div class="fw-bold mb-2 text-dark">THÔNG TIN MẸ</div>
+                                        <div class="mb-1">
+                                            <span class="small text-muted">Họ tên:</span>
+                                            <span class="fw-bold" th:text="${d.formData['motherFullName']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">CCCD:</span>
+                                            <span class="fw-bold" th:text="${d.formData['motherIdNumber']}">---</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- History Timeline -->
                 <div class="card card-modern border-0 shadow-sm p-4 mb-4">
                     <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Lịch sử xử lý</h5>

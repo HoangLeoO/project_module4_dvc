@@ -325,6 +325,16 @@ public class OpsDossierService implements IOpsDossierService {
             }
         }
 
+        // Check Overdue Note
+        String internalNote = null;
+        if (request.getChildDob() != null) {
+            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(request.getChildDob(),
+                    java.time.LocalDate.now());
+            if (daysBetween > 60) {
+                internalNote = "CẢNH BÁO: Đăng ký khai sinh quá hạn (quá " + daysBetween + " ngày).";
+            }
+        }
+
         OpsDossier dossier = OpsDossier.builder()
                 .dossierCode(nextCode)
                 .dossierStatus("NEW")
@@ -334,6 +344,7 @@ public class OpsDossierService implements IOpsDossierService {
                 .service(service)
                 .applicant(applicant)
                 .formData(formData)
+                .note(internalNote)
                 .build();
 
         opsDossierRepository.save(dossier);

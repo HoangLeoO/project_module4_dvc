@@ -244,6 +244,7 @@
                                 <label class="form-label">Họ và tên trẻ <span class="text-danger">*</span></label>
                                 <input type="text" id="childName" class="form-control text-uppercase"
                                     placeholder="VD: LÊ VĂN A" required>
+                                <p class="invalid-feedback" id="childNameError" style="display: none;"></p>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Giới tính <span class="text-danger">*</span></label>
@@ -252,20 +253,24 @@
                                     <option value="MALE">Nam</option>
                                     <option value="FEMALE">Nữ</option>
                                 </select>
+                                <p class="invalid-feedback" id="childGenderError" style="display: none;"></p>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
                                 <input type="date" id="childDob" class="form-control" required>
+                                <p class="invalid-feedback" id="childDobError" style="display: none;"></p>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Dân tộc <span class="text-danger">*</span></label>
                                 <input type="text" id="childEthnicity" class="form-control" value="Kinh" required>
+                                <p class="invalid-feedback" id="childEthnicityError" style="display: none;"></p>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Nơi sinh (Cơ sở y tế) <span
                                         class="text-danger">*</span></label>
                                 <input type="text" id="childBirthPlace" class="form-control"
                                     placeholder="VD: Bệnh viện Phụ sản - Nhi Đà Nẵng" required>
+                                <p class="invalid-feedback" id="childBirthPlaceError" style="display: none;"></p>
                             </div>
                             <div class="col-12 mt-2">
                                 <label class="form-label">Nơi đăng ký khai sinh <span
@@ -273,16 +278,7 @@
                                 <input type="text" id="registeredAddress" class="form-control"
                                     placeholder="VD: Phường Hải Châu, Quận Hải Châu, TP Đà Nẵng" required
                                     th:value="${citizen.permanentAddress}">
-                            </div>
-                            <div class="col-12 mt-3">
-                                <div class="form-check form-switch p-3 border rounded bg-light">
-                                    <input class="form-check-input ms-0" type="checkbox" id="requestBhyt" checked>
-                                    <label class="form-check-label ms-2 fw-bold" for="requestBhyt">
-                                        Đăng ký cấp thẻ BHYT miễn phí cho trẻ
-                                    </label>
-                                    <p class="small text-muted mb-0 ms-2">Thẻ sẽ được chuyển phát về địa chỉ thường trú
-                                        của mẹ.</p>
-                                </div>
+                                <p class="invalid-feedback" id="registeredAddressError" style="display: none;"></p>
                             </div>
                         </div>
 
@@ -293,16 +289,11 @@
                         </div>
 
                         <div id="paternitySection" class="alert alert-warning mt-3 d-none">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="confirmPaternity"
-                                    onchange="togglePaternityUpload()">
-                                <label class="form-check-label fw-bold" for="confirmPaternity">
-                                    Đăng ký đồng thời thủ tục Nhận cha, mẹ, con
-                                </label>
-                            </div>
-                            <div id="paternityUploadHint" class="mt-1 ps-4 small text-muted d-none">
-                                * Sẽ yêu cầu đính kèm văn bản chứng minh quan hệ ở bước tiếp theo.
-                            </div>
+                            <i class="bi bi-bell-fill me-2 animated-bell"></i>
+                            <strong>Thông báo:</strong> Người cha chưa đăng ký kết hôn với mẹ của trẻ. Vui lòng nộp bổ
+                            sung hồ sơ thủ tục nhận con để hoàn tất thông tin khai sinh.
+                            <!-- Hidden input to track state -->
+                            <input type="hidden" id="isPaternityRequired" value="false">
                         </div>
                     </div>
                 </div>
@@ -334,10 +325,11 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="fw-bold mb-1 text-warning">Văn bản chứng minh quan hệ Cha -
-                                                Con</span>
+                                            <h6 class="fw-bold mb-1 text-warning">Hồ sơ thủ tục nhận con <span
+                                                    class="text-danger">*</span>
                                             </h6>
-                                            <p class="small text-muted mb-0">Cần thiết cho thủ tục nhận Cha, Mẹ, Con.
+                                            <p class="small text-muted mb-0">Văn bản chứng minh quan hệ Cha - Con và các
+                                                giấy tờ liên quan.
                                             </p>
                                         </div>
                                         <button class="btn btn-warning btn-sm text-white"><i
@@ -463,11 +455,25 @@
         function validateStep(step) {
             if (step === 1) {
                 let isValid = true;
-                const setError = (id, cond) => {
+                const setError = (id, cond, msg = '') => {
                     const el = document.getElementById(id);
+                    const errorEl = document.getElementById(id + 'Error');
                     if (el) {
-                        if (!cond) { el.classList.add('is-invalid'); isValid = false; }
-                        else el.classList.remove('is-invalid');
+                        if (!cond) {
+                            el.classList.add('is-invalid');
+                            isValid = false;
+                            if (errorEl) {
+                                errorEl.innerText = msg;
+                                errorEl.style.display = 'block';
+                            }
+                        }
+                        else {
+                            el.classList.remove('is-invalid');
+                            if (errorEl) {
+                                errorEl.style.display = 'none';
+                                errorEl.innerText = '';
+                            }
+                        }
                     }
                 };
 
@@ -497,30 +503,78 @@
                     return false;
                 }
 
-                setError('childName', document.getElementById('childName').value.trim() !== '');
-                setError('childGender', document.getElementById('childGender').value !== '');
+                // Name Validation (Strict Vietnamese Reference)
+                const childNameEl = document.getElementById('childName');
+                let childNameVal = childNameEl.value.trim();
+
+                // Auto-format to Title Case (e.g., "nguyen  van  a" -> "Nguyễn Văn A")
+                if (childNameVal) {
+                    childNameVal = childNameVal
+                        .toLowerCase()
+                        .split(' ')
+                        .filter(word => word.length > 0)
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    childNameEl.value = childNameVal;
+                }
+
+                // Regex for validation: 
+                // 1. No special chars/numbers (only letters and spaces)
+                const hasSpecialChars = /[^a-zA-Z\sàáâãèéêìíòóôõùúăđĩũơưạ-ỹÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯẠ-Ỹ]/.test(childNameVal);
+                const words = childNameVal.split(' ');
+
+                if (childNameVal === '') {
+                    setError('childName', false, 'Vui lòng nhập họ và tên trẻ.');
+                } else if (hasSpecialChars) {
+                    setError('childName', false, 'Tên trẻ chỉ được chứa chữ cái tiếng Việt (không chứa số hay ký tự đặc biệt)!');
+                } else if (words.length < 2) {
+                    setError('childName', false, 'Tên trẻ ít nhất 2 từ  (Họ + Tên)!');
+                } else {
+                    setError('childName', true);
+                }
+
+                setError('childGender', document.getElementById('childGender').value !== '', 'Vui lòng chọn giới tính.');
 
                 // Date Validation
                 const childDobVal = document.getElementById('childDob').value;
                 if (!childDobVal) {
-                    setError('childDob', false);
-                    isValid = false;
+                    setError('childDob', false, 'Vui lòng chọn ngày sinh.');
                 } else {
                     const dobDate = new Date(childDobVal);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0); // normalize today
 
                     if (dobDate > today) {
-                        setError('childDob', false);
-                        showModal("Ngày sinh của trẻ không được lớn hơn ngày hiện tại!", 'error');
-                        return false;
+                        setError('childDob', false, 'Ngày sinh của trẻ không được lớn hơn ngày hiện tại!');
                     } else {
-                        setError('childDob', true);
+                        // Check overdue (> 60 days)
+                        // Time difference in milliseconds
+                        const diffTime = today.getTime() - dobDate.getTime();
+                        // Convert to days
+                        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (diffDays > 60) {
+                            // Use warning style for this specific case if 'is-invalid' is too strong,
+                            // or just keep it valid but show warning text? 
+                            // The request was "hien thi loi", so warning might not count as error blocking submit.
+                            // Current logic was: warning only, valid stays true.
+                            // Let's implement inline warning:
+                            const dobErrorEl = document.getElementById('childDobError');
+                            if (dobErrorEl) {
+                                dobErrorEl.innerText = "CẢNH BÁO: Đăng ký khai sinh quá hạn (quá 60 ngày kể từ ngày sinh)!";
+                                dobErrorEl.className = "small text-danger d-block mt-1"; // Use danger text for visibility even if valid
+                            }
+                            // We still allow it valid
+                            document.getElementById('childDob').classList.remove('is-invalid');
+                        } else {
+                            setError('childDob', true);
+                        }
                     }
                 }
 
-                setError('childEthnicity', document.getElementById('childEthnicity').value.trim() !== '');
-                setError('childBirthPlace', document.getElementById('childBirthPlace').value.trim() !== '');
+                setError('childEthnicity', document.getElementById('childEthnicity').value.trim() !== '', 'Vui lòng nhập dân tộc.');
+                setError('childBirthPlace', document.getElementById('childBirthPlace').value.trim() !== '', 'Vui lòng nhập nơi sinh.');
+                setError('registeredAddress', document.getElementById('registeredAddress').value.trim() !== '', 'Vui lòng nhập nơi đăng ký khai sinh.');
 
                 return isValid;
             }
@@ -531,24 +585,38 @@
 
         function checkMotherSingleLogic() {
             const gender = document.getElementById('applicantGender').value;
-            const status = document.getElementById('applicantMaritalStatus').value; // 'single' or 'married' (mapped from server)
+            const status = document.getElementById('applicantMaritalStatus').value;
             const fatherId = document.getElementById('fatherId').value.trim();
-            const motherId = document.getElementById('motherId').value.trim();
             const section = document.getElementById('paternitySection');
             const check = document.getElementById('confirmPaternity');
 
-            // Logic: If NOT married AND valid parent info present -> Require Paternity Recognition
-            // Note: status is mapped to 'single' or 'married' in hidden input, but lets be robust
-            if (status !== 'married') {
-                if ((gender === 'MALE' && motherId) || (gender === 'FEMALE' && fatherId)) {
+            // Đã kết hôn -> Ẩn hoàn toàn
+            if (status === 'married') {
+                section.classList.add('d-none');
+                check.checked = false;
+                check.disabled = false;
+            } else {
+                // Chưa kết hôn (Single)
+                if (gender === 'MALE') {
+                    // Nam độc thân: Bắt buộc
                     section.classList.remove('d-none');
-                    // check.checked = true; // Relaxed: let user decide
-                    togglePaternityUpload();
-                    return;
+                    check.checked = true;
+                    check.disabled = true;
+                } else {
+                    // Nữ độc thân:
+                    if (fatherId) {
+                        // Có nhập cha -> Bắt buộc
+                        section.classList.remove('d-none');
+                        check.checked = true;
+                        check.disabled = true;
+                    } else {
+                        // Không nhập cha -> Ẩn
+                        section.classList.add('d-none');
+                        check.checked = false;
+                        check.disabled = false;
+                    }
                 }
             }
-            section.classList.add('d-none');
-            check.checked = false; // Reset if conditions not met
             togglePaternityUpload();
         }
 
@@ -652,8 +720,6 @@
                     idInput.classList.add('is-invalid');
                     showModal("Không tìm thấy thông tin công dân.", 'error');
                 }
-            } catch (error) {
-                showModal("Lỗi kết nối.", 'error');
             } finally {
                 btn.innerHTML = '<i class="bi bi-search"></i>';
                 btn.disabled = false;
@@ -668,24 +734,45 @@
             document.getElementById(role + 'Display').classList.add('d-none');
             document.getElementById(role + 'Input').classList.remove('d-none');
             checkRevealChildSection();
+            checkMotherSingleLogic();
         }
 
         function checkRevealChildSection() {
             const gender = document.getElementById('applicantGender').value;
             const fatherId = document.getElementById('fatherId').value.trim();
-            const motherId = document.getElementById('motherId').value.trim();
             const childSection = document.getElementById('childSection');
+            const childInputs = childSection.querySelectorAll('input, select, textarea');
 
             let canReveal = false;
+            let canEdit = false;
+
             if (gender === 'MALE') {
-                if (verificationState.mother) canReveal = true;
+                // Nam: Luôn hiện child section
+                canReveal = true;
+                // Chỉ cho phép nhập khi đã xác thực Mẹ
+                canEdit = verificationState.mother;
             } else {
-                if (!fatherId) canReveal = true;
-                else if (verificationState.father) canReveal = true;
+                // Nữ: Luôn hiện child section
+                canReveal = true;
+                // Cho phép nhập nếu không có Cha HOẶC đã xác thực Cha
+                if (!fatherId) canEdit = true;
+                else if (verificationState.father) canEdit = true;
             }
 
-            if (canReveal) childSection.classList.remove('d-none');
-            else childSection.classList.add('d-none');
+            if (canReveal) {
+                childSection.classList.remove('d-none');
+                // Enable/Disable child inputs based on canEdit
+                childInputs.forEach(input => {
+                    input.disabled = !canEdit;
+                    if (!canEdit) {
+                        input.classList.add('bg-light');
+                    } else {
+                        input.classList.remove('bg-light');
+                    }
+                });
+            } else {
+                childSection.classList.add('d-none');
+            }
         }
 
         function formatDate(dateStr) {
@@ -756,31 +843,45 @@
         }
 
         function submitForm() {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/citizen/dossier/submit-birth-registration';
-            const addField = (n, v) => {
-                const i = document.createElement('input');
-                i.type = 'hidden'; i.name = n; i.value = v;
-                form.appendChild(i);
-            };
-            addField('serviceId', document.getElementById('serviceId').value);
-            addField('applicantGender', document.getElementById('applicantGender').value);
-            addField('applicantMaritalStatus', document.getElementById('applicantMaritalStatus').value);
-            addField('childName', document.getElementById('childName').value);
-            addField('childGender', document.getElementById('childGender').value.toUpperCase());
-            addField('childDob', document.getElementById('childDob').value);
-            addField('childEthnicity', document.getElementById('childEthnicity').value);
-            addField('childBirthPlace', document.getElementById('childBirthPlace').value);
-            addField('registeredAddress', document.getElementById('registeredAddress').value);
-            addField('requestBhyt', document.getElementById('requestBhyt').checked);
-            addField('fatherName', document.getElementById('fatherName').value);
-            addField('fatherId', document.getElementById('fatherId').value);
-            addField('motherName', document.getElementById('motherName').value);
-            addField('motherId', document.getElementById('motherId').value);
-            addField('isPaternityRecognition', document.getElementById('confirmPaternity').checked);
-            document.body.appendChild(form);
-            form.submit();
+            try {
+                console.log('Starting form submission...');
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/citizen/dossier/submit-birth-registration';
+                const addField = (n, v) => {
+                    const i = document.createElement('input');
+                    i.type = 'hidden'; i.name = n; i.value = v;
+                    form.appendChild(i);
+                    console.log(`Added field: ${n} = ${v}`);
+                };
+                addField('serviceId', document.getElementById('serviceId').value);
+                addField('applicantGender', document.getElementById('applicantGender').value);
+                addField('applicantMaritalStatus', document.getElementById('applicantMaritalStatus').value);
+                addField('childName', document.getElementById('childName').value);
+                addField('childGender', document.getElementById('childGender').value.toUpperCase());
+                addField('childDob', document.getElementById('childDob').value);
+                addField('childEthnicity', document.getElementById('childEthnicity').value);
+                addField('childBirthPlace', document.getElementById('childBirthPlace').value);
+                addField('registeredAddress', document.getElementById('registeredAddress').value);
+                addField('fatherName', document.getElementById('fatherName').value);
+                addField('fatherId', document.getElementById('fatherId').value);
+                addField('motherName', document.getElementById('motherName').value);
+                addField('motherId', document.getElementById('motherId').value);
+
+                // Paternity Logic
+                if (document.getElementById('isPaternityRequired').value === 'true') {
+                    addField('isPaternityRecognition', 'true');
+                } else {
+                    addField('isPaternityRecognition', 'false');
+                }
+
+                document.body.appendChild(form);
+                console.log('Form created and appended, submitting...');
+                form.submit();
+            } catch (error) {
+                console.error('Error in submitForm:', error);
+                showModal('Lỗi khi nộp hồ sơ: ' + error.message, 'error');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
