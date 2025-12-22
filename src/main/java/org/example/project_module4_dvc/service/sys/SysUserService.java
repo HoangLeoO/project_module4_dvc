@@ -5,6 +5,8 @@ import org.example.project_module4_dvc.repository.sys.SysUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class SysUserService implements ISysUserService {
 
@@ -14,5 +16,10 @@ public class SysUserService implements ISysUserService {
     @Override
     public SysUser findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public SysUser findById(Long userId) {
+        return  userRepository.findById(userId).orElse(null);
     }
 }

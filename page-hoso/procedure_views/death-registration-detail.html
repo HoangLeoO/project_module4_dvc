@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Thủ tục Hành chính - Đăng ký khai tử</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --background-color: #f8f9fa;
+            --text-color: #343a40;
+            --border-color: #dee2e6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 5px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        .header-meta {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            margin-right: 5px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-left: 5px solid var(--primary-color);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .info-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f3f5;
+            font-weight: 600;
+        }
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+        .step-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+        .step-item::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-size: 20px;
+            top: -5px;
+        }
+        .note {
+            background-color: #e2f0fb;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-meta">
+        <span class="badge">Mã thủ tục: 1.000656</span>
+        <span class="badge" style="background-color: var(--success-color);">Cấp thực hiện: Cấp Xã</span>
+        <span>Lĩnh vực: Hộ tịch</span>
+    </div>
+    <h1>Thủ tục đăng ký khai tử</h1>
+    
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">Cơ quan thực hiện</span>
+            Ủy ban Nhân dân xã, phường, thị trấn
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cách thức thực hiện</span>
+            Trực tiếp, Trực tuyến, Bưu chính
+        </div>
+        <div class="info-item">
+            <span class="info-label">Thời hạn giải quyết</span>
+            Ngay trong ngày (hoặc ngày làm việc tiếp theo nếu nhận sau 15h)
+        </div>
+        <div class="info-item">
+            <span class="info-label">Kết quả thực hiện</span>
+            Trích lục khai tử
+        </div>
+    </div>
+
+    <div class="section-title">Trình tự thực hiện</div>
+    <ul class="step-list">
+        <li class="step-item"><strong>Bước 1: Nộp hồ sơ</strong>
+            <p>Người có yêu cầu nộp hồ sơ trực tiếp tại UBND cấp xã hoặc nộp trực tuyến qua Cổng dịch vụ công, hoặc gửi qua bưu điện.</p>
+        </li>
+        <li class="step-item"><strong>Bước 2: Tiếp nhận và kiểm tra</strong>
+            <p>Cán bộ tiếp nhận kiểm tra tính chính xác, đầy đủ của hồ sơ. Nếu hồ sơ đầy đủ, tiếp nhận và hẹn trả kết quả. Nếu chưa đầy đủ, hướng dẫn bổ sung.</p>
+        </li>
+        <li class="step-item"><strong>Bước 3: Xử lý hồ sơ</strong>
+            <p>Công chức tư pháp - hộ tịch thẩm tra hồ sơ. Nếu hợp lệ, ghi vào Sổ đăng ký khai tử và cập nhật CSDL.</p>
+        </li>
+        <li class="step-item"><strong>Bước 4: Trả kết quả</strong>
+            <p>In Trích lục khai tử, trình Lãnh đạo UBND cấp xã ký và trả kết quả cho người dân.</p>
+        </li>
+    </ul>
+
+    <div class="section-title">Thành phần hồ sơ</div>
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên giấy tờ</th>
+                <th>Bản chính</th>
+                <th>Bản sao</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Tờ khai đăng ký khai tử</td>
+                <td>1</td>
+                <td>0</td>
+                <td>Theo mẫu quy định</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Giấy báo tử hoặc giấy tờ thay thế</td>
+                <td>1</td>
+                <td>0</td>
+                <td>Giấy báo tử, Văn bản xác nhận của cơ quan công an/y tế...</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Giấy tờ tùy thân</td>
+                <td>0</td>
+                <td>1</td>
+                <td>CCCD, CMND, Hộ chiếu (xuất trình)</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Văn bản ủy quyền</td>
+                <td>1</td>
+                <td>0</td>
+                <td>Trường hợp ủy quyền (phải chứng thực nếu không phải người thân)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">Phí, Lệ phí</div>
+    <div class="note">
+        <strong>Lệ phí:</strong> Mức thu cụ thể do HĐND cấp tỉnh quyết định. Miễn lệ phí đăng ký đúng hạn, người có công, hộ nghèo.<br>
+        <strong>Phí cấp bản sao:</strong> Theo Thông tư 281/2016/TT-BTC.
+    </div>
+
+    <div class="section-title">Căn cứ pháp lý</div>
+    <ul class="step-list">
+        <li class="step-item">Luật Hộ tịch số 60/2014/QH13</li>
+        <li class="step-item">Nghị định 123/2015/NĐ-CP</li>
+        <li class="step-item">Thông tư 04/2020/TT-BTP</li>
+        <li class="step-item">Thông tư 106/2021/TT-BTC</li>
+    </ul>
+
+</div>
+
+</body>
+</html>
