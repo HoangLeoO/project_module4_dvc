@@ -152,7 +152,6 @@ public class LeaderController {
         Page<DossierApprovalSummaryDTO> dossiers = leaderService.getMyDossiers(idLeader,applicantName,domain,pageable);
         
         model.addAttribute("dossiers", dossiers);
-        model.addAttribute("dossiers", dossiers);
         // Lấy danh sách domain không trùng lặp
         List<String> domains = catServiceService.findAll().stream()
                 .map(CatService::getDomain)

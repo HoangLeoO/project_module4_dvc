@@ -2,6 +2,9 @@ package org.example.project_module4_dvc.service.learder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
+import org.example.project_module4_dvc.entity.ops.OpsDossierFile;
+import org.example.project_module4_dvc.repository.sys.SysDepartmentRepository;
+import org.example.project_module4_dvc.service.FileStorageService;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.project_module4_dvc.dto.dossier.NewDossierDTO;
 import org.example.project_module4_dvc.entity.cat.CatService;
@@ -22,19 +25,24 @@ import java.util.UUID;
 @Service
 public class TOpsDossierService implements ITOpsDossierService {
 
-    @Autowired private OpsDossierRepository dossierRepository;
-    @Autowired private OpsDossierLogRepository logRepository;
-    @Autowired private OpsDossierFileRepository fileRepository;
-    @Autowired private CatServiceRepository catServiceRepository;
-    @Autowired private org.example.project_module4_dvc.repository.sys.SysDepartmentRepository departmentRepository;
-    @Autowired private ObjectMapper objectMapper; // Dùng để convert DTO -> JSON String
-//    @Autowired private FileStorageService fileStorageService; // Service lưu file vật lý
+    @Autowired
+    private OpsDossierRepository dossierRepository;
+    @Autowired
+    private OpsDossierFileRepository opsDossierFileRepository;
+    @Autowired
+    private CatServiceRepository catServiceRepository;
+    @Autowired
+    private SysDepartmentRepository departmentRepository;
+    @Autowired
+    private ObjectMapper objectMapper; // Dùng để convert DTO -> JSON String
+    @Autowired private
+    FileStorageService fileStorageService; // Service lưu file vật lý
 
     // ================================================================
     // ÁNH XẠ LOGIC SQL VÀO JAVA
     // ================================================================
-//    @Transactional(rollbackFor = Exception.class) // Đảm bảo cả 3 bảng được lưu thành công hoặc rollback toàn bộ
-    @Transactional
+    @Transactional(rollbackFor = Exception.class) // Đảm bảo cả 2 bảng được lưu thành công hoặc rollback toàn bộ
+//    @Transactional
     public void submitDossier(NewDossierDTO request, List<MultipartFile> files, SysUser currentUser) throws Exception {
 
         // 1. Lấy thông tin dịch vụ (Tương ứng SELECT id FROM cat_services...)
@@ -77,24 +85,25 @@ public class TOpsDossierService implements ITOpsDossierService {
 
 
 
-        // ================================================================
-        // BƯỚC 2: LƯU FILE (ops_dossier_files)
-        // ================================================================
-//        if (files != null && !files.isEmpty()) {
-//            for (MultipartFile file : files) {
-//                // 3a. Lưu file vật lý vào ổ cứng/server
-//                String fileUrl = fileStorageService.storeFile(file); // Hàm này trả về đường dẫn "/uploads/..."
-//
-//                // 3b. Lưu thông tin vào DB
-//                OpsDossierFile fileEntity = new OpsDossierFile();
-//                fileEntity.setDossier(dossier);
-//                fileEntity.setFileName(file.getOriginalFilename());
-//                fileEntity.setFileUrl(fileUrl); // Đường dẫn file
-//                fileEntity.setFileType(getFileExtension(file.getOriginalFilename()));
-//
-//                fileRepository.save(fileEntity);
-//            }
-//        }
+//         ================================================================
+//         BƯỚC 2: LƯU FILE (ops_dossier_files)
+//         ================================================================
+        // Xử lý File
+        if (files != null) {
+            for (MultipartFile file : files) {
+                // 1. Gọi StorageService để lưu file vật lý và lấy đường dẫn
+                String fileUrl = fileStorageService.store(file);
+
+                // 2. Lưu thông tin vào DB (Bảng ops_dossier_files)
+                OpsDossierFile fileEntity = new OpsDossierFile();
+                fileEntity.setDossier(dossier);
+                fileEntity.setFileName(file.getOriginalFilename());
+                fileEntity.setFileType(file.getContentType());
+                fileEntity.setFileUrl(fileUrl); // Lưu đường dẫn trả về từ store()
+
+                opsDossierFileRepository.save(fileEntity);
+            }
+        }
     }
 
     // Hàm phụ lấy đuôi file

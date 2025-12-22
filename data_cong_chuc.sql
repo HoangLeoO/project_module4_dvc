@@ -769,6 +769,7 @@ VALUES
      'Yêu cầu bổ sung hồ sơ',
      'Hồ sơ khai tử (HS-HK02-0005) cần bổ sung giấy báo tử bản gốc.',
      'STATUS_UPDATE');
+
 INSERT INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES

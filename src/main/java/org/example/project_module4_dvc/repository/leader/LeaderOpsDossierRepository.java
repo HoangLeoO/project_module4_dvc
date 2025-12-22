@@ -19,7 +19,8 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
             d.id, d.dossierCode, d.applicant.fullName, d.service.serviceName, 
             d.service.domain, d.receivingDept.deptName, d.currentHandler.fullName, 
             d.dossierStatus, d.finishDate,
-            CAST(function('DATEDIFF', d.dueDate, CURRENT_DATE) AS long)
+            CAST(function('DATEDIFF', d.dueDate, CURRENT_DATE) AS long),
+            d.formData
         )
         FROM OpsDossier d
         WHERE d.dossierStatus = 'VERIFIED'
@@ -37,7 +38,8 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
             d.id, d.dossierCode, d.applicant.fullName, d.service.serviceName, 
             d.service.domain, d.receivingDept.deptName, d.currentHandler.fullName, 
             d.dossierStatus, d.finishDate,
-            CAST(function('DATEDIFF', d.dueDate, CURRENT_DATE) AS long)
+            CAST(function('DATEDIFF', d.dueDate, CURRENT_DATE) AS long),
+            d.formData
         )
         FROM OpsDossier d
         WHERE d.dossierStatus = 'VERIFIED'
@@ -64,7 +66,8 @@ public interface LeaderOpsDossierRepository extends JpaRepository<OpsDossier, Lo
         SELECT new org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO(
             d.id, d.dossierCode, d.applicant.fullName, d.service.serviceName, 
             d.service.domain, d.receivingDept.deptName, d.currentHandler.fullName, 
-            d.dossierStatus, d.finishDate, 0L
+            d.dossierStatus, d.finishDate, 0L,
+            d.formData
         )
         FROM OpsDossier d
         WHERE d.dossierStatus = 'APPROVED'
