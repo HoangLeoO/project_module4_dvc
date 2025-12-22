@@ -73,11 +73,12 @@ public class WebSecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain leaderFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/leader/**", "/login/official", "/process-login-official", "/logout/official");
 
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/official", "/register", "/assets/**", "/403", "/404","leader/**").permitAll()
+                .requestMatchers("/", "/login/official", "/register", "/assets/**", "/403", "/404").permitAll()
                 .anyRequest().hasAnyRole("CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
         );
 
@@ -89,17 +90,9 @@ public class WebSecurityConfig {
                 .passwordParameter("password")
         );
 
-        http.logout(form -> form
-                .logoutUrl("/logout/official")
-                .logoutSuccessUrl("/login/official?logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-        );
-
-        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
-
         return http.build();
     }
+
 
     // --- 3. OFFICIAL & COMMON LOGIN CHAIN (Chuyên viên + Xử lý đăng nhập chung) ---
     @Bean
@@ -147,32 +140,25 @@ public class WebSecurityConfig {
     @Bean
     @Order(4)
     public SecurityFilterChain citizenFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/citizen/**", "/login/citizen", "/process-login", "/logout/citizen");
 
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/citizen", "/register", "/assets/**", "/403", "/404","citizen/**").permitAll()
-                .anyRequest().hasRole("CONG_DAN") // Hoặc .authenticated()
+                .requestMatchers("/", "/login/citizen", "/process-login", "/register", "/assets/**", "/403", "/404").permitAll()
+                .anyRequest().hasRole("CONG_DAN")
         );
 
         http.formLogin(form -> form
                 .loginPage("/login/citizen")
-                .loginProcessingUrl("/process-login") // URL post form
+                .loginProcessingUrl("/process-login")
                 .successHandler(successHandler)
                 .defaultSuccessUrl("/citizen/hoso", true)
                 .usernameParameter("username")
                 .passwordParameter("password")
         );
 
-        http.logout(form -> form
-                .logoutUrl("/logout/citizen")
-                .logoutSuccessUrl("/login/citizen?logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-        );
-
-        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
-
         return http.build();
     }
+
 }
