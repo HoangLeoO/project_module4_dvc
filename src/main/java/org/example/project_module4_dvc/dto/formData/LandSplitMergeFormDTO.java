@@ -13,6 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LandSplitMergeFormDTO {
     private String landCertificateNumber;
     private String landPlotNumber;

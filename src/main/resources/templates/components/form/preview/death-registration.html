@@ -1,0 +1,88 @@
+<div th:fragment="form-detail" class="document-preview font-times">
+    <div class="text-center mb-4">
+        <h6 class="fw-bold fs-5 mb-0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold small text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+
+        <h3 class="fw-bold text-danger mb-4">TRÍCH LỤC KHAI TỬ</h3>
+        <div class="fst-italic">(Bản sao)</div>
+    </div>
+
+    <div class="document-body px-4" style="line-height: 1.8;">
+
+        <div class="row mb-2">
+            <div class="col-12 fw-bold text-uppercase">Thông tin người mất:</div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                Họ, chữ đệm, tên: <span class="fw-bold text-uppercase fs-5"
+                    th:text="${formData.deceasedFullName}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6">
+                Ngày, tháng, năm sinh: <span class="fw-bold" th:text="${formData.dateOfBirth}"></span>
+            </div>
+            <div class="col-6">
+                Giới tính: <span class="fw-bold" th:text="${formData['gender'] ?: '...'}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Dân tộc: <span class="fw-bold" th:text="${formData['ethnicity'] ?: 'Kinh'}"></span>
+                - Quốc tịch: <span class="fw-bold" th:text="${formData['nationality'] ?: 'Việt Nam'}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Số giấy tờ tùy thân: <span class="fw-bold" th:text="${formData['idNumber'] ?: '...'}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                Nơi thường trú cuối cùng: <span class="fw-bold" th:text="${formData.lastResidence}"></span>
+            </div>
+        </div>
+
+        <hr class="my-4 border-dashed" />
+
+        <div class="row mb-2">
+            <div class="col-12 fw-bold text-uppercase">Thông tin về cái chết:</div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-6">
+                Đã chết vào lúc: <span class="fw-bold" style="border-bottom: 1px dotted #000; padding: 0 10px;">... giờ
+                    ... phút</span>
+            </div>
+            <div class="col-6">
+                Ngày, tháng, năm chết: <span class="fw-bold" th:text="${formData.dateOfDeath}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                Nơi chết: <span class="fw-bold" th:text="${formData.placeOfDeath}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Nguyên nhân chết: <span class="fw-bold" th:text="${formData.causeOfDeath}"></span>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6 text-center">
+            </div>
+            <div class="col-6 text-center">
+                <div class="fst-italic">Đà Nẵng, ngày .... tháng .... năm ....</div>
+                <div class="fw-bold text-uppercase mt-2">Người ký trích lục</div>
+                <div class="fst-italic small">(Ký, ghi rõ họ tên, chức vụ, đóng dấu)</div>
+                <div class="stamp-anchor position-relative mt-5" style="height: 100px;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

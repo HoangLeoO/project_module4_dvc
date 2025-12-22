@@ -1296,5 +1296,48 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HK02-0024' AND l.action = 'TRINH_KY' AND s.step_order = 2;
 
 
+-- =======================================================
+-- MOCK DATA BỔ SUNG: 4 Thủ tục còn thiếu (Marriage, Death, Land Purpose, Land Split)
+-- =======================================================
+
+-- 1. HT01_KETHON (Marriage Registration) - VERIFIED
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES ('HS-HT01-0005', (SELECT id FROM cat_services WHERE service_code = 'HT01_KETHON'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_03'), (SELECT id FROM sys_users WHERE username = 'hc_pct'), 'VERIFIED', NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), '{"husbandFullName": "Lê Văn Cường", "husbandDob": "1992-02-10", "husbandIdNumber": "012345679003", "husbandAddress": "Phường Thanh Khê, TP Đà Nẵng", "husbandEthnicity": "Kinh", "husbandNationality": "Việt Nam", "wifeFullName": "Phạm Thị Dung", "wifeDob": "1995-11-03", "wifeIdNumber": "012345679004", "wifeAddress": "Phường Hòa Cường, TP Đà Nẵng", "wifeEthnicity": "Kinh", "wifeNationality": "Việt Nam", "intendedMarriageDate": "2023-12-25", "registeredPlace": "UBND Phường Hải Châu"}');
+
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0005'), (SELECT id FROM sys_users WHERE username = 'cd_03'), 'NOP_HO_SO', NULL, 'NEW', NULL),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0005'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Tư pháp thẩm tra'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0005'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đủ điều kiện, trình ký');
+
+-- 2. HK02_KAITU (Death Registration) - PENDING
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES ('HS-HK02-0006', (SELECT id FROM cat_services WHERE service_code = 'HK02_KAITU'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_01'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'PENDING', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), '{"deceasedFullName": "Nguyễn Văn Cụ", "dateOfBirth": "1940-01-01", "dateOfDeath": "2023-11-20", "placeOfDeath": "Tại nhà riêng", "causeOfDeath": "Tuổi cao sức yếu", "lastResidence": "Phường Hải Châu, TP Đà Nẵng", "ethnicity": "Kinh", "nationality": "Việt Nam", "idNumber": "001040000001", "relativeFullName": "Nguyễn Văn An", "relativeRelationship": "Con đẻ"}');
+
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0006'), (SELECT id FROM sys_users WHERE username = 'cd_01'), 'NOP_HO_SO', NULL, 'NEW', NULL),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0006'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Tư pháp xác minh');
+
+-- 3. DD02_CHUYENMDSD (Land Purpose Change) - VERIFIED
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES ('HS-DD02-0007', (SELECT id FROM cat_services WHERE service_code = 'DD02_CHUYENMDSD'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_05'), (SELECT id FROM sys_users WHERE username = 'hc_pct'), 'VERIFIED', NOW(), DATE_ADD(NOW(), INTERVAL 20 DAY), '{"landCertificateNumber": "GCN-DN-0003", "landPlotNumber": "TH-102", "mapSheetNumber": "TBD-05", "landAreaM2": 350.0, "currentLandPurpose": "Đất trồng cây lâu năm", "requestedLandPurpose": "Đất ở nông thôn", "reasonForChange": "Xây dựng nhà ở cho con trai", "commitment": "Cam kết sử dụng đúng mục đích và nộp đủ thuế"}');
+
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD02-0007'), (SELECT id FROM sys_users WHERE username = 'cd_05'), 'NOP_HO_SO', NULL, 'NEW', NULL),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD02-0007'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Địa chính thẩm định'),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD02-0007'), (SELECT id FROM sys_users WHERE username = 'hc_dc'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đã thẩm định, đủ điều kiện');
+
+-- 4. DD03_TACHHOP (Land Split) - PENDING
+INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+VALUES ('HS-DD03-0008', (SELECT id FROM cat_services WHERE service_code = 'DD03_TACHHOP'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_01'), (SELECT id FROM sys_users WHERE username = 'hc_dc'), 'PENDING', NOW(), DATE_ADD(NOW(), INTERVAL 15 DAY), '{"landCertificateNumber": "GCN-DN-0001", "landPlotNumber": "TH-001", "mapSheetNumber": "TBD-01", "originalAreaM2": 120.0, "numberOfNewPlots": 2, "requestedSplitAreas": "60.0, 60.0", "splitReason": "Tách cho 2 con", "surveyCompleted": true}');
+
+INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+VALUES
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0008'), (SELECT id FROM sys_users WHERE username = 'cd_01'), 'NOP_HO_SO', NULL, 'NEW', NULL),
+    ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0008'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Địa chính đo đạc');
+
+
 
 

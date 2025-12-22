@@ -8,7 +8,7 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
-                <input type="date" class="form-control" th:value="${formData.husbandDob != null ? #temporals.format(formData.husbandDob, 'yyyy-MM-dd') : ''}" readonly>
+                <input type="date" class="form-control" th:value="${formData.husbandDob ?: ''}" readonly>
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Số CCCD/CMND</label>
@@ -24,7 +24,7 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
-                <input type="date" class="form-control" th:value="${formData.wifeDob != null ? #temporals.format(formData.wifeDob, 'yyyy-MM-dd') : ''}" readonly>
+                <input type="date" class="form-control" th:value="${formData.wifeDob ?: ''}" readonly>
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Số CCCD/CMND</label>
@@ -36,7 +36,7 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Ngày dự kiến kết hôn</label>
-                <input type="date" class="form-control" th:value="${formData.intendedMarriageDate != null ? #temporals.format(formData.intendedMarriageDate, 'yyyy-MM-dd') : ''}" readonly>
+                <input type="date" class="form-control" th:value="${formData.intendedMarriageDate ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Nơi đăng ký</label>
