@@ -310,14 +310,14 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 FROM ops_dossiers d
                 JOIN cat_services s ON d.service_id = s.id
                 WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-                  AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+                  AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)
                 ORDER BY d.due_date ASC
             """,
             countQuery = """
                         SELECT COUNT(*)
                         FROM ops_dossiers d
                         WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-                          AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+                          AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)
                     """,
             nativeQuery = true)
     Page<Map<String, Object>> findNearlyDueAlerts(Pageable pageable);

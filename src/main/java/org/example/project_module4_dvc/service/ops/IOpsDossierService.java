@@ -48,6 +48,7 @@ public interface IOpsDossierService {
 
     int calculateOnTimeRateStrict();
 
+    Page<OpsDossier> getAdminDossierPage(Pageable pageable);
     // Submit Birth Registration Logic
     void submitBirthRegistration(org.example.project_module4_dvc.dto.BirthRegistrationRequest request, Long userId);
 }

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Hồ sơ - Admin Core</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/internal.css">
+</head>
+
+<body class="bg-light">
+
+<!-- WRAPPER -->
+<div class="d-flex" id="wrapper">
+    <!-- SIDEBAR -->
+    <div class="bg-dark text-white border-end"
+         style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+        <div class="p-3 border-bottom d-flex align-items-center bg-black bg-opacity-25">
+            <i class="bi bi-cpu-fill fs-4 me-2 text-info"></i>
+            <div class="fw-bold">E-GOV ADMIN CORE</div>
+        </div>
+        <div class="list-group list-group-flush p-2">
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Giám sát &
+                Vận hành</small>
+            <a href="/admin/"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-speedometer2 me-2"></i>Tổng quan</a>
+            <a href="/admin/records"
+               class="list-group-item list-group-item-action active bg-secondary bg-opacity-25 text-white border-0 fw-bold"><i
+                    class="bi bi-file-earmark-text me-2"></i>Hồ sơ DVC</a>
+            <a href="/admin/feedbacks"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-chat-square-quote me-2"></i>Phản ánh & KN</a>
+            <a href="admin-audit-logs.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-activity me-2"></i>Audit Logs</a>
+            <a href="admin-payment-history.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-currency-exchange me-2"></i>Thanh toán</a>
+
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Quản trị Dữ
+                liệu</small>
+            <a href="admin-users.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-people-fill me-2"></i>Người dùng</a>
+            <a href="admin-depts.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-diagram-3 me-2"></i>Cơ cấu tổ chức</a>
+            <a href="admin-kb-mgmt.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-book me-2"></i>Kho tri thức</a>
+            <a href="admin-mock-console.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-database-fill-gear me-2"></i>Mock Console</a>
+
+            <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Cấu hình Hệ
+                thống</small>
+            <a href="/admin/services"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-list-check me-2"></i>Dịch vụ công</a>
+            <a href="admin-workflow.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-diagram-2 me-2"></i>Quy trình (Workflow)</a>
+            <a href="admin-templates.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-file-earmark-word me-2"></i>Biểu mẫu & Phôi</a>
+            <a href="admin-system-settings.html"
+               class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
+                    class="bi bi-sliders me-2"></i>Tham số hệ thống</a>
+
+            <div class="mt-4 px-2">
+                <a href="../06-shared/internal-login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                        class="bi bi-box-arrow-left me-2"></i>Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div style="margin-left: 260px; width: calc(100% - 260px);" class="d-flex flex-column min-vh-100">
+
+        <!-- HEADER -->
+        <nav class="navbar navbar-expand bg-white border-bottom sticky-top px-4 shadow-sm" style="height: 60px;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="admin-dashboard.html">Admin</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Quản lý Hồ sơ</li>
+                </ol>
+            </nav>
+        </nav>
+
+        <main class="flex-grow-1 p-4">
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Danh sách Hồ sơ Dịch vụ công</h5>
+                    <div>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-download me-1"></i>Xuất
+                            Excel
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <!-- FILTERS -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Mã hồ sơ, Tên công dân...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select">
+                                <option value="">-- Tất cả Trạng thái --</option>
+                                <option value="processing">Đang xử lý</option>
+                                <option value="completed">Đã hoàn thành</option>
+                                <option value="rejected">Từ chối / Yêu cầu bổ sung</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select">
+                                <option value="">-- Tất cả Lĩnh vực --</option>
+                                <option>Hộ tịch</option>
+                                <option>Đất đai</option>
+                                <option>Xây dựng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100 fw-bold">Tìm kiếm</button>
+                        </div>
+                    </div>
+
+                    <!-- ALERTS/WARNINGS SUMMARY -->
+                    <div class="alert alert-danger d-flex align-items-center mb-3 p-2 small">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                        <div>
+                            <strong>Cảnh báo:</strong>
+                            Có
+                            <span class="fw-bold"
+                                  th:text="${overdueCount}">0</span>
+                            hồ sơ quá hạn và
+                            <span class="fw-bold"
+                                  th:text="${nearlyDueCount}">0</span>
+                            hồ sơ sắp đến hạn cần xử lý gấp.
+                        </div>
+                    </div>
+
+                    <!-- DATA TABLE -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle border">
+                            <thead class="bg-light">
+                            <tr>
+                                <th style="width: 60px;">STT</th>
+                                <th>Mã Hồ sơ</th>
+                                <th>Cán bộ thực hiện</th>
+                                <th>Lĩnh vực</th>
+                                <th>Ngày tiếp nhận</th>
+                                <th>Hẹn trả</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d, stat : ${dossiers.content}"
+                                th:classappend="
+                                    ${d.dueDate != null and d.dueDate.isBefore(T(java.time.LocalDateTime).now()) and d.dossierStatus != 'COMPLETED'
+    and d.dossierStatus != 'APPROVED'}
+                                        ? 'table-danger'
+                                        : (${d.dueDate != null and
+                                        d.dueDate.isAfter(T(java.time.LocalDateTime).now()) and
+                                        d.dueDate.isBefore(T(java.time.LocalDateTime).now().plusDays(1))}
+                                        ? 'table-warning' : '')
+                            ">
+                                <!-- STT -->
+                                <td class="text-center fw-bold"
+                                    th:text="${dossiers.number * dossiers.size + stat.index + 1}">
+                                    1
+                                </td>
+                                <!-- Mã hồ sơ -->
+                                <td class="fw-bold" th:text="${d.dossierCode}">HS-XXX</td>
+
+                                <!-- Cán bộ -->
+                                <td th:text="${d.currentHandler != null ? d.currentHandler.fullName : 'Chưa phân công'}">
+                                    Chưa phân công
+                                </td>
+
+                                <!-- Lĩnh vực -->
+                                <td th:text="${d.service.domain}">---</td>
+
+                                <!-- Ngày tiếp nhận -->
+                                <td th:text="${#temporals.format(d.submissionDate, 'dd/MM/yyyy')}">
+                                    01/01/2024
+                                </td>
+
+                                <!-- Hẹn trả -->
+                                <td>
+                                    <!-- QUÁ HẠN -->
+                                    <div th:if="${d.dueDate != null and d.dueDate.isBefore(T(java.time.LocalDateTime).now()) and d.dossierStatus != 'COMPLETED'
+    and d.dossierStatus != 'APPROVED'}">
+                                        <div class="fw-bold text-danger"
+                                             th:text="${#temporals.format(d.dueDate, 'dd/MM/yyyy')}">
+                                        </div>
+                                        <span class="badge bg-danger">
+                                            Quá hạn
+                                        </span>
+                                    </div>
+
+                                    <!-- SẮP ĐẾN HẠN (≤ 1 ngày) -->
+                                    <div th:if="${d.dueDate != null
+                                                and !d.dueDate.isBefore(T(java.time.LocalDateTime).now())
+                                                and d.dueDate.isBefore(T(java.time.LocalDateTime).now().plusDays(1))}">
+                                        <div class="fw-bold text-warning-emphasis">
+                                            Sắp đến hạn
+                                        </div>
+                                        <div class="small text-muted">
+                                            Trả trước
+                                            <span th:text="${#temporals.format(d.dueDate, 'HH:mm dd/MM/yyyy')}"></span>
+                                        </div>
+                                        <span class="badge bg-warning text-dark">
+                                            Cần xử lý gấp
+                                        </span>
+                                    </div>
+
+                                    <!-- BÌNH THƯỜNG -->
+                                    <div th:if="${d.dueDate != null
+                                                and d.dueDate.isAfter(T(java.time.LocalDateTime).now().plusDays(1))}">
+                                        <span th:text="${#temporals.format(d.dueDate, 'dd/MM/yyyy')}"></span>
+                                    </div>
+
+                                    <!-- KHÔNG CÓ HẸN TRẢ -->
+                                    <span th:if="${d.dueDate == null}" class="text-muted">—</span>
+                                </td>
+
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${d.dossierStatus == 'APPROVED' or d.dossierStatus == 'RESULT_RETURNED'} ? 'bg-success' :
+                                                          (${d.dossierStatus == 'VERIFIED'} ? 'bg-info text-dark' :
+                                                          (${d.dossierStatus == 'PENDING'} ? 'bg-warning text-dark' :
+                                                          (${d.dossierStatus == 'REJECTED'} ? 'bg-danger' :
+                                                          'bg-secondary')))"
+                                          th:text="${d.dossierStatus == 'APPROVED' or d.dossierStatus == 'RESULT_RETURNED'} ? 'Đã hoàn thành' :
+                                                   (${d.dossierStatus == 'VERIFIED'} ? 'Đã xác minh' :
+                                                   (${d.dossierStatus == 'PENDING'} ? 'Đang xử lý' :
+                                                   (${d.dossierStatus == 'REJECTED'} ? 'Từ chối' :
+                                                   'Mới tiếp nhận')))">
+                                        Trạng thái
+                                     </span>
+                                </td>
+
+
+                                <!-- Thao tác -->
+                                <td>
+                                    <a th:href="@{/admin/records/{id}(id=${d.id})}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Xử lý
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- PAGINATION -->
+                    <nav class="mt-3">
+                        <ul class="pagination pagination-sm justify-content-end mb-0">
+                            <li class="page-item" th:classappend="${dossiers.first}? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/admin/records(page=${dossiers.number - 1}, status=${currentStatus})}">
+                                    Trước
+                                </a>
+                            </li>
+
+                            <li class="page-item"
+                                th:each="i : ${#numbers.sequence(0, dossiers.totalPages - 1)}"
+                                th:classappend="${i == dossiers.number}? 'active'">
+                                <a class="page-link"
+                                   th:href="@{/admin/records(page=${i}, status=${currentStatus})}"
+                                   th:text="${i + 1}">1</a>
+                            </li>
+
+                            <li class="page-item" th:classappend="${dossiers.last}? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/admin/records(page=${dossiers.number + 1}, status=${currentStatus})}">
+                                    Sau
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- JS Logic -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
