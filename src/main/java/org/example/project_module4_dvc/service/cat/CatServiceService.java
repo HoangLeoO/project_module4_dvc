@@ -8,6 +8,7 @@ import org.example.project_module4_dvc.repository.cat.CatWorkflowStepRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,5 +80,20 @@ public class CatServiceService implements ICatServiceService {
     @Override
     public List<CatService> findAll() {
         return catServiceRepository.findAll();
+    }
+
+    @Override
+    public CatService save(CatService service) {
+        return catServiceRepository.save(service);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        catServiceRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<CatService> findById(Long id) {
+        return catServiceRepository.findById(id);
     }
 }

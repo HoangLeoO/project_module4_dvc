@@ -48,7 +48,7 @@ public class DashboardAlertService implements IDashboardAlertService {
 //         2. Hồ sơ sắp hết hạn (<=3 ngày)
         adminOpsDossierRepository.findNearlyDue(
                 LocalDateTime.now(),
-                LocalDateTime.now().plusDays(3)
+                LocalDateTime.now().plusDays(1)
         ).forEach(d -> {
             alerts.add(new AlertDTO(
                     d.getId(),

@@ -59,7 +59,7 @@
 
             <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Cấu hình Hệ
                 thống</small>
-            <a href="admin-services.html"
+            <a href="/admin/services"
                class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
                     class="bi bi-list-check me-2"></i>Dịch vụ công</a>
             <a href="admin-workflow.html"
@@ -232,25 +232,20 @@
                                     <span th:if="${d.dueDate == null}" class="text-muted">—</span>
                                 </td>
 
-                                <!-- Trạng thái -->
                                 <td>
                                     <span class="badge"
-                                          th:classappend="
-                                            ${d.dossierStatus == 'COMPLETED'} ? 'bg-success' :
-                                            (${d.dossierStatus == 'VERIFIED'} ? 'bg-info text-dark' :
-                                            (${d.dossierStatus == 'PENDING'} ? 'bg-warning text-dark' :
-                                            (${d.dossierStatus == 'APPROVED'} ? 'bg-primary' :
-                                            (${d.dossierStatus == 'REJECTED'} ? 'bg-danger' :
-                                            'bg-secondary'))))"
-                                          th:text="
-                                            ${d.dossierStatus == 'COMPLETED'} ? 'Đã hoàn thành' :
-                                            (${d.dossierStatus == 'VERIFIED'} ? 'Đã xác minh' :
-                                            (${d.dossierStatus == 'PENDING'} ? 'Đang xử lý' :
-                                            (${d.dossierStatus == 'APPROVED'} ? 'Đã duyệt' :
-                                            (${d.dossierStatus == 'REJECTED'} ? 'Từ chối' :
-                                            'Mới tiếp nhận'))))">
-                                                Trạng thái
-                                        </span>
+                                          th:classappend="${d.dossierStatus == 'APPROVED' or d.dossierStatus == 'RESULT_RETURNED'} ? 'bg-success' :
+                                                          (${d.dossierStatus == 'VERIFIED'} ? 'bg-info text-dark' :
+                                                          (${d.dossierStatus == 'PENDING'} ? 'bg-warning text-dark' :
+                                                          (${d.dossierStatus == 'REJECTED'} ? 'bg-danger' :
+                                                          'bg-secondary')))"
+                                          th:text="${d.dossierStatus == 'APPROVED' or d.dossierStatus == 'RESULT_RETURNED'} ? 'Đã hoàn thành' :
+                                                   (${d.dossierStatus == 'VERIFIED'} ? 'Đã xác minh' :
+                                                   (${d.dossierStatus == 'PENDING'} ? 'Đang xử lý' :
+                                                   (${d.dossierStatus == 'REJECTED'} ? 'Từ chối' :
+                                                   'Mới tiếp nhận')))">
+                                        Trạng thái
+                                     </span>
                                 </td>
 
 

@@ -90,7 +90,7 @@ public class OpsDossierService implements IOpsDossierService {
                 if (daysDiff < 0) { // Quá hạn
                     alert.put("type", "OVERDUE");
                     alert.put("days", Math.abs(daysDiff));
-                } else if (daysDiff <= 3) { // Sắp đến hạn trong 3 ngày
+                } else if (daysDiff <= 1) { // Sắp đến hạn trong 3 ngày
                     alert.put("type", "NEARLY_DUE");
                     alert.put("days", daysDiff);
                 } else {
