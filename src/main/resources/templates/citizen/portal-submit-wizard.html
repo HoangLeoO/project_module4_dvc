@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<!-- USE FRAGMENT FOR HEAD -->
+
+<head th:replace="~{citizen/layout/fragments :: head('Nộp hồ sơ')}">
+</head>
+<!-- Custom Wizard CSS -->
+<style>
+    .wizard-step {
+        position: relative;
+        z-index: 1;
+    }
+
+    .wizard-step .btn-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #dee2e6;
+        background: white;
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    .wizard-step.active .btn-circle {
+        border-color: var(--bs-primary);
+        background: var(--bs-primary);
+        color: white;
+    }
+
+    .wizard-connector {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #dee2e6;
+        z-index: 0;
+    }
+</style>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <!-- USE FRAGMENT FOR HEADER -->
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+
+        <!-- Page Title -->
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary mb-2">Nộp Hồ sơ Trực tuyến</h2>
+            <p class="text-muted" id="serviceNameLabel"
+                th:text="${s != null ? 'Thủ tục: ' + s.serviceName : 'Chọn thủ tục để tiếp tục'}">Thủ tục: Đăng ký khai
+                sinh (Liên thông)</p>
+        </div>
+
+        <!-- 2. WIZARD NAV -->
+        <div class="position-relative mb-5 mx-auto" style="max-width: 800px;">
+            <div class="wizard-connector"></div>
+            <div class="d-flex justify-content-between position-relative">
+
+                <div class="wizard-step active" id="navStep1">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">1</div>
+                        <small class="fw-bold">Thông tin Tờ khai</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep2">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">2</div>
+                        <small class="text-muted">Thành phần Hồ sơ</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep3">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">3</div>
+                        <small class="text-muted">Lệ phí & Nộp</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- WIZARD CONTENT -->
+        <div class="card shadow-sm border-0 rounded-3 wizard-content mx-auto" style="max-width: 900px;">
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- Error Alert -->
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong th:text="${errorMessage}">Lỗi!</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- STEP 1: APPLICANT & CHILD INFO (MERGED) -->
+                <div id="step1">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 1: Thông tin Tờ khai đăng ký khai sinh
+                    </h5>
+
+                    <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+                        <i class="bi bi-person-check-fill fs-4 me-3"></i>
+                        <div>
+                            Hệ thống đã tự động điền thông tin của bạn. Vui lòng kiểm tra và hoàn xác thực thông tin của
+                            người còn lại (nếu có).
+                        </div>
+                    </div>
+
+                    <!-- A. PARENT INFO SECTION -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-uppercase text-secondary mb-0">A. Thông tin Cha và Mẹ</h6>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillParents()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Làm mới
+                        </button>
+                    </div>
+
+                    <!-- Hidden Fields for Applicant Context -->
+                    <input type="hidden" id="applicantId" th:value="${citizen.cccd}">
+                    <input type="hidden" id="applicantName" th:value="${citizen.fullName}">
+                    <input type="hidden" id="applicantGender"
+                        th:value="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? 'male' : 'female'}">
+                    <input type="hidden" id="applicantMaritalStatus"
+                        th:value="${#strings.toLowerCase(citizen.maritalStatus)}">
+                    <input type="hidden" id="serviceId" th:value="${s != null ? s.id : ''}">
+                    <input type="hidden" id="spouseName" th:value="${spouse != null ? spouse.fullName : ''}">
+                    <input type="hidden" id="spouseCccd" th:value="${spouse != null ? spouse.cccd : ''}">
+                    <input type="hidden" id="spouseDob" th:value="${spouse != null ? spouse.dob : ''}">
+
+                    <div class="row g-4 mb-4">
+                        <!-- Father Section -->
+                        <div class="col-md-6" id="fatherOuter">
+                            <div class="card h-100 border shadow-sm">
+                                <div class="card-header bg-white py-2">
+                                    <span class="fw-bold text-primary"><i class="bi bi-person-fill me-1"></i>Thông tin
+                                        Cha</span>
+                                    <span class="father-req text-danger d-none">*</span>
+                                </div>
+                                <div class="card-body">
+                                    <div id="fatherDisplay"
+                                        th:class="${(#strings.equalsIgnoreCase(citizen.gender, 'MALE')) || (spouse != null && #strings.equalsIgnoreCase(citizen.gender, 'FEMALE')) ? '' : 'd-none'}">
+                                        <div class="mb-2">
+                                            <label class="text-muted small d-block">Họ và tên</label>
+                                            <span id="fatherDisplayName" class="fw-bold fs-5"
+                                                th:text="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? citizen.fullName : (spouse != null ? spouse.fullName : '')}"></span>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="text-muted small d-block">Số CCCD</label>
+                                                <span id="fatherDisplayId" class="fw-bold"
+                                                    th:text="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? citizen.cccd : (spouse != null ? spouse.cccd : '')}"></span>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="text-muted small d-block">Ngày sinh</label>
+                                                <span id="fatherDisplayDob" class="fw-bold text-secondary"
+                                                    th:text="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? #temporals.format(citizen.dob, 'dd/MM/yyyy') : (spouse != null ? #temporals.format(spouse.dob, 'dd/MM/yyyy') : '')}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="fatherInput"
+                                        th:class="${(#strings.equalsIgnoreCase(citizen.gender, 'MALE')) || (spouse != null && #strings.equalsIgnoreCase(citizen.gender, 'FEMALE')) ? 'd-none' : ''}">
+                                        <label class="form-label small">Tra cứu CCCD Cha</label>
+                                        <div class="input-group">
+                                            <input type="text" id="fatherId" class="form-control"
+                                                placeholder="12 số CCCD" onchange="resetVerification('father')"
+                                                th:value="${(spouse == null && #strings.equalsIgnoreCase(citizen.gender, 'FEMALE')) ? '' : (#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? citizen.cccd : (spouse != null ? spouse.cccd : ''))}">
+                                            <button class="btn btn-primary" type="button"
+                                                onclick="verifyCitizen('father')" id="btnVerifyFather">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" id="fatherName" class="form-control mt-2 bg-light"
+                                            placeholder="Kết quả tra cứu..." readonly
+                                            th:value="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? citizen.fullName : (spouse != null ? spouse.fullName : '')}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mother Section -->
+                        <div class="col-md-6" id="motherOuter">
+                            <div class="card h-100 border shadow-sm">
+                                <div class="card-header bg-white py-2">
+                                    <span class="fw-bold text-danger"><i class="bi bi-person-heart me-1"></i>Thông tin
+                                        Mẹ</span>
+                                    <span class="mother-req text-danger d-none">*</span>
+                                </div>
+                                <div class="card-body">
+                                    <div id="motherDisplay"
+                                        th:class="${(#strings.equalsIgnoreCase(citizen.gender, 'FEMALE')) || (spouse != null && #strings.equalsIgnoreCase(citizen.gender, 'MALE')) ? '' : 'd-none'}">
+                                        <div class="mb-2">
+                                            <label class="text-muted small d-block">Họ và tên</label>
+                                            <span id="motherDisplayName" class="fw-bold fs-5"
+                                                th:text="${#strings.equalsIgnoreCase(citizen.gender, 'FEMALE') ? citizen.fullName : (spouse != null ? spouse.fullName : '')}"></span>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="text-muted small d-block">Số CCCD</label>
+                                                <span id="motherDisplayId" class="fw-bold"
+                                                    th:text="${#strings.equalsIgnoreCase(citizen.gender, 'FEMALE') ? citizen.cccd : (spouse != null ? spouse.cccd : '')}"></span>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="text-muted small d-block">Ngày sinh</label>
+                                                <span id="motherDisplayDob" class="fw-bold text-secondary"
+                                                    th:text="${#strings.equalsIgnoreCase(citizen.gender, 'FEMALE') ? #temporals.format(citizen.dob, 'dd/MM/yyyy') : (spouse != null ? #temporals.format(spouse.dob, 'dd/MM/yyyy') : '')}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="motherInput"
+                                        th:class="${(#strings.equalsIgnoreCase(citizen.gender, 'FEMALE')) || (spouse != null && #strings.equalsIgnoreCase(citizen.gender, 'MALE')) ? 'd-none' : ''}">
+                                        <label class="form-label small">Tra cứu CCCD Mẹ</label>
+                                        <div class="input-group">
+                                            <input type="text" id="motherId" class="form-control"
+                                                placeholder="12 số CCCD" onchange="resetVerification('mother')"
+                                                th:value="${(spouse == null && #strings.equalsIgnoreCase(citizen.gender, 'MALE')) ? '' : (#strings.equalsIgnoreCase(citizen.gender, 'FEMALE') ? citizen.cccd : (spouse != null ? spouse.cccd : ''))}">
+                                            <button class="btn btn-primary" type="button"
+                                                onclick="verifyCitizen('mother')" id="btnVerifyMother">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" id="motherName" class="form-control mt-2 bg-light"
+                                            placeholder="Kết quả tra cứu..." readonly
+                                            th:value="${#strings.equalsIgnoreCase(citizen.gender, 'FEMALE') ? citizen.fullName : (spouse != null ? spouse.fullName : '')}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Input for Applicant DOB -->
+                    <input type="hidden" id="applicantDob" th:value="${citizen.dob}">
+
+                    <!-- B. CHILD INFO SECTION (Hidden until parents verified) -->
+                    <div id="childSection"
+                        th:class="${(#strings.equalsIgnoreCase(citizen.gender, 'MALE') && spouse != null) || (#strings.equalsIgnoreCase(citizen.gender, 'FEMALE') && (spouse != null || #strings.equalsIgnoreCase(citizen.maritalStatus, 'SINGLE'))) ? '' : 'd-none'}">
+                        <h6 class="fw-bold text-uppercase mb-3 text-secondary border-top pt-4">B. Thông tin Trẻ sinh
+                        </h6>
+                        <div id="formBirth" class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Họ và tên trẻ <span class="text-danger">*</span></label>
+                                <input type="text" id="childName" class="form-control text-uppercase"
+                                    placeholder="VD: LÊ VĂN A" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                <select id="childGender" class="form-select" required>
+                                    <option value="" selected disabled>Chọn giới tính</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
+                                <input type="date" id="childDob" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Dân tộc <span class="text-danger">*</span></label>
+                                <input type="text" id="childEthnicity" class="form-control" value="Kinh" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Nơi sinh (Cơ sở y tế) <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="childBirthPlace" class="form-control"
+                                    placeholder="VD: Bệnh viện Phụ sản - Nhi Đà Nẵng" required>
+                            </div>
+                        </div>
+
+                        <!-- Procedures & Warnings -->
+                        <div id="singleFatherWarning" class="alert alert-danger mt-3 d-none">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            <strong>Lưu ý:</strong> Bạn đang đăng ký khai sinh diện Cha đơn thân.
+                        </div>
+
+                        <div id="paternitySection" class="alert alert-warning mt-3 d-none">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmPaternity"
+                                    onchange="togglePaternityUpload()">
+                                <label class="form-check-label fw-bold" for="confirmPaternity">
+                                    Đăng ký đồng thời thủ tục Nhận cha, mẹ, con
+                                </label>
+                            </div>
+                            <div id="paternityUploadHint" class="mt-1 ps-4 small text-muted d-none">
+                                * Sẽ yêu cầu đính kèm văn bản chứng minh quan hệ ở bước tiếp theo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: UPLOAD ZONE -->
+                <div id="step2" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Thành phần Hồ sơ</h5>
+
+                    <div id="uploadList" class="row g-3">
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Giấy chứng sinh <span class="text-danger">*</span>
+                                            </h6>
+                                            <p class="small text-muted mb-0">Đính kèm bản quét hoặc ảnh chụp Giấy chứng
+                                                sinh bản chính.</p>
+                                        </div>
+                                        <button class="btn btn-outline-primary btn-sm"><i
+                                                class="bi bi-upload me-2"></i>Chọn File</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 d-none" id="paternityUploadItem">
+                            <div class="card border-warning shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold mb-1 text-warning">Văn bản chứng minh quan hệ Cha -
+                                                Con</span>
+                                            </h6>
+                                            <p class="small text-muted mb-0">Cần thiết cho thủ tục nhận Cha, Mẹ, Con.
+                                            </p>
+                                        </div>
+                                        <button class="btn btn-warning btn-sm text-white"><i
+                                                class="bi bi-upload me-2"></i>Chọn File</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: PAYMENT & SUBMIT -->
+                <div id="step3" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Xác nhận & Nộp hồ sơ</h5>
+
+                    <div class="alert alert-success border-0 shadow-sm text-center py-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                        <h4 class="fw-bold mt-3">Hồ sơ đã sẵn sàng!</h4>
+                        <p class="text-muted">Vui lòng kiểm tra lại thông tin trước khi nộp.</p>
+                    </div>
+
+                    <div class="bg-white p-3 border rounded     mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Lệ phí thủ tục:</span>
+                            <span class="fw-bold" id="totalFeeDisplay"
+                                th:text="${s != null ? #numbers.formatDecimal(s.feeAmount, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '0 VNĐ'}">0
+                                VNĐ</span>
+                        </div>
+                    </div>
+
+                    <p class="text-center small text-muted">
+                        Bằng việc nhấn "Nộp hồ sơ", bạn cam kết chịu trách nhiệm về tính chính xác của thông tin.
+                    </p>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                    <button class="btn btn-secondary px-4 disabled" id="btnBack" onclick="changeStep(-1)">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại
+                    </button>
+                    <button class="btn btn-primary px-4 fw-bold" id="btnNext" onclick="changeStep(1)">
+                        Tiếp tục <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    </div>
+
+    <!-- USE FRAGMENT FOR FOOTER -->
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+    <!-- JS Logic -->
+    <!-- Generic Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-primary" id="messageModalTitle">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-info-circle-fill text-primary" style="font-size: 3rem;"
+                            id="messageModalIcon"></i>
+                    </div>
+                    <p class="mb-0 fs-5" id="messageModalBody">Nội dung thông báo</p>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center">
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script th:inline="javascript">
+        let currentStep = 1;
+        const verificationState = {
+            father: /*[[${(#strings.equalsIgnoreCase(citizen.gender, 'MALE')) || (spouse != null && #strings.equalsIgnoreCase(citizen.gender, 'FEMALE'))}]]*/ false,
+            mother: /*[[${(#strings.equalsIgnoreCase(citizen.gender, 'FEMALE')) || (spouse != null && #strings.equalsIgnoreCase(citizen.gender, 'MALE'))}]]*/ false
+        };
+
+        // Helper to show modal
+        function showModal(message, type = 'info') {
+            const modalEl = document.getElementById('messageModal');
+            const titleEl = document.getElementById('messageModalTitle');
+            const bodyEl = document.getElementById('messageModalBody');
+            const iconEl = document.getElementById('messageModalIcon');
+            const modal = new bootstrap.Modal(modalEl);
+
+            bodyEl.innerText = message;
+
+            if (type === 'error') {
+                titleEl.innerText = 'Lỗi';
+                titleEl.className = 'modal-title fw-bold text-danger';
+                iconEl.className = 'bi bi-x-circle-fill text-danger';
+            } else if (type === 'warning') {
+                titleEl.innerText = 'Lưu ý';
+                titleEl.className = 'modal-title fw-bold text-warning';
+                iconEl.className = 'bi bi-exclamation-triangle-fill text-warning';
+            } else {
+                titleEl.innerText = 'Thông báo';
+                titleEl.className = 'modal-title fw-bold text-primary';
+                iconEl.className = 'bi bi-info-circle-fill text-primary';
+            }
+
+            modal.show();
+        }
+
+        function changeStep(delta) {
+            if (delta === 1 && !validateStep(currentStep)) return;
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > 3) currentStep = 3;
+            updateWizardUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                let isValid = true;
+                const setError = (id, cond) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (!cond) { el.classList.add('is-invalid'); isValid = false; }
+                        else el.classList.remove('is-invalid');
+                    }
+                };
+
+                const gender = document.getElementById('applicantGender').value;
+                const fatherId = document.getElementById('fatherId').value.trim();
+                const motherId = document.getElementById('motherId').value.trim();
+
+                // 1. Parent Validation
+                if (gender === 'male') {
+                    if (!motherId || !verificationState.mother) {
+                        document.getElementById('motherId').classList.add('is-invalid');
+                        showModal("Vì bạn là Cha, vui lòng tra cứu và xác thực thông tin Mẹ.", 'warning');
+                        return false;
+                    }
+                } else {
+                    if (fatherId && !verificationState.father) {
+                        document.getElementById('fatherId').classList.add('is-invalid');
+                        showModal("Vui lòng xác thực thông tin Cha trước khi tiếp tục.", 'warning');
+                        return false;
+                    }
+                }
+
+                // 2. Child Validation (only if section is revealed)
+                const childSection = document.getElementById('childSection');
+                if (childSection.classList.contains('d-none')) {
+                    showModal("Vui lòng hoàn tất xác thực thông tin Cha/Mẹ để nhập thông tin con.", 'warning');
+                    return false;
+                }
+
+                setError('childName', document.getElementById('childName').value.trim() !== '');
+                setError('childGender', document.getElementById('childGender').value !== '');
+
+                // Date Validation
+                const childDobVal = document.getElementById('childDob').value;
+                if (!childDobVal) {
+                    setError('childDob', false);
+                    isValid = false;
+                } else {
+                    const dobDate = new Date(childDobVal);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // normalize today
+
+                    if (dobDate > today) {
+                        setError('childDob', false);
+                        showModal("Ngày sinh của trẻ không được lớn hơn ngày hiện tại!", 'error');
+                        return false;
+                    } else {
+                        setError('childDob', true);
+                    }
+                }
+
+                setError('childEthnicity', document.getElementById('childEthnicity').value.trim() !== '');
+                setError('childBirthPlace', document.getElementById('childBirthPlace').value.trim() !== '');
+
+                return isValid;
+            }
+            return true;
+        }
+
+        // ... (keep updateWizardUI, verifyCitizen, resetVerification, checkRevealChildSection, autoFillParents ...)
+
+        function checkMotherSingleLogic() {
+            const gender = document.getElementById('applicantGender').value;
+            const status = document.getElementById('applicantMaritalStatus').value; // 'single' or 'married' (mapped from server)
+            const fatherId = document.getElementById('fatherId').value.trim();
+            const motherId = document.getElementById('motherId').value.trim();
+            const section = document.getElementById('paternitySection');
+            const check = document.getElementById('confirmPaternity');
+
+            // Logic: If NOT married AND valid parent info present -> Require Paternity Recognition
+            // Note: status is mapped to 'single' or 'married' in hidden input, but lets be robust
+            if (status !== 'married') {
+                if ((gender === 'male' && motherId) || (gender === 'female' && fatherId)) {
+                    section.classList.remove('d-none');
+                    // check.checked = true; // Relaxed: let user decide
+                    togglePaternityUpload();
+                    return;
+                }
+            }
+            section.classList.add('d-none');
+            check.checked = false; // Reset if conditions not met
+            togglePaternityUpload();
+        }
+
+        function updateWizardUI() {
+            for (let i = 1; i <= 3; i++) {
+                const el = document.getElementById(`step${i}`);
+                const navEl = document.getElementById(`navStep${i}`);
+                if (i === currentStep) {
+                    if (el) el.classList.remove('d-none');
+                    if (navEl) {
+                        navEl.classList.add('active');
+                        navEl.querySelector('small').className = 'fw-bold';
+                    }
+                } else {
+                    if (el) el.classList.add('d-none');
+                    if (navEl) {
+                        navEl.classList.remove('active');
+                        navEl.querySelector('small').className = 'text-muted';
+                    }
+                }
+            }
+
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+
+            if (currentStep === 1) btnBack.classList.add('disabled');
+            else btnBack.classList.remove('disabled');
+
+            if (currentStep === 3) {
+                btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
+                btnNext.className = 'btn btn-success px-4 fw-bold';
+                btnNext.onclick = function () { submitForm(); };
+            } else {
+                btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
+                btnNext.className = 'btn btn-primary px-4 fw-bold';
+                btnNext.onclick = function () { changeStep(1); };
+            }
+
+            const paternityCheck = document.getElementById('confirmPaternity').checked;
+            const item = document.getElementById('paternityUploadItem');
+            if (item) item.classList.toggle('d-none', !paternityCheck);
+
+            // Fee display
+            const baseFeeValue = /*[[${s != null ? s.feeAmount : 0}]]*/ 0;
+            const feeDisplay = document.getElementById('totalFeeDisplay');
+            if (feeDisplay) {
+                feeDisplay.innerText = Number(baseFeeValue).toLocaleString() + ' VNĐ';
+            }
+        }
+
+        async function verifyCitizen(role) {
+            const idInput = document.getElementById(role + 'Id');
+            const nameInput = document.getElementById(role + 'Name');
+            const btn = document.getElementById('btnVerify' + role.charAt(0).toUpperCase() + role.slice(1));
+            const cccd = idInput.value.trim();
+
+            if (!/^\d{12}$/.test(cccd)) {
+                idInput.classList.add('is-invalid');
+                return;
+            }
+
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/citizen/lookup/${cccd}`);
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Validation: If Male applicant manually enters Mother info
+                    const applicantGender = document.getElementById('applicantGender').value;
+                    if (role === 'mother' && applicantGender === 'male') {
+                        if (data.gender.toUpperCase() !== 'FEMALE') {
+                            showModal("Công dân này không phải giới tính Nữ.", 'error');
+                            idInput.classList.add('is-invalid');
+                            return;
+                        }
+                        if (data.maritalStatus.toUpperCase() !== 'SINGLE') {
+                            showModal("Mẹ đang có hôn nhân hợp pháp nên cha của trẻ được xác định theo chồng hợp pháp. Nếu muốn xác định cha là người khác, cần hồ sơ/ quyết định hợp pháp (thường do Tòa án).", 'warning');
+                            idInput.classList.add('is-invalid');
+                            return;
+                        }
+                    }
+
+                    nameInput.value = data.fullName;
+                    idInput.classList.remove('is-invalid');
+                    idInput.classList.add('is-valid');
+                    verificationState[role] = true;
+
+                    // Transition to display mode for better UX
+                    document.getElementById(role + 'DisplayName').innerText = data.fullName;
+                    document.getElementById(role + 'DisplayId').innerText = cccd;
+                    document.getElementById(role + 'DisplayDob').innerText = formatDate(data.dob);
+                    document.getElementById(role + 'Display').classList.remove('d-none');
+                    document.getElementById(role + 'Input').classList.add('d-none');
+
+                    checkMotherSingleLogic();
+                } else {
+                    verificationState[role] = false;
+                    nameInput.value = '';
+                    idInput.classList.add('is-invalid');
+                    showModal("Không tìm thấy thông tin công dân.", 'error');
+                }
+            } catch (error) {
+                showModal("Lỗi kết nối.", 'error');
+            } finally {
+                btn.innerHTML = '<i class="bi bi-search"></i>';
+                btn.disabled = false;
+                checkRevealChildSection();
+            }
+        }
+
+        function resetVerification(role) {
+            verificationState[role] = false;
+            document.getElementById(role + 'Name').value = '';
+            document.getElementById(role + 'Id').classList.remove('is-valid', 'is-invalid');
+            document.getElementById(role + 'Display').classList.add('d-none');
+            document.getElementById(role + 'Input').classList.remove('d-none');
+            checkRevealChildSection();
+        }
+
+        function checkRevealChildSection() {
+            const gender = document.getElementById('applicantGender').value;
+            const fatherId = document.getElementById('fatherId').value.trim();
+            const motherId = document.getElementById('motherId').value.trim();
+            const childSection = document.getElementById('childSection');
+
+            let canReveal = false;
+            if (gender === 'male') {
+                if (verificationState.mother) canReveal = true;
+            } else {
+                if (!fatherId) canReveal = true;
+                else if (verificationState.father) canReveal = true;
+            }
+
+            if (canReveal) childSection.classList.remove('d-none');
+            else childSection.classList.add('d-none');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '---';
+            if (dateStr.includes('-')) {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function autoFillParents() {
+            const gender = document.getElementById('applicantGender').value;
+            const status = document.getElementById('applicantMaritalStatus').value;
+            const nameValue = document.getElementById('applicantName').value;
+            const idValue = document.getElementById('applicantId').value;
+            const dobValue = document.getElementById('applicantDob').value;
+            const spouseNameVal = document.getElementById('spouseName').value;
+            const spouseCccdVal = document.getElementById('spouseCccd').value;
+            const spouseDobVal = document.getElementById('spouseDob').value;
+
+            // Reset UI States
+            ['father', 'mother'].forEach(role => {
+                document.getElementById(role + 'Display').classList.add('d-none');
+                document.getElementById(role + 'Input').classList.remove('d-none');
+                document.getElementById(role + 'Id').value = '';
+                document.getElementById(role + 'Name').value = '';
+                verificationState[role] = false;
+            });
+
+            const setDisplay = (role, n, i, d) => {
+                document.getElementById(role + 'DisplayName').innerText = n;
+                document.getElementById(role + 'DisplayId').innerText = i;
+                document.getElementById(role + 'DisplayDob').innerText = formatDate(d);
+                document.getElementById(role + 'Display').classList.remove('d-none');
+                document.getElementById(role + 'Input').classList.add('d-none');
+                // Fill hidden inputs for submission
+                document.getElementById(role + 'Id').value = i;
+                document.getElementById(role + 'Name').value = n;
+                verificationState[role] = true;
+            };
+
+            if (gender === 'male') {
+                setDisplay('father', nameValue, idValue, dobValue);
+                if (status === 'married' && spouseCccdVal) {
+                    setDisplay('mother', spouseNameVal, spouseCccdVal, spouseDobVal);
+                }
+            } else {
+                setDisplay('mother', nameValue, idValue, dobValue);
+                if (status === 'married' && spouseCccdVal) {
+                    setDisplay('father', spouseNameVal, spouseCccdVal, spouseDobVal);
+                }
+            }
+
+            document.querySelectorAll('.father-req').forEach(el => el.classList.toggle('d-none', gender === 'female'));
+            document.querySelectorAll('.mother-req').forEach(el => el.classList.toggle('d-none', gender === 'male'));
+
+            checkMotherSingleLogic();
+            checkRevealChildSection();
+        }
+
+
+
+        function togglePaternityUpload() {
+            const isChecked = document.getElementById('confirmPaternity').checked;
+            const hint = document.getElementById('paternityUploadHint');
+            if (hint) hint.classList.toggle('d-none', !isChecked);
+        }
+
+        function submitForm() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/citizen/dossier/submit-birth-registration';
+            const addField = (n, v) => {
+                const i = document.createElement('input');
+                i.type = 'hidden'; i.name = n; i.value = v;
+                form.appendChild(i);
+            };
+            addField('serviceId', document.getElementById('serviceId').value);
+            addField('applicantGender', document.getElementById('applicantGender').value);
+            addField('applicantMaritalStatus', document.getElementById('applicantMaritalStatus').value);
+            addField('childName', document.getElementById('childName').value);
+            addField('childGender', document.getElementById('childGender').value);
+            addField('childDob', document.getElementById('childDob').value);
+            addField('childEthnicity', document.getElementById('childEthnicity').value);
+            addField('childBirthPlace', document.getElementById('childBirthPlace').value);
+            addField('fatherName', document.getElementById('fatherName').value);
+            addField('fatherId', document.getElementById('fatherId').value);
+            addField('motherName', document.getElementById('motherName').value);
+            addField('motherId', document.getElementById('motherId').value);
+            addField('isPaternityRecognition', document.getElementById('confirmPaternity').checked);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Already mostly rendered by Thymeleaf, just sync visibility logic
+            checkMotherSingleLogic();
+            checkRevealChildSection();
+
+            // Handle requirement indicators
+            const gender = document.getElementById('applicantGender').value;
+            document.querySelectorAll('.father-req').forEach(el => el.classList.toggle('d-none', gender === 'female'));
+            document.querySelectorAll('.mother-req').forEach(el => el.classList.toggle('d-none', gender === 'male'));
+        });
+    </script>
+</body>
+
+</html>

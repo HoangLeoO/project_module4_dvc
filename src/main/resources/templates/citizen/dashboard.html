@@ -126,8 +126,10 @@
                                                 nộp</span>
                                             <span th:if="${d.dossierStatus == 'PENDING'}"
                                                 class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-1 rounded-pill small">Đang
-                                                class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-1 rounded-pill small">Đang
                                                 xử lý</span>
+                                            <span th:if="${d.dossierStatus == 'VERIFIED'}"
+                                                class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-1 rounded-pill small">Đã
+                                                xác minh</span>
                                             <span th:if="${d.dossierStatus == 'NEED_SUPPLEMENT'}"
                                                 class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-1 rounded-pill small">Cần
                                                 bổ sung</span>
@@ -190,6 +192,39 @@
     </main>
 
     <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-body text-center py-5">
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 p-4 rounded-circle d-inline-block">
+                            <i class="bi bi-check-lg text-success" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-3">Nộp hồ sơ thành công!</h3>
+                    <p class="text-muted fs-5 mb-4">Hồ sơ của bạn đã được gửi đến hệ thống.<br>Vui lòng theo dõi trạng
+                        thai xử lý tại đây.</p>
+                    <button type="button" class="btn btn-success px-5 py-2 fw-bold"
+                        data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check for success message and trigger modal -->
+    <div th:if="${successMessage}" id="successMessageFlag" class="d-none"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var successFlag = document.getElementById('successMessageFlag');
+            if (successFlag) {
+                var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            }
+        });
+    </script>
 
 </body>
 

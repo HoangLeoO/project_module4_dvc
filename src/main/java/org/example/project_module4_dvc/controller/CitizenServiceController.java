@@ -1,8 +1,12 @@
 package org.example.project_module4_dvc.controller;
 
+import org.example.project_module4_dvc.config.CustomUserDetails;
 import org.example.project_module4_dvc.dto.cat.CatServiceDTO;
+import org.example.project_module4_dvc.entity.mock.MockCitizen;
 import org.example.project_module4_dvc.service.cat.ICatServiceService;
+import org.example.project_module4_dvc.service.mock.IMockCitizenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +21,9 @@ public class CitizenServiceController {
 
     @Autowired
     private ICatServiceService catServiceService;
+
+    @Autowired
+    private IMockCitizenService mockCitizenService;
 
     @GetMapping("/services")
     public String showServices(@RequestParam(required = false) String keyword,
@@ -51,12 +58,30 @@ public class CitizenServiceController {
     }
 
     @GetMapping("/submit-wizard")
-    public String showSubmitWizard(@RequestParam(value = "code", required = false) String code, Model model) {
+    public String showSubmitWizard(@RequestParam(value = "code", required = false) String code,
+            Model model,
+            Authentication authentication) {
         if (code != null) {
             var service = catServiceService.getServiceByCode(code);
             model.addAttribute("s", service);
         }
+
+        // Lấy thông tin người đăng nhập
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long citizenId = userDetails.getCitizenId();
+
+        // Lấy thông tin công dân từ database
+        MockCitizen citizen = mockCitizenService.findById(citizenId);
+        model.addAttribute("citizen", citizen);
+
+        // Logic check Spouse if Married (Enhanced: fallback to Household logic)
+        MockCitizen spouse = mockCitizenService.findSpouseByCitizenId(citizenId);
+        if (spouse != null) {
+            model.addAttribute("spouse", spouse);
+        }
+
         model.addAttribute("activePage", "services");
-        return "citizen/services/submit";
+
+        return "citizen/portal-submit-wizard";
     }
 }

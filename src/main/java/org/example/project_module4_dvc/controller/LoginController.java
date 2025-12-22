@@ -14,12 +14,12 @@ public class LoginController {
     @Autowired
     private ISysUserService userService;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public String landingPage() {
-        return "citizen/home";
-    }
+//    @RequestMapping(value = "", method = RequestMethod.GET)
+//    public String landingPage() {
+//        return "citizen/home";
+//    }
 
-    @RequestMapping(value = "login/citizen", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public String loginPageCitizen() {
         return "citizen/login";
     }
