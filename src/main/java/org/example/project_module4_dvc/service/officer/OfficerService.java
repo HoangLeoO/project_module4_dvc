@@ -11,9 +11,15 @@ import org.example.project_module4_dvc.mapper.OpsDossierMapper;
 import org.example.project_module4_dvc.mapper.OpsDossierResultMapper;
 import org.example.project_module4_dvc.repository.ops.OpsDossierFileRepository;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
+import org.example.project_module4_dvc.repository.cat.CatWorkflowStepRepository;
+import org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository;
+import org.example.project_module4_dvc.repository.ops.OpsLogWorkflowStepRepository;
 import org.example.project_module4_dvc.repository.ops.OpsDossierResultRepository;
 import org.example.project_module4_dvc.repository.sys.SysUserRepository;
 import org.example.project_module4_dvc.service.websocket.IWebsocketService;
+import org.example.project_module4_dvc.entity.ops.OpsDossierLog;
+import org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep;
+import org.example.project_module4_dvc.entity.cat.CatWorkflowStep;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,19 +37,28 @@ public class OfficerService implements IOfficerService {
 
     private final OpsDossierResultRepository opsDossierResultRepository;
     private final SysUserRepository sysUserRepository;
+    private final OpsDossierLogRepository opsDossierLogRepository;
+    private final OpsLogWorkflowStepRepository opsLogWorkflowStepRepository;
+    private final CatWorkflowStepRepository catWorkflowStepRepository;
 
     private final IWebsocketService websocketService;
 
     public OfficerService(OpsDossierMapper opsDossierMapper, OpsDossierResultMapper opsDossierResultMapper,
-                          OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
-                          OpsDossierResultRepository opsDossierResultRepository, SysUserRepository sysUserRepository,
-                          IWebsocketService websocketService) {
+            OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
+            OpsDossierResultRepository opsDossierResultRepository, SysUserRepository sysUserRepository,
+            OpsDossierLogRepository opsDossierLogRepository,
+            OpsLogWorkflowStepRepository opsLogWorkflowStepRepository,
+            CatWorkflowStepRepository catWorkflowStepRepository,
+            IWebsocketService websocketService) {
         this.opsDossierMapper = opsDossierMapper;
         this.opsDossierResultMapper = opsDossierResultMapper;
         this.opsDossierRepository = opsDossierRepository;
         this.opsDossierFileRepository = opsDossierFileRepository;
         this.opsDossierResultRepository = opsDossierResultRepository;
         this.sysUserRepository = sysUserRepository;
+        this.opsDossierLogRepository = opsDossierLogRepository;
+        this.opsLogWorkflowStepRepository = opsLogWorkflowStepRepository;
+        this.catWorkflowStepRepository = catWorkflowStepRepository;
         this.websocketService = websocketService;
     }
 
@@ -86,14 +101,21 @@ public class OfficerService implements IOfficerService {
     }
 
     @Override
-    public void updateDossierStatus(Long dossierId, String status, Long specialistId, LocalDateTime dueDate, String reason) {
+    @Transactional
+    public void updateDossierStatus(Long dossierId, String status, Long specialistId, LocalDateTime dueDate,
+            String reason) {
         OpsDossier opsDossier = opsDossierRepository.findById(dossierId).orElse(null);
         if (opsDossier != null) {
+            String oldStatus = opsDossier.getDossierStatus();
             opsDossier.setDossierStatus(status);
             opsDossier.setDueDate(dueDate);
             opsDossier.setCurrentHandler(sysUserRepository.findById(specialistId).orElse(null));
             opsDossier.setRejectionReason(reason);
-            opsDossierRepository.save(opsDossier);
+            OpsDossier saved = opsDossierRepository.save(opsDossier);
+
+            if ("PENDING".equals(status)) {
+                recordStepCompletion(saved, specialistId, "ACCEPTED", oldStatus, "PENDING", "Hồ sơ đã được tiếp nhận");
+            }
         }
     }
 
@@ -152,5 +174,35 @@ public class OfficerService implements IOfficerService {
                         .handlerName(specialist.getFullName())
                         .action("ASSIGNED")
                         .build());
+
+        // 4. Record Workflow Step Completion (Step 1: Tiếp nhận hồ sơ)
+        recordStepCompletion(saved, specialistId, "ASSIGNED", oldStatus, "PENDING", "Đã tiếp nhận và phân công xử lý");
+    }
+
+    private void recordStepCompletion(OpsDossier dossier, Long actorId, String action, String prevStatus,
+            String nextStatus, String comments) {
+        // Create Log
+        OpsDossierLog log = OpsDossierLog.builder()
+                .dossier(dossier)
+                .actorId(actorId)
+                .action(action)
+                .prevStatus(prevStatus)
+                .nextStatus(nextStatus)
+                .comments(comments)
+                .build();
+        OpsDossierLog savedLog = opsDossierLogRepository.save(log);
+
+        // Find Step 1 for this service
+        catWorkflowStepRepository.findAll().stream()
+                .filter(s -> s.getService().getId().equals(dossier.getService().getId()) && s.getStepOrder() == 1)
+                .findFirst()
+                .ifPresent(step -> {
+                    OpsLogWorkflowStep lws = new OpsLogWorkflowStep();
+                    lws.setLog(savedLog);
+                    lws.setWorkflowStep(step);
+                    lws.setDescription(step.getStepName() + " hoàn thành");
+                    lws.setCreatedAt(java.time.Instant.now());
+                    opsLogWorkflowStepRepository.save(lws);
+                });
     }
 }
