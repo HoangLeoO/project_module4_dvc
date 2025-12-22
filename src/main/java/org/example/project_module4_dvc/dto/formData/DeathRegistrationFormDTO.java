@@ -12,13 +12,22 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeathRegistrationFormDTO {
-     private String deceasedFullName;
+
+    private String deceasedFullName;
     private LocalDate dateOfBirth;
+    private String gender;
+    private String ethnicity;
     private LocalDate dateOfDeath;
     private String placeOfDeath;
-
+    private String deathReason;
+    private String deathNoticeNumber;
     private String lastResidence;
+
 
     private String relativeFullName;
     private String relativeRelationship;
+    private String relativeIdNumber;
+    private String relativeDateOfBirth;
+    private String relativePhoneNumber;
+    private String relativeAddress;
 }

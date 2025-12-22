@@ -76,6 +76,7 @@ public class MockLand {
     @NotNull(message = "Chủ sở hữu không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false, referencedColumnName = "id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private MockCitizen owner;
 
     // --- 6. Trạng thái ---

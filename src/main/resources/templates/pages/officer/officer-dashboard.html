@@ -302,11 +302,10 @@
                         <h6 class="dropdown-header">Tài khoản</h6>
                     </li>
                     <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Đăng
+                    <li><a class="dropdown-item text-danger" th:href="@{/logout/officer}"><i class="bi bi-box-arrow-right me-2"></i>Đăng
                         xuất</a></li>
                 </ul>
             </div>
@@ -370,13 +369,13 @@
                      th:classappend="${nearDueCount > 0} ? 'border border-danger border-2' : ''">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <p class="text-muted fw-medium mb-1">Trạng thái hồ sơ</p>
+                            <p class="text-muted fw-medium mb-1">Hồ sơ sắp quá hạn</p>
                             <h2 class="fw-bold mb-0"
                                 th:classappend="${nearDueCount > 0} ? 'text-danger' : 'text-success'"
                                 th:text="${nearDueCount}">0</h2>
                             <div class="mt-2 small px-2 py-1 rounded d-inline-block fw-bold"
                                  th:classappend="${nearDueCount > 0} ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success'"
-                                 th:text="${nearDueCount > 0} ? 'Sắp quá hạn 6H' : 'Hoạt động ổn định'">
+                                 th:text="${nearDueCount > 0} ? 'Sắp quá hạn 6H' : 'Không có'">
                                 Ổn định
                             </div>
                         </div>
@@ -438,18 +437,17 @@
                 <table class="table custom-table align-middle mb-0">
                     <thead>
                     <tr>
-                        <th class="ps-4">STT</th>
+
                         <th>Mã hồ sơ</th>
                         <th>Công dân</th>
                         <th>Thủ tục</th>
                         <th>Thời gian nộp</th>
                         <th>Tình trạng</th>
-                        <th class="text-end pe-4">Tác vụ</th>
+                        <th>Tác vụ</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="dossier,i:${dossiers.content}">
-                        <td class="ps-4 text-muted fw-bold" th:text="${i.count}">1</td>
                         <td>
                                     <span class="badge bg-light text-dark border fw-bold"
                                           style="font-family: monospace; font-size: 0.85rem;"
@@ -503,7 +501,7 @@
 
             <!-- Footer / Pagination -->
             <div class="card-footer bg-white border-top-0 py-3">
-                <nav>
+                <nav th:if="${dossiers.totalPages>0}">
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${dossiers.hasPrevious()} ? '' : 'disabled'">
                             <a class="page-link border-0 rounded-circle mx-1 d-flex align-items-center justify-content-center fw-bold"

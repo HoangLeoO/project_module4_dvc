@@ -4,31 +4,31 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Số chứng chỉ đất</label>
-                <input type="text" class="form-control fw-bold" th:value="${formData.landCertificateNumber}" readonly>
+                <input type="text" class="form-control fw-bold" th:value="${formData.landCertificateNumber ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số tờ bản đồ</label>
-                <input type="text" class="form-control" th:value="${formData.mapSheetNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.landMapSheet ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số thửa đất</label>
-                <input type="text" class="form-control" th:value="${formData.landPlotNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.landPlotNumber ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Chủ sở hữu hiện tại</label>
-                <input type="text" class="form-control" th:value="${formData.currentOwner}" readonly>
+                <input type="text" class="form-control" th:value="${formData.currentOwner ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Loại thay đổi</label>
-                <input type="text" class="form-control" th:value="${formData.changeType}" readonly>
+                <input type="text" class="form-control" th:value="${formData.changeType ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Lý do thay đổi</label>
-                <input type="text" class="form-control" th:value="${formData.changeReason}" readonly>
+                <input type="text" class="form-control" th:value="${formData.changeReason ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Chủ sở hữu mới</label>
-                <input type="text" class="form-control" th:value="${formData.newOwner}" readonly>
+                <input type="text" class="form-control" th:value="${formData.newOwner ?: ''}" readonly>
             </div>
         </div>
     </form>

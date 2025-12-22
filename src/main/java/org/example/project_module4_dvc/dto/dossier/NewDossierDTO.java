@@ -24,6 +24,10 @@ public class NewDossierDTO {
     Long applicantId;
     String serviceName;
     String cccd;
+    Long specialistId;
+    String rejectionReason;
+    ;
+    private Long receivingDeptId;
     private Map<String, Object> formData;
 
     public boolean isOverdue() {
