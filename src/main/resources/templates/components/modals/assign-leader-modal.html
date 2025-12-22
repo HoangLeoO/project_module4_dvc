@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="assignModal" class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      <div class="modal-header px-4 py-3 border-bottom">
+        <h5 class="modal-title fw-bold text-primary d-flex align-items-center">
+          <i class="bi bi-person-check-fill me-2 fs-5"></i>
+          Chuyển tiếp cho cấp trên
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form th:action="@{/specialist/dashboard/reception/update}" method="get">
+        <div class="modal-body p-4">
+
+          <input type="hidden" name="dossierId" th:value="${dossier.id}">
+
+          <style>
+            .specialist-radio {
+              position: absolute;
+              opacity: 0;
+              width: 0;
+              height: 0;
+            }
+
+            .specialist-card-label {
+              cursor: pointer;
+              transition: all 0.2s ease;
+              background-color: #f8f9fa;
+              /* slightly off-white default */
+              border: 1px solid transparent;
+            }
+
+            .specialist-card-label:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+              background-color: #fff;
+              border-color: #cbd5e1;
+            }
+
+            .specialist-radio:checked+.specialist-card-label {
+              background-color: #f0f9ff !important;
+              border-color: #0f4c81 !important;
+              box-shadow: 0 4px 12px rgba(15, 76, 129, 0.15) !important;
+            }
+
+            .specialist-radio:checked+.specialist-card-label .check-icon {
+              transform: scale(1);
+            }
+
+            .check-icon {
+              transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              transform: scale(0);
+            }
+          </style>
+          <div class="mb-3">
+            <label class="form-label fw-bold text-secondary small text-uppercase mb-2"><i
+                    class="bi bi-pencil-square me-1"></i> Ghi chú (Tùy chọn)</label>
+            <textarea class="form-control bg-light border-0 rounded-3 px-3 py-3" name="note" rows="3"
+                      placeholder="Nhập ghi chú bàn giao (nếu có)..." style="resize: none;"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer border-top-0 px-4 pb-4">
+          <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4"
+                  data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
+            <i class="bi bi-send-check me-2"></i>Xác nhận
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>

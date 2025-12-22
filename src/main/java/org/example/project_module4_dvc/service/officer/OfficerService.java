@@ -35,9 +35,9 @@ public class OfficerService implements IOfficerService {
     private final IWebsocketService websocketService;
 
     public OfficerService(OpsDossierMapper opsDossierMapper, OpsDossierResultMapper opsDossierResultMapper,
-            OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
-            OpsDossierResultRepository opsDossierResultRepository, SysUserRepository sysUserRepository,
-            IWebsocketService websocketService) {
+                          OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
+                          OpsDossierResultRepository opsDossierResultRepository, SysUserRepository sysUserRepository,
+                          IWebsocketService websocketService) {
         this.opsDossierMapper = opsDossierMapper;
         this.opsDossierResultMapper = opsDossierResultMapper;
         this.opsDossierRepository = opsDossierRepository;
@@ -62,9 +62,9 @@ public class OfficerService implements IOfficerService {
 
     // kq tra ve
     @Override
-    public Page<ResultDossierDTO> findAllResult(String dossierStatus, String departmentName, Pageable pageable) {
-        return opsDossierResultRepository.findOpsDossierResultByDossier_DossierStatusAndDossier_ReceivingDept_DeptName(
-                dossierStatus, departmentName, pageable).map(opsDossierResultMapper::toDTO);
+    public Page<ResultDossierDTO> findAllResult(String departmentName, Pageable pageable) {
+        return opsDossierResultRepository.findOpsDossierResultByDossier_ReceivingDept_DeptName(
+                departmentName, pageable).map(opsDossierResultMapper::toDTO);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class OfficerService implements IOfficerService {
     }
 
     @Override
-    public void updateDossierStatus(Long dossierId, String status, Long specialistId, LocalDateTime dueDate,String reason) {
+    public void updateDossierStatus(Long dossierId, String status, Long specialistId, LocalDateTime dueDate, String reason) {
         OpsDossier opsDossier = opsDossierRepository.findById(dossierId).orElse(null);
         if (opsDossier != null) {
             opsDossier.setDossierStatus(status);

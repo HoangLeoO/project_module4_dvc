@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class SpecialistService implements ISpecialistService{
     private final OpsDossierRepository opsDossierRepository;
@@ -22,5 +25,13 @@ public class SpecialistService implements ISpecialistService{
     @Override
     public Page<NewDossierDTO> findAll(String dossierStatus, String departmentName, Long specialistId, Pageable pageable) {
         return opsDossierRepository.findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndCurrentHandler_Id(dossierStatus,departmentName,specialistId,pageable).map(opsDossierMapper::toDTO);
+    }
+
+    @Override
+    public List<NewDossierDTO> findNearlyDue(String departmentName, Long specialistId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime limit = now.plusHours(6);
+        return opsDossierRepository.findNearlyDueSpecialist(now, limit, departmentName,specialistId).stream().map(opsDossierMapper::toDTO)
+                .toList();
     }
 }

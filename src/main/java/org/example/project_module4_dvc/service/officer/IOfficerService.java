@@ -17,7 +17,7 @@ public interface IOfficerService {
     // lay nhung ho so vua tao tu nguoi dan
     Page<NewDossierDTO> findAll(String dossierStatus, String departmentName, Pageable pageable);
 
-    Page<ResultDossierDTO> findAllResult(String dossierStatus, String departmentName, Pageable pageable);
+    Page<ResultDossierDTO> findAllResult(String departmentName, Pageable pageable);
 
     NewDossierDTO findById(Long id);
 
