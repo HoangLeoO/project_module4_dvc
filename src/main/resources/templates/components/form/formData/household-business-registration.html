@@ -4,15 +4,15 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Tên doanh nghiệp</label>
-                <input type="text" class="form-control fw-bold" th:value="${formData.businessName}" readonly>
+                <input type="text" class="form-control fw-bold" th:value="${formData.businessName ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Ngành kinh doanh</label>
-                <input type="text" class="form-control" th:value="${formData.businessLine}" readonly>
+                <input type="text" class="form-control" th:value="${formData.businessLine ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Địa chỉ kinh doanh</label>
-                <input type="text" class="form-control" th:value="${formData.businessAddress}" readonly>
+                <input type="text" class="form-control" th:value="${formData.businessAddress ?: ''}" readonly>
             </div>
         </div>
 
@@ -20,11 +20,11 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên chủ</label>
-                <input type="text" class="form-control" th:value="${formData.businessOwner}" readonly>
+                <input type="text" class="form-control" th:value="${formData.businessOwner ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số CCCD/CMND</label>
-                <input type="text" class="form-control" th:value="${formData.ownerIdNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.ownerIdNumber ?: ''}" readonly>
             </div>
         </div>
 
@@ -32,11 +32,11 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label small">Vốn đăng ký</label>
-                <input type="text" class="form-control" th:value="${formData.registeredCapital}" readonly>
+                <input type="text" class="form-control" th:value="${formData.registeredCapital ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Số lượng nhân viên</label>
-                <input type="text" class="form-control" th:value="${formData.numberOfEmployees}" readonly>
+                <input type="text" class="form-control" th:value="${formData.numberOfEmployees ?: ''}" readonly>
             </div>
         </div>
     </form>

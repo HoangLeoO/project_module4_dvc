@@ -80,33 +80,25 @@ public class DashboardController {
                     formDataDTO = convertMapToDTO(formDataMap, MarriageRegistrationFormDTO.class);
                     System.out.println("Processing Marriage Registration");
                     break;
-                case 3: // Thay đổi đất đai
-                    formDataDTO = convertMapToDTO(formDataMap, LandChangeRegistrationFormDTO.class);
+                case 3: // Khai tu
+                    formDataDTO = convertMapToDTO(formDataMap, DeathRegistrationFormDTO.class);
                     System.out.println("Processing Land Change Registration");
                     break;
-                case 4: // Đăng ký cư trú
-                    formDataDTO = convertMapToDTO(formDataMap, ResidenceRegistrationFormDTO.class);
-                    System.out.println("Processing Residence Registration");
+                case 4: // xac nhan tinh trang hon nhan
+                    formDataDTO = convertMapToDTO(formDataMap, MaritalStatusCertificateFormDTO.class);
                     break;
-                case 5: // Thay đổi mục đích sử dụng đất
+                case 5: // thay doi quyen su dung dat
+                    formDataDTO = convertMapToDTO(formDataMap, LandChangeRegistrationFormDTO.class);
+                    break;
+                case 6: // chuyen doi muc dich
                     formDataDTO = convertMapToDTO(formDataMap, LandPurposeChangeFormDTO.class);
-                    System.out.println("Processing Land Purpose Change");
                     break;
-                case 6: // Tách/hợp nhất thửa đất
+                case 7: // tach thua
                     formDataDTO = convertMapToDTO(formDataMap, LandSplitMergeFormDTO.class);
-                    System.out.println("Processing Land Split/Merge");
-                    break;
-                case 7: // Đăng ký tử vong
-                    formDataDTO = convertMapToDTO(formDataMap, DeathRegistrationFormDTO.class);
-                    System.out.println("Processing Death Registration");
                     break;
                 case 8: // Đăng ký kinh doanh hộ gia đình
                     formDataDTO = convertMapToDTO(formDataMap, HouseholdBusinessRegistrationFormDTO.class);
                     System.out.println("Processing Household Business Registration");
-                    break;
-                case 9: // Giấy chứng nhận tình trạng hôn nhân
-                    formDataDTO = convertMapToDTO(formDataMap, MaritalStatusCertificateFormDTO.class);
-                    System.out.println("Processing Marital Status Certificate");
                     break;
                 default:
                     System.err.println("Unknown service ID: " + serviceId);
