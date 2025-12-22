@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ISysDepartmentService {
     SysDepartment getDept();
+
+    List<SysDepartment> getAll();
 }

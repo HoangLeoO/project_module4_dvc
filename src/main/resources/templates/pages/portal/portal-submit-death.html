@@ -244,7 +244,7 @@
                                     th:value="${opsDossier.formData != null ? opsDossier.formData['relativeAddress'] : ''}"
                                     readonly required>
                             </div>
-                            <div class="col-12">
+                            <div class="col-md-6">
                                 <label class="form-label text-muted small text-uppercase fw-bold">Mối quan hệ với người
                                     mất</label>
                                 <select class="form-select" name="relativeRelationship" required>
@@ -252,6 +252,14 @@
                                     <option value="vo_chong">Vợ/Chồng</option>
                                     <option value="cha_me">Cha/Mẹ</option>
                                     <option value="nguoi_than_khac">Người thân khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Nơi nộp hồ sơ</label>
+                                <select class="form-select" name="receivingDeptId" required>
+                                    <option value="">-- Chọn Đơn vị tiếp nhận --</option>
+                                    <option th:each="dept : ${sysDepartment}" th:value="${dept.id}"
+                                        th:text="${dept.deptName}"></option>
                                 </select>
                             </div>
                         </div>
@@ -358,41 +366,9 @@
                             </div>
                         </div>
 
-                        <!-- File List Mock -->
+                        <!-- File List -->
                         <div class="list-group" id="fileList">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">Giay-bao-tu.pdf <span
-                                                class="text-danger">*</span>
-                                        </h6>
-                                        <small class="text-muted">Bắt buộc theo quy định</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-card-image text-primary fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">CCCD-Nguoi-mat.jpg</h6>
-                                        <small class="text-muted">Đính kèm nếu có</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">To-khai-dang-ky-khai-tu.pdf <span
-                                                class="badge bg-success ms-1">Auto-gen</span></h6>
-                                        <small class="text-muted">1.2 MB - Tạo tự động từ Bước 2</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
+                            <!-- Files will be added here dynamically -->
 
                             <!-- AUTHORIZATION FILE (Hidden by default) -->
                             <div id="authFileItem"
@@ -717,6 +693,17 @@
                 const form = document.getElementById('submissionForm');
                 const formData = new FormData(form);
 
+                // IMPORTANT: Overwrite 'files' from our staging area
+                // First delete any files automatically picked up by FormData from the input tag
+                formData.delete('files');
+
+                // Append files from fileStore
+                if (fileStore.files.length > 0) {
+                    for (let i = 0; i < fileStore.files.length; i++) {
+                        formData.append('files', fileStore.files[i]);
+                    }
+                }
+
                 const response = await fetch('/citizen/submit', {
                     method: 'POST',
                     body: formData
@@ -806,46 +793,79 @@
             }
         }
 
+        // --- FILE HANDLING LOGIC ---
+        // Global array to store selected files
+        const fileStore = new DataTransfer();
+
         function handleFileSelect(input) {
+            if (input.files && input.files.length > 0) {
+                Array.from(input.files).forEach(file => {
+                    // Check for duplicates (optional but good UX)
+                    let exists = false;
+                    for (let i = 0; i < fileStore.files.length; i++) {
+                        if (fileStore.files[i].name === file.name && fileStore.files[i].size === file.size) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        fileStore.items.add(file);
+                    }
+                });
+                // Reset input so same file can be selected again if needed (though we handle dups)
+                input.value = '';
+
+                renderFileList();
+            }
+        }
+
+        function renderFileList() {
             const fileList = document.getElementById('fileList');
-            // Retain the authFileItem if it exists, or just append new files?
-            // For simplicity, we append new files to the list. 
-            // Better: Clear previous *user selected* files? Input[type=file] replaces selection usually.
-
-            // Remove previous user-selected files (assuming they don't have special ID like authFileItem)
-            // Actually, let's just append for now, or clear all except auth item.
-
+            // Clear current list items EXCEPT authFileItem
             Array.from(fileList.children).forEach(child => {
                 if (child.id !== 'authFileItem') {
-                    // child.remove(); // Don't remove hardcoded requirements for now?
-                    // The user wanted to "upload", usually implies adding their own.
-                    // Let's just ADD to the list.
+                    child.remove();
                 }
             });
 
-            if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => {
-                    const item = document.createElement('div');
-                    item.className = 'list-group-item d-flex justify-content-between align-items-center';
-                    item.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-file-earmark-text-fill text-primary fs-4 me-3"></i>
-                            <div>
-                                <h6 class="mb-0 small fw-bold">${file.name}</h6>
-                                <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
-                            </div>
+            // Re-render from fileStore
+            Array.from(fileStore.files).forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center animate-fade-in';
+                item.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-text-fill text-primary fs-4 me-3"></i>
+                        <div>
+                            <h6 class="mb-0 small fw-bold">${file.name}</h6>
+                            <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
                         </div>
-                        <button class="btn btn-sm btn-link text-danger" type="button" onclick="this.closest('.list-group-item').remove()"><i class="bi bi-trash"></i></button>
-                     `;
-                    // Insert before the auth item or at the end
-                    const authItem = document.getElementById('authFileItem');
-                    if (authItem) {
-                        fileList.insertBefore(item, authItem);
-                    } else {
-                        fileList.appendChild(item);
-                    }
-                });
-            }
+                    </div>
+                    <button class="btn btn-sm btn-link text-danger" type="button" onclick="removeFile(${index})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                 `;
+
+                // Insert before authItem
+                const authItem = document.getElementById('authFileItem');
+                if (authItem) {
+                    fileList.insertBefore(item, authItem);
+                } else {
+                    fileList.appendChild(item);
+                }
+            });
+        }
+
+        function removeFile(index) {
+            const newDt = new DataTransfer();
+            Array.from(fileStore.files).forEach((file, i) => {
+                if (i !== index) newDt.items.add(file);
+            });
+
+            // Clear and reload fileStore
+            fileStore.items.clear();
+            Array.from(newDt.files).forEach(f => fileStore.items.add(f));
+
+            renderFileList();
         }
     </script>
 </body>

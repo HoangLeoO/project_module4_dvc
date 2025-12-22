@@ -68,11 +68,19 @@ public class TOpsDossierService implements ITOpsDossierService {
         // Tính hạn xử lý: NOW() + SLA (DATE_ADD)
         dossier.setDueDate(LocalDateTime.now().plusHours(service.getSlaHours()));
 
-        // --- FIX: Set Receiving Department (Tạm thời hardcode WARD-001 - UBND Phường Hải Châu) ---
-        // Trong thực tế, cần logic routing dựa vào địa chỉ công dân hoặc chọn từ form
-        SysDepartment receivingDept = departmentRepository.findByDeptCode("WARD-001");
+        // --- FIX: Set Receiving Department ---
+        SysDepartment receivingDept = null;
+        if (request.getReceivingDeptId() != null) {
+            receivingDept = departmentRepository.findById(request.getReceivingDeptId()).orElse(null);
+        }
+
         if (receivingDept == null) {
-            throw new RuntimeException("Không tìm thấy phòng ban tiếp nhận mặc định (WARD-001)");
+             // Fallback default
+             receivingDept = departmentRepository.findByDeptCode("WARD-001");
+        }
+
+        if (receivingDept == null) {
+            throw new RuntimeException("Không tìm thấy đơn vị tiếp nhận (Mã: " + request.getReceivingDeptId() + " hoặc Default WARD-001)");
         }
         dossier.setReceivingDept(receivingDept);
 
