@@ -7,20 +7,23 @@ import org.example.project_module4_dvc.dto.dossier.NewDossierDTO;
 import org.example.project_module4_dvc.dto.formData.*;
 import org.example.project_module4_dvc.dto.specialist.SpecialistAvailableDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossierFile;
+import org.example.project_module4_dvc.service.FileStorageService;
 import org.example.project_module4_dvc.service.officer.IOfficerService;
+import org.example.project_module4_dvc.service.ops.IOpsDossierFileService;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,8 +34,14 @@ import java.util.Map;
 public class DashboardController {
     private final IOfficerService officerService;
 
-    public DashboardController(IOfficerService officerService) {
+    private final FileStorageService fileStorageService;
+
+    private final IOpsDossierFileService opsDossierFileService;
+
+    public DashboardController(IOfficerService officerService, FileStorageService fileStorageService,IOpsDossierFileService opsDossierFileService) {
         this.officerService = officerService;
+        this.fileStorageService = fileStorageService;
+        this.opsDossierFileService = opsDossierFileService;
     }
 
     @GetMapping("")
@@ -151,6 +160,28 @@ public class DashboardController {
         } catch (Exception e) {
             System.err.println("Error converting Map to " + dtoClass.getSimpleName() + ": " + e.getMessage());
             return null;
+        }
+    }
+
+    @GetMapping("/view-file/{id}")
+    public ResponseEntity<Resource> viewFile(@PathVariable("id") Long id) {
+        String  filePath = opsDossierFileService.getById(id).getFileUrl();
+        try {
+          Resource resource = fileStorageService.loadFileAsResource(filePath);
+            
+            // Determine content type
+            String contentType = "application/octet-stream"; 
+            try {
+                contentType = Files.probeContentType(resource.getFile().toPath());
+            } catch (Exception e) {
+                // ignore
+            }
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

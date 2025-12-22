@@ -327,7 +327,7 @@
                                     <strong class="text-dark" th:text="${file.fileName}"></strong>
                                     <small class="text-muted mt-1">Đã điền đầy đủ theo mẫu TP/HT-2024</small>
                                 </div>
-                                <a href="#" class="btn btn-sm btn-light border shadow-sm text-primary fw-bold">
+                                <a th:href="@{/officer/dashboard/view-file/__${file.getId()}__}" class="btn btn-sm btn-light border shadow-sm text-primary fw-bold">
                                     <i class="bi bi-eye me-1"></i> Xem
                                 </a>
                             </label>

@@ -216,6 +216,14 @@
                                 <input type="text" class="form-control bg-light" name="ownerAddress"
                                     th:value="${opsDossier.formData['ownerAddress']}" readonly required>
                             </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Nơi nộp hồ sơ</label>
+                                <select class="form-select" name="receivingDeptId" required>
+                                    <option value="">-- Chọn Đơn vị tiếp nhận --</option>
+                                    <option th:each="dept : ${sysDepartment}" th:value="${dept.id}"
+                                        th:text="${dept.deptName}"></option>
+                                </select>
+                            </div>
                         </div>
 
                     </div>
@@ -325,41 +333,9 @@
                             </div>
                         </div>
 
+                        <!-- File List -->
                         <div class="list-group" id="fileList">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">Hop-dong-chuyen-nhuong.pdf <span
-                                                class="text-danger">*</span>
-                                        </h6>
-                                        <small class="text-muted">Đã công chứng</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-image-fill text-primary fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">So-do-ban-goc-scan.pdf <span
-                                                class="text-danger">*</span>
-                                        </h6>
-                                        <small class="text-muted">Quét màu đầy đủ các trang</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">To-khai-thue-tncn.xlsx</h6>
-                                        <small class="text-muted">Mẫu 03/BĐS-TNCN</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
+                            <!-- Files will be added here dynamically -->
 
                             <!-- AUTHORIZATION FILE (Hidden by default) -->
                             <div id="authFileItem"
@@ -873,6 +849,82 @@
         }
 
 
+        // --- FILE HANDLING LOGIC ---
+        // Global array to store selected files
+        const fileStore = new DataTransfer();
+
+        function handleFileSelect(input) {
+            if (input.files && input.files.length > 0) {
+                Array.from(input.files).forEach(file => {
+                    // Check for duplicates (optional but good UX)
+                    let exists = false;
+                    for (let i = 0; i < fileStore.files.length; i++) {
+                        if (fileStore.files[i].name === file.name && fileStore.files[i].size === file.size) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        fileStore.items.add(file);
+                    }
+                });
+                // Reset input so same file can be selected again if needed (though we handle dups)
+                input.value = '';
+
+                renderFileList();
+            }
+        }
+
+        function renderFileList() {
+            const fileList = document.getElementById('fileList');
+            // Clear current list items EXCEPT authFileItem
+            Array.from(fileList.children).forEach(child => {
+                if (child.id !== 'authFileItem') {
+                    child.remove();
+                }
+            });
+
+            // Re-render from fileStore
+            Array.from(fileStore.files).forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center animate-fade-in';
+                item.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-text-fill text-primary fs-4 me-3"></i>
+                        <div>
+                            <h6 class="mb-0 small fw-bold">${file.name}</h6>
+                            <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-link text-danger" type="button" onclick="removeFile(${index})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                 `;
+
+                // Insert before authItem
+                const authItem = document.getElementById('authFileItem');
+                if (authItem) {
+                    fileList.insertBefore(item, authItem);
+                } else {
+                    fileList.appendChild(item);
+                }
+            });
+        }
+
+        function removeFile(index) {
+            const newDt = new DataTransfer();
+            Array.from(fileStore.files).forEach((file, i) => {
+                if (i !== index) newDt.items.add(file);
+            });
+
+            // Clear and reload fileStore
+            fileStore.items.clear();
+            Array.from(newDt.files).forEach(f => fileStore.items.add(f));
+
+            renderFileList();
+        }
+
+        // --- SUBMIT LOGIC UPDATE ---
         async function submitDossier() {
             const btnNext = document.getElementById('btnNext');
             const originalText = btnNext.innerHTML;
@@ -880,28 +932,19 @@
             btnNext.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Đang xử lý...';
 
             try {
-                // Ensure form exists (I added it in previous chunk, but need to check if closing tag is right)
-                // Actually the form tag isn't closed in my previous chunk 0.
-                // But browsers usually auto-close or it covers the whole content? 
-                // Wait, I inserted <form> at start of Step 1. I need to close it.
-                // Assuming I wrap the key content. Ideally <form> should wrap the whole wizard content or I use 'form' attribute but that is HTML5.
-                // Let's assume the <form> I added spans enough.
-
-                // Correction: The <form> tag structure in replacing chunk 1 is adding it *inside* step 1.
-                // This might not cover step 2, 3, 4. 
-                // Better strategy: Use a form that wraps the entire wizard content in the original HTML if possible, OR
-                // construct FormData manually from all inputs in document if form is fragmented.
-                // Given the messy HTML structure, constructing from 'document.getElementById("submissionForm")' requires the form to be a parent.
-                // Let's assume I place <form> around the content properly.
-                // Chunk 1 places it at line 149 (Step 1).
-                // I need to close it at the end of Step 4 or main content.
-
                 const form = document.getElementById('submissionForm');
-                // If form is null because I messed up structure, fallback to collecting inputs?
-
                 const formData = new FormData(form);
 
-                // Add files if they are outside form? (They are in Step 3, which is after Step 1, so if form closes at end of div, it is fine).
+                // IMPORTANT: Overwrite 'files' from our staging area
+                // First delete any files automatically picked up by FormData from the input tag
+                formData.delete('files');
+
+                // Append files from fileStore
+                if (fileStore.files.length > 0) {
+                    for (let i = 0; i < fileStore.files.length; i++) {
+                        formData.append('files', fileStore.files[i]);
+                    }
+                }
 
                 const response = await fetch('/citizen/submit', {
                     method: 'POST',
@@ -922,39 +965,6 @@
                 alert("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.");
                 btnNext.disabled = false;
                 btnNext.innerHTML = originalText;
-            }
-        }
-        function handleFileSelect(input) {
-            const fileList = document.getElementById('fileList');
-            // Remove previous user-selected files (assuming they don't have special ID like authFileItem)
-            Array.from(fileList.children).forEach(child => {
-                if (child.id !== 'authFileItem') {
-                    // child.remove(); // Keep mock files for now or remove based on preference
-                }
-            });
-
-            if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => {
-                    const item = document.createElement('div');
-                    item.className = 'list-group-item d-flex justify-content-between align-items-center';
-                    item.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-file-earmark-text-fill text-primary fs-4 me-3"></i>
-                            <div>
-                                <h6 class="mb-0 small fw-bold">${file.name}</h6>
-                                <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
-                            </div>
-                        </div>
-                        <button class="btn btn-sm btn-link text-danger" type="button" onclick="this.closest('.list-group-item').remove()"><i class="bi bi-trash"></i></button>
-                     `;
-                    // Insert before the auth item or at the end
-                    const authItem = document.getElementById('authFileItem');
-                    if (authItem) {
-                        fileList.insertBefore(item, authItem);
-                    } else {
-                        fileList.appendChild(item);
-                    }
-                });
             }
         }
     </script>
