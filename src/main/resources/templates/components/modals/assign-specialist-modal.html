@@ -1,55 +1,151 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
 
-<div th:fragment="assignModal" class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title fw-bold">
-          <i class="bi bi-person-check-fill me-2"></i>Phân công xử lý
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+  <div th:fragment="assignModal" class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header px-4 py-3 border-bottom">
+          <h5 class="modal-title fw-bold text-primary d-flex align-items-center">
+            <i class="bi bi-person-check-fill me-2 fs-5"></i>
+            Phân công xử lý
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
-      <form th:action="@{/officer/dashboard/reception/confirm}" method="post">
-        <div class="modal-body p-4">
-          <div class="text-center mb-4">
-            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 text-primary mb-2">
-              <i class="bi bi-file-earmark-person fs-1"></i>
+        <form th:action="@{/officer/dashboard/reception/update}" method="get">
+          <div class="modal-body p-4">
+
+            <input type="hidden" name="dossierId" th:value="${dossier.id}">
+
+            <style>
+              .specialist-radio {
+                position: absolute;
+                opacity: 0;
+                width: 0;
+                height: 0;
+              }
+
+              .specialist-card-label {
+                cursor: pointer;
+                transition: all 0.2s ease;
+                background-color: #f8f9fa;
+                /* slightly off-white default */
+                border: 1px solid transparent;
+              }
+
+              .specialist-card-label:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+                background-color: #fff;
+                border-color: #cbd5e1;
+              }
+
+              .specialist-radio:checked+.specialist-card-label {
+                background-color: #f0f9ff !important;
+                border-color: #0f4c81 !important;
+                box-shadow: 0 4px 12px rgba(15, 76, 129, 0.15) !important;
+              }
+
+              .specialist-radio:checked+.specialist-card-label .check-icon {
+                transform: scale(1);
+              }
+
+              .check-icon {
+                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                transform: scale(0);
+              }
+            </style>
+
+            <div class="mb-4">
+              <label class="form-label fw-bold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-people-fill me-1"></i> Chọn chuyên viên xử lý
+                <span class="text-danger">*</span>
+              </label>
+
+              <div class="d-flex flex-column gap-3" style="max-height: 400px; overflow-y: auto; padding: 2px;">
+                <div th:each="spec : ${specialists}">
+                  <input type="radio" class="specialist-radio" name="specialistId" th:id="'spec-' + ${spec.userId}"
+                    th:value="${spec.userId}" required>
+
+                  <label th:for="'spec-' + ${spec.userId}"
+                    class="specialist-card-label card p-3 border-0 rounded-3 shadow-sm position-relative h-100 mb-0">
+                    <div class="d-flex align-items-center">
+                      <!-- Check Icon indicator -->
+                      <div class="check-icon position-absolute top-0 end-0 mt-2 me-2 text-primary">
+                        <i class="bi bi-check-circle-fill fs-5"></i>
+                      </div>
+
+                      <!-- Avatar -->
+                      <div class="position-relative me-3">
+                        <img
+                          th:src="'https://ui-avatars.com/api/?name=' + ${spec.fullName} + '&background=random&color=fff&size=64'"
+                          class="rounded-circle shadow-sm" width="48" height="48" alt="Avatar">
+                      </div>
+
+                      <!-- Info -->
+                      <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1" th:text="${spec.fullName}">Nguyen Van A</h6>
+                        <div class="d-flex align-items-center text-muted small">
+                          <i class="bi bi-person-badge me-1"></i>
+                          <span th:text="${spec.roleName}">Chuyên viên</span>
+                        </div>
+                      </div>
+
+                      <!-- Workload Badge -->
+                      <div class="text-end me-4">
+                        <div class="d-flex flex-column align-items-end">
+                          <span class="badge rounded-pill mb-1"
+                            th:classappend="${spec.currentWorkload == 0} ? 'bg-success bg-opacity-10 text-success' : 
+                                                        (${spec.currentWorkload < 5} ? 'bg-info bg-opacity-10 text-info' : 'bg-warning bg-opacity-10 text-warning')">
+                            <i class="bi bi-inbox-fill me-1"></i>
+                            <span th:text="${spec.currentWorkload}">0</span> hồ sơ
+                          </span>
+                          <small class="text-muted" style="font-size: 0.7rem;">Đang xử lý</small>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Fallback if empty -->
+                <div th:if="${#lists.isEmpty(specialists)}"
+                  class="text-center py-4 bg-light rounded border border-dashed">
+                  <i class="bi bi-person-x fs-2 text-muted mb-2 d-block"></i>
+                  <span class="text-muted">Không tìm thấy chuyên viên phù hợp</span>
+                </div>
+              </div>
             </div>
-            <p class="text-muted">Chọn chuyên viên thụ lý hồ sơ này để tiếp tục quy trình.</p>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold text-secondary small text-uppercase mb-2">
+                <i class="bi bi-calendar-event me-1"></i> Ngày hẹn trả <span class="text-danger">*</span>
+              </label>
+              <input type="datetime-local" class="form-control bg-light border-0 rounded-3 px-3 py-3" name="dueDate"
+                required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold text-secondary small text-uppercase mb-2"><i
+                  class="bi bi-pencil-square me-1"></i> Ghi chú (Tùy chọn)</label>
+              <textarea class="form-control bg-light border-0 rounded-3 px-3 py-3" name="note" rows="3"
+                placeholder="Nhập ghi chú bàn giao (nếu có)..." style="resize: none;"></textarea>
+            </div>
           </div>
 
-          <input type="hidden" name="dossierId" th:value="${dossier.id}">
-
-          <div class="mb-3">
-            <label class="form-label fw-bold text-muted small text-uppercase">Chọn chuyên viên</label>
-            <select class="form-select form-select-lg" name="specialistId" required>
-              <option value="" selected disabled>-- Chọn chuyên viên --</option>
-<!--              <option th:each="staff : ${specialists}"-->
-<!--                      th:value="${staff.id}"-->
-<!--                      th:text="${staff.fullName} + ' - ' + ${staff.departmentName}">-->
-<!--              </option>-->
-            </select>
+          <div class="modal-footer border-top-0 px-4 pb-4">
+            <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4"
+              data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
+              <i class="bi bi-send-check me-2"></i>Xác nhận & In phiếu
+            </button>
           </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-bold text-muted small text-uppercase">Ghi chú (Tùy chọn)</label>
-            <textarea class="form-control" name="note" rows="3" placeholder="Nhập ghi chú bàn giao..."></textarea>
-          </div>
-        </div>
-
-        <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Đóng</button>
-          <button type="submit" class="btn btn-primary fw-bold px-4">
-            <i class="bi bi-send-check me-2"></i>Xác nhận & In phiếu
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
 </body>
+
 </html>

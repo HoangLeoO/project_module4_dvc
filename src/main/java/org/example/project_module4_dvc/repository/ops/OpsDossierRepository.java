@@ -7,6 +7,7 @@ import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 
+import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,6 +31,8 @@ import java.time.LocalDateTime;
 public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
     Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus,String departmentName, Pageable pageable);
+
+    Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndCurrentHandler_Id(String dossierStatus, String receivingDeptDeptName, Long currentHandlerId, Pageable pageable);
     @Query("""
     select hs
     from OpsDossier hs

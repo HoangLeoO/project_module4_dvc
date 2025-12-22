@@ -11,6 +11,7 @@ public interface OpsDossierMapper {
     @Mapping(source = "service.serviceName", target = "serviceName")
     @Mapping(source = "service.id", target = "serviceId")
     @Mapping(source = "applicant.citizen.cccd", target = "cccd")
+    @Mapping(source = "applicant.id", target = "applicantId")
     NewDossierDTO toDTO(OpsDossier opsDossier);
 
 }

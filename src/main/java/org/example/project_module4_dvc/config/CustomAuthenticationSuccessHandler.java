@@ -38,12 +38,17 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 redirectUrl = "/leader/dashboard";
                 break;
             }
-            if (role.equals("ROLE_CHUYEN_VIEN") || role.equals("ROLE_CANBO_MOTCUA")
-                    || role.equals("ROLE_CANBO_TU_PHAP") || role.equals("ROLE_CANBO_DIA_CHINH")
-                    || role.equals("ROLE_CANBO_KINH_TE")) {
+            if (role.equals("ROLE_CANBO_MOTCUA")) {
 
                 // Chuyển hướng đến officer dashboard
                 response.sendRedirect("/officer/dashboard");
+                return; // Kết thúc
+            }
+            if (role.equals("ROLE_CANBO_TU_PHAP") || role.equals("ROLE_CANBO_DIA_CHINH")
+                    || role.equals("ROLE_CANBO_KINH_TE")) {
+
+                // Chuyển hướng đến officer dashboard
+                response.sendRedirect("/specialist/dashboard");
                 return; // Kết thúc
             }
 

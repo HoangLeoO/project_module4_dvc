@@ -35,6 +35,11 @@ public class LoginController {
         return "pages/official-login";
     }
 
+    @RequestMapping(value = "login/specialist", method = RequestMethod.GET)
+    public String loginPageSpecialist() {
+        return "pages/official-login";
+    }
+
     @RequestMapping(value = "/403", method = RequestMethod.GET)
     public String accessDenied() {
         return "pages/403";

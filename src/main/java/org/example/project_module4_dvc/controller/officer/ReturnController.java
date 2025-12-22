@@ -22,6 +22,8 @@ public class ReturnController {
     @GetMapping("")
     public String getReturnForm(Model model, @PageableDefault(size = 5) Pageable pageable,
                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+        model.addAttribute("officerName", userDetails.getFullName());
+        model.addAttribute("departmentName", userDetails.getDepartmentName());
         model.addAttribute("dossiers", officerService.findAllResult("APPROVED",userDetails.getDepartmentName(),pageable));
         return "pages/officer/officer-return";
     }
