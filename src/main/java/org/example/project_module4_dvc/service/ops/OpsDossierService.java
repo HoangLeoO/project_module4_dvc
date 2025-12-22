@@ -184,13 +184,13 @@ public class OpsDossierService implements IOpsDossierService {
     @Override
     public int calculateOnTimeRateStrict() {
 
-        long total = opsDossierRepository.countTotalForKpi();
+        long total = opsDossierRepository.countThisMonth();
         if (total == 0) {
             return 100;
         }
 
-        long onTime = opsDossierRepository.countOnTimeForKpi();
+        long onTime = opsDossierRepository.countOverdue();
 
-        return Math.round((onTime * 100f) / total);
+        return Math.round(((total - onTime) * 100f) / total);
     }
 }

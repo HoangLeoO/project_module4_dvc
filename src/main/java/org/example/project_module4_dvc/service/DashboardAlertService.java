@@ -2,6 +2,7 @@ package org.example.project_module4_dvc.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.project_module4_dvc.dto.admin.AlertDTO;
+import org.example.project_module4_dvc.repository.admin.AdminOpsDossierRepository;
 import org.example.project_module4_dvc.repository.mod.ModFeedbackRepository;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.example.project_module4_dvc.service.iml.IDashboardAlertService;
@@ -23,6 +24,7 @@ public class DashboardAlertService implements IDashboardAlertService {
 
     private final OpsDossierRepository opsDossierRepository;
     private final ModFeedbackRepository modFeedbackRepository;
+    private final AdminOpsDossierRepository adminOpsDossierRepository;
 
     @Override
     public Page<AlertDTO> getAlerts(Pageable pageable) {
@@ -44,7 +46,7 @@ public class DashboardAlertService implements IDashboardAlertService {
         });
 
 //         2. Hồ sơ sắp hết hạn (<=3 ngày)
-        opsDossierRepository.findNearlyDue(
+        adminOpsDossierRepository.findNearlyDue(
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(3)
         ).forEach(d -> {

@@ -39,6 +39,6 @@ public class AdminController {
         model.addAttribute("alerts",
                 dashboardAlertService.getAlerts(PageRequest.of(page, 3)));
         model.addAttribute("onTimeRate",opsDossierService.calculateOnTimeRateStrict());
-        return "pages/admin/dashboard";
+        return "pages/admin/admin-dashboard";
     }
 }
