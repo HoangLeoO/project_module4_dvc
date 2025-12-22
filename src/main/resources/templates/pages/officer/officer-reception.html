@@ -208,19 +208,19 @@
             <div class="d-flex align-items-center gap-4">
                 <!-- Notifications Example -->
                 <button class="btn btn-light rounded-circle position-relative border-0 shadow-sm"
-                        style="width: 40px; height: 40px;">
+                    style="width: 40px; height: 40px;">
                     <i class="bi bi-bell-fill text-muted"></i>
                     <span
-                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
                 </button>
 
                 <!-- Profile Dropdown -->
                 <div class="dropdown">
                     <a href="#"
-                       class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle px-3 py-2 rounded-pill bg-white shadow-sm border"
-                       data-bs-toggle="dropdown">
+                        class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle px-3 py-2 rounded-pill bg-white shadow-sm border"
+                        data-bs-toggle="dropdown">
                         <img src="https://ui-avatars.com/api/?name=Can+Bo&background=0f4c81&color=fff"
-                             class="rounded-circle me-2" width="32" height="32">
+                            class="rounded-circle me-2" width="32" height="32">
                         <div class="d-flex flex-column me-2" style="line-height: 1.1;">
                             <span class="fw-bold small" th:text="${officerName}"></span>
                             <small class="text-muted" style="font-size: 0.7rem;">Cán bộ tiếp nhận</small>
@@ -234,8 +234,9 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item text-danger" th:href="@{/logout/officer}"><i class="bi bi-box-arrow-right me-2"></i>Đăng
-                            xuất</a></li>
+                        <li><a class="dropdown-item text-danger" th:href="@{/logout/officer}"><i
+                                    class="bi bi-box-arrow-right me-2"></i>Đăng
+                                xuất</a></li>
                     </ul>
                 </div>
             </div>
@@ -284,16 +285,17 @@
                             </div>
                             <div class="card border-0 shadow-sm bg-white">
                                 <div class="card-header bg-white border-bottom py-3">
-                                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-file-text me-2"></i>Chi tiết tờ khai</h6>
-<!--                                    <div class="alert alert-info">-->
-<!--                                        Kiểu dữ liệu: <span th:text="${formData.getClass().getName()}"></span> <br/>-->
-<!--                                        Giá trị: <span th:text="${formData}"></span>-->
-<!--                                    </div>-->
+                                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-file-text me-2"></i>Chi tiết tờ
+                                        khai</h6>
+                                    <!--                                    <div class="alert alert-info">-->
+                                    <!--                                        Kiểu dữ liệu: <span th:text="${formData.getClass().getName()}"></span> <br/>-->
+                                    <!--                                        Giá trị: <span th:text="${formData}"></span>-->
+                                    <!--                                    </div>-->
                                 </div>
                                 <div class="card-body p-4">
 
                                     <th:block th:if="${formData != null}">
-                                        <div  th:replace="~{__${formFragment}__}"></div>
+                                        <div th:replace="~{__${formFragment}__}"></div>
                                     </th:block>
                                     <th:block th:if="${formData == null}">
                                         <div class="alert alert-warning text-center">
@@ -326,7 +328,8 @@
                                     <strong class="text-dark" th:text="${file.fileName}"></strong>
                                     <small class="text-muted mt-1">Đã điền đầy đủ theo mẫu TP/HT-2024</small>
                                 </div>
-                                <a th:href="@{/officer/dashboard/view-file/__${file.getId()}__}" class="btn btn-sm btn-light border shadow-sm text-primary fw-bold">
+                                <a th:href="@{/officer/dashboard/view-file/__${file.getId()}__}"
+                                    class="btn btn-sm btn-light border shadow-sm text-primary fw-bold">
                                     <i class="bi bi-eye me-1"></i> Xem
                                 </a>
                             </label>
@@ -348,10 +351,8 @@
                         </div>
 
                         <div class="d-grid gap-3">
-                            <button type="button"
-                                    class="btn btn-primary btn-action text-white"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#assignModal">
+                            <button type="button" class="btn btn-primary btn-action text-white" data-bs-toggle="modal"
+                                data-bs-target="#assignModal">
                                 <i class="bi bi-printer-fill me-2"></i>Tiếp nhận & In phiếu
                             </button>
 
