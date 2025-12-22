@@ -13,7 +13,7 @@ public class LoginController {
 
     @Autowired
     private ISysUserService userService;
-//
+
 //    @RequestMapping(value = "", method = RequestMethod.GET)
 //    public String landingPage() {
 //        return "citizen/home";

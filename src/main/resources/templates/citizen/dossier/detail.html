@@ -56,6 +56,27 @@
                     </div>
                 </div>
 
+                <!-- Process Timeline (Workflow Steps) -->
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4" th:if="${workflowSteps != null}">
+                    <h5 class="fw-bold text-dark mb-4 border-start border-4 border-info ps-3">Quy trình thực hiện</h5>
+                    <div class="timeline-steps">
+                        <div th:each="step : ${workflowSteps}" class="d-flex gap-3 mb-4 last-no-border">
+                            <!-- Step Number Circle -->
+                            <div class="bg-primary text-white bg-gradient rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                                style="width: 32px; height: 32px; font-size: 14px; font-weight: bold;"
+                                th:classappend="${step.stepOrder < currentStepOrder ? 'bg-success' : (step.stepOrder == currentStepOrder ? 'bg-primary' : 'bg-light text-muted border')}"
+                                th:text="${step.stepOrder}">1</div>
+
+                            <!-- Step Content -->
+                            <div>
+                                <h6 class="fw-bold mb-0"
+                                    th:classappend="${step.stepOrder < currentStepOrder ? 'text-success' : (step.stepOrder == currentStepOrder ? 'text-primary' : 'text-dark')}"
+                                    th:text="${step.stepName}">Tên bước</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- History Timeline -->
                 <div class="card card-modern border-0 shadow-sm p-4 mb-4">
                     <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Lịch sử xử lý</h5>
@@ -70,7 +91,16 @@
                             <div class="flex-grow-1 ps-3 border-start position-relative">
                                 <i class="bi bi-circle-fill text-primary position-absolute"
                                     style="left: -6px; top: 5px; font-size: 10px;"></i>
-                                <h6 class="fw-bold text-dark mb-1">Cập nhật hồ sơ</h6>
+                                <h6 class="fw-bold text-dark mb-1" th:switch="${log.action}">
+                                    <span th:case="'NOP_HO_SO'">Nộp hồ sơ</span>
+                                    <span th:case="'CHUYEN_BUOC'">Chuyển bước xử lý</span>
+                                    <span th:case="'TRINH_KY'">Trình ký</span>
+                                    <span th:case="'PHE_DUYET'">Phê duyệt hồ sơ</span>
+                                    <span th:case="'YEU_CAU_BO_SUNG'">Yêu cầu bổ sung</span>
+                                    <span th:case="'TRA_KET_QUA'">Trả kết quả</span>
+                                    <span th:case="'TU_CHOI'">Từ chối hồ sơ</span>
+                                    <span th:case="*">Cập nhật hồ sơ</span>
+                                </h6>
                                 <p class="small text-muted mb-1" th:text="${log.comments}">Hồ sơ đã được cán bộ Nguyễn
                                     Văn B tiếp nhận và chuyển phòng chuyên môn.</p>
                                 <div class="small text-primary fw-medium" th:if="${log.actorName != null}">

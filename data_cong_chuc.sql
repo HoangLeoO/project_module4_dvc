@@ -1298,3 +1298,12 @@ WHERE d.dossier_code = 'HS-HK02-0024' AND l.action = 'TRINH_KY' AND s.step_order
 
 
 
+-- Update Spouse IDs to link citizens directly in mock_citizens table
+UPDATE mock_citizens SET spouse_id = 2 WHERE id = 1; -- Nguyễn Văn An (Vợ: Bình)
+UPDATE mock_citizens SET spouse_id = 1 WHERE id = 2; -- Trần Thị Bình (Chồng: An)
+
+UPDATE mock_citizens SET spouse_id = 6 WHERE id = 7; -- Đặng Văn Khôi (Vợ: Hạnh)
+UPDATE mock_citizens SET spouse_id = 7 WHERE id = 6; -- Ngô Thị Hạnh (Chồng: Khôi)
+
+UPDATE mock_citizens SET spouse_id = 14 WHERE id = 13; -- Phan Văn Long (Vợ: Mai)
+UPDATE mock_citizens SET spouse_id = 13 WHERE id = 14; -- Lý Thị Mai (Chồng: Long)

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>View File Modal</title>
+</head>
+
+<body>
+    <!-- Modal xem file -->
+    <div th:fragment="viewFileModal" class="modal fade" id="viewFileModal" tabindex="-1"
+        aria-labelledby="viewFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Header -->
+                <div class="modal-header border-0 py-0 position-relative overflow-hidden"
+                    style="background: linear-gradient(135deg, #0f4c81 0%, #1e6091 50%, #00b4d8 100%); min-height: 80px;">
+
+                    <!-- Decorative circles -->
+                    <div class="position-absolute"
+                        style="width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -40px; right: 60px;">
+                    </div>
+                    <div class="position-absolute"
+                        style="width: 80px; height: 80px; background: rgba(255,255,255,0.08); border-radius: 50%; bottom: -30px; right: 150px;">
+                    </div>
+
+                    <div class="d-flex align-items-center py-3 px-2 position-relative z-1">
+                        <!-- File Icon Container -->
+                        <div class="d-flex align-items-center justify-content-center rounded-3 me-3 shadow"
+                            id="fileIconContainer"
+                            style="width: 56px; height: 56px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                            <i class="bi bi-file-earmark text-primary" id="fileTypeIcon"
+                                style="font-size: 1.75rem;"></i>
+                        </div>
+
+                        <!-- Title and file name -->
+                        <div class="text-white">
+                            <h5 class="modal-title fw-bold mb-1 d-flex align-items-center" id="viewFileModalLabel">
+                                <span>Xem tệp đính kèm</span>
+                            </h5>
+                            <div class="d-flex align-items-center gap-2">
+                                <small class="opacity-75 text-truncate" style="max-width: 400px;"
+                                    id="fileNameDisplay">Đang tải...</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Close button -->
+                    <button type="button"
+                        class="btn-close btn-close-white position-absolute top-50 translate-middle-y me-3 z-1"
+                        style="right: 0;" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body p-0" style="min-height: 70vh; max-height: 80vh; overflow: hidden;">
+
+                    <!-- Loading State -->
+                    <div id="fileLoadingState"
+                        class="d-flex flex-column align-items-center justify-content-center h-100"
+                        style="min-height: 400px;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Đang tải...</span>
+                        </div>
+                        <p class="text-muted">Đang tải tệp tin...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="fileErrorState"
+                        class="d-none flex-column align-items-center justify-content-center h-100 p-5"
+                        style="min-height: 400px;">
+                        <div class="bg-danger bg-opacity-10 rounded-circle p-4 mb-4">
+                            <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+                        </div>
+                        <h5 class="text-danger fw-bold mb-2">Không thể hiển thị tệp</h5>
+                        <p class="text-muted text-center mb-4">Định dạng tệp không được hỗ trợ hoặc tệp bị lỗi</p>
+                        <a id="fileDownloadFallback" href="#" class="btn btn-outline-primary rounded-pill px-4"
+                            download>
+                            <i class="bi bi-download me-2"></i>Tải về để xem
+                        </a>
+                    </div>
+
+                    <!-- PDF Viewer -->
+                    <div id="pdfViewerContainer" class="d-none w-100 h-100">
+                        <iframe id="pdfViewer" class="w-100 border-0" style="height: 75vh;"></iframe>
+                    </div>
+
+                    <!-- Image Viewer -->
+                    <div id="imageViewerContainer"
+                        class="d-none w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-10 p-4"
+                        style="min-height: 75vh;">
+                        <img id="imageViewer" class="img-fluid rounded-3 shadow-lg"
+                            style="max-height: 70vh; object-fit: contain;" alt="Preview">
+                    </div>
+
+                    <!-- DOCX Viewer (using Google Docs Viewer or Office Online) -->
+                    <div id="docxViewerContainer" class="d-none w-100 h-100">
+                        <div id="docxNotice" class="alert alert-info m-4 d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                            <div>
+                                <strong>Lưu ý:</strong> Tệp Word (.docx) sẽ được mở trong trình xem tài liệu.
+                                Để có trải nghiệm tốt nhất, bạn có thể tải về và mở bằng Microsoft Word.
+                            </div>
+                        </div>
+                        <iframe id="docxViewer" class="w-100 border-0" style="height: 65vh;"></iframe>
+                    </div>
+
+                    <!-- Unsupported File Type -->
+                    <div id="unsupportedFileContainer"
+                        class="d-none flex-column align-items-center justify-content-center h-100 p-5"
+                        style="min-height: 400px;">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-4 mb-4">
+                            <i class="bi bi-file-earmark-x text-warning fs-1"></i>
+                        </div>
+                        <h5 class="text-warning fw-bold mb-2">Định dạng không hỗ trợ xem trước</h5>
+                        <p class="text-muted text-center mb-4" id="unsupportedFileType">Tệp tin này không thể xem trước
+                            trong trình duyệt</p>
+                        <a id="unsupportedDownload" href="#" class="btn btn-primary rounded-pill px-4" download>
+                            <i class="bi bi-download me-2"></i>Tải về
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer border-top px-4 py-3 bg-light">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2"
+                                id="fileTypeBadge">
+                                <i class="bi bi-file-earmark me-1"></i>
+                                <span id="fileTypeText">---</span>
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a id="downloadBtn" href="#" class="btn btn-outline-primary rounded-pill px-4" download>
+                                <i class="bi bi-download me-2"></i>Tải về
+                            </a>
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                                <i class="bi bi-x-lg me-2"></i>Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for file preview -->
+    <script th:fragment="viewFileModalScript">
+        // Event delegation for view file buttons
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btn-view-file');
+            if (btn) {
+                const fileId = btn.dataset.fileId;
+                const fileName = btn.dataset.fileName;
+                const fileType = btn.dataset.fileType;
+                openFileModal(fileId, fileName, fileType);
+            }
+        });
+
+        function openFileModal(fileId, fileName, fileType) {
+            const modal = new bootstrap.Modal(document.getElementById('viewFileModal'));
+
+            // Reset all containers
+            document.getElementById('fileLoadingState').classList.remove('d-none');
+            document.getElementById('fileLoadingState').classList.add('d-flex');
+            document.getElementById('fileErrorState').classList.remove('d-flex');
+            document.getElementById('fileErrorState').classList.add('d-none');
+            document.getElementById('pdfViewerContainer').classList.add('d-none');
+            document.getElementById('imageViewerContainer').classList.remove('d-flex');
+            document.getElementById('imageViewerContainer').classList.add('d-none');
+            document.getElementById('docxViewerContainer').classList.add('d-none');
+            document.getElementById('unsupportedFileContainer').classList.remove('d-flex');
+            document.getElementById('unsupportedFileContainer').classList.add('d-none');
+
+            // Set file name
+            document.getElementById('fileNameDisplay').textContent = fileName;
+            document.getElementById('viewFileModalLabel').textContent = fileName;
+
+            // Build file URL - adjust based on your controller path
+            const fileUrl = `/specialist/dashboard/view-file/${fileId}`;
+
+            // Set download links
+            document.getElementById('downloadBtn').href = fileUrl;
+            document.getElementById('downloadBtn').setAttribute('download', fileName);
+            document.getElementById('fileDownloadFallback').href = fileUrl;
+            document.getElementById('fileDownloadFallback').setAttribute('download', fileName);
+            document.getElementById('unsupportedDownload').href = fileUrl;
+            document.getElementById('unsupportedDownload').setAttribute('download', fileName);
+
+            // Determine file type and show appropriate viewer
+            const fileExt = fileName.split('.').pop().toLowerCase();
+            let displayType = '';
+            let iconClass = 'bi-file-earmark';
+
+            modal.show();
+
+            setTimeout(() => {
+                // Hide loading
+                document.getElementById('fileLoadingState').classList.remove('d-flex');
+                document.getElementById('fileLoadingState').classList.add('d-none');
+
+                if (fileExt === 'pdf') {
+                    displayType = 'PDF';
+                    iconClass = 'bi-file-earmark-pdf';
+                    document.getElementById('pdfViewer').src = fileUrl;
+                    document.getElementById('pdfViewerContainer').classList.remove('d-none');
+
+                } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExt)) {
+                    displayType = fileExt.toUpperCase();
+                    iconClass = 'bi-file-earmark-image';
+                    document.getElementById('imageViewer').src = fileUrl;
+                    document.getElementById('imageViewerContainer').classList.remove('d-none');
+                    document.getElementById('imageViewerContainer').classList.add('d-flex');
+
+                } else if (['doc', 'docx'].includes(fileExt)) {
+                    displayType = fileExt.toUpperCase();
+                    iconClass = 'bi-file-earmark-word';
+                    // For DOCX files - show with notice about local vs production
+                    const fullUrl = window.location.origin + fileUrl;
+                    // Update notice with download link
+                    document.getElementById('docxNotice').innerHTML = `
+                        <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                        <div>
+                            <strong>Lưu ý:</strong> Tệp Word (.${fileExt}) đang được tải trong trình xem tài liệu. 
+                            Nếu không hiển thị được, vui lòng <a href="${fileUrl}" download="${fileName}" class="fw-bold text-primary">tải về</a> và mở bằng Microsoft Word.
+                        </div>
+                    `;
+                    // Try Office Online Viewer first (works better for DOCX)
+                    document.getElementById('docxViewer').src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
+                    document.getElementById('docxViewerContainer').classList.remove('d-none');
+
+                } else if (['xls', 'xlsx'].includes(fileExt)) {
+                    displayType = fileExt.toUpperCase();
+                    iconClass = 'bi-file-earmark-excel';
+                    document.getElementById('unsupportedFileType').textContent = `Tệp Excel (${fileExt.toUpperCase()}) không thể xem trước. Vui lòng tải về.`;
+                    document.getElementById('unsupportedFileContainer').classList.remove('d-none');
+                    document.getElementById('unsupportedFileContainer').classList.add('d-flex');
+
+                } else {
+                    displayType = fileExt.toUpperCase() || 'UNKNOWN';
+                    iconClass = 'bi-file-earmark';
+                    document.getElementById('unsupportedFileType').textContent = `Định dạng tệp (${displayType}) không hỗ trợ xem trước`;
+                    document.getElementById('unsupportedFileContainer').classList.remove('d-none');
+                    document.getElementById('unsupportedFileContainer').classList.add('d-flex');
+                }
+
+                // Update file type display
+                document.getElementById('fileTypeText').textContent = displayType;
+
+                // Update icon with file-type specific color
+                const iconEl = document.getElementById('fileTypeIcon');
+                iconEl.className = `bi ${iconClass}`;
+                iconEl.style.fontSize = '1.75rem';
+
+                // Set color based on file type
+                let iconColor = '#0f4c81'; // default primary
+                if (fileExt === 'pdf') {
+                    iconColor = '#dc3545'; // red for PDF
+                } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExt)) {
+                    iconColor = '#6f42c1'; // purple for images
+                } else if (['doc', 'docx'].includes(fileExt)) {
+                    iconColor = '#2b579a'; // Word blue
+                } else if (['xls', 'xlsx'].includes(fileExt)) {
+                    iconColor = '#217346'; // Excel green
+                }
+                iconEl.style.color = iconColor;
+
+            }, 300);
+        }
+
+        // Clean up when modal is closed
+        document.getElementById('viewFileModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('pdfViewer').src = '';
+            document.getElementById('imageViewer').src = '';
+            document.getElementById('docxViewer').src = '';
+        });
+    </script>
+
+</body>
+
+</html>

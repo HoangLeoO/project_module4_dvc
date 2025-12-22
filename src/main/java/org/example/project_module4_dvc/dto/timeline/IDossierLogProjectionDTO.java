@@ -4,7 +4,12 @@ import java.time.LocalDateTime;
 
 public interface IDossierLogProjectionDTO {
     LocalDateTime getCreatedAt();
+
     String getComments();
+
     String getActorName();
+
     String getDeptName();
+
+    String getAction();
 }
