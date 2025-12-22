@@ -11,13 +11,20 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/internal.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .alert-list {
+            min-height: 35vh;
+            max-height: 35vh;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
 
 <!-- WRAPPER -->
 <div class="d-flex" id="wrapper">
-
+x
     <!-- SIDEBAR -->
     <div class="bg-dark text-white border-end"
          style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
@@ -28,13 +35,13 @@
         <div class="list-group list-group-flush p-2">
             <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Giám sát &
                 Vận hành</small>
-            <a href="admin-dashboard.html"
+            <a href="/admin/"
                class="list-group-item list-group-item-action active bg-secondary bg-opacity-25 text-white border-0 fw-bold"><i
                     class="bi bi-speedometer2 me-2"></i>Tổng quan (Dashboard)</a>
-            <a href="admin-records.html"
+            <a href="/admin/records"
                class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
                     class="bi bi-file-earmark-text me-2"></i>Hồ sơ Dịch vụ công</a>
-            <a href="admin-feedbacks.html"
+            <a href="/admin/feedbacks"
                class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
                     class="bi bi-chat-square-quote me-2"></i>Phản ánh kiến nghị</a>
             <a href="admin-audit-logs.html"
@@ -139,7 +146,7 @@
                                 </div>
                                 <i class="bi bi-hourglass-split fs-1 text-warning opacity-25"></i>
                             </div>
-                            <div class="mt-2 small text-muted"><a href="admin-records.html?status=processing"
+                            <div class="mt-2 small text-muted"><a href="/admin/records"
                                                                   class="text-decoration-none">Xem chi tiết &rarr;</a>
                             </div>
                         </div>
@@ -206,7 +213,8 @@
                         <div class="card-header bg-white fw-bold py-3 text-danger">
                             <i class="bi bi-shield-exclamation me-2"></i>Hệ thống Cảnh báo
                         </div>
-                        <div class="list-group list-group-flush small">
+                        <div class="card-body p-0 d-flex flex-column">
+                        <div class="list-group list-group-flush small alert-list">
 
                             <div th:each="alert : ${alerts.content}"
                                  class="list-group-item list-group-item-action border-0 mb-1 rounded"
@@ -263,6 +271,7 @@
 
                             </ul>
                         </nav>
+                        </div>
 
 
                     </div>
@@ -313,7 +322,7 @@
                                 <div class="text-muted small">Chưa trả lời (Cảnh báo)</div>
                             </div>
                             <div class="ms-auto">
-                                <a href="admin-feedbacks.html" class="btn btn-sm btn-light border">Chi tiết</a>
+                                <a href="/admin/feedbacks" class="btn btn-sm btn-light border">Chi tiết</a>
                             </div>
                         </div>
                     </div>

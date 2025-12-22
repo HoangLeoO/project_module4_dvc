@@ -47,4 +47,6 @@ public interface IOpsDossierService {
     int getOnTimeRate();
 
     int calculateOnTimeRateStrict();
+
+    Page<OpsDossier> getAdminDossierPage(Pageable pageable);
 }

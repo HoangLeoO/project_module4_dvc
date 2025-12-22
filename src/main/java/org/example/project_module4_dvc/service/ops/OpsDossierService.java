@@ -193,4 +193,9 @@ public class OpsDossierService implements IOpsDossierService {
 
         return Math.round(((total - onTime) * 100f) / total);
     }
+
+    @Override
+    public Page<OpsDossier> getAdminDossierPage(Pageable pageable) {
+        return opsDossierRepository.findAll(pageable);
+    }
 }

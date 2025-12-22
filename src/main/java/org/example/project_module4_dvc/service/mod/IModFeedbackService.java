@@ -18,4 +18,6 @@ public interface IModFeedbackService {
     List<ModFeedback> getUnresolvedFeedbacks();
 
     Page<ModFeedback> getUnresolvedFeedbacks(Pageable pageable);
+
+    Page<ModFeedback> getAllFeedbacks(Pageable pageable);
 }
