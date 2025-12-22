@@ -4,7 +4,7 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên</label>
-                <input type="text" class="form-control fw-bold" th:value="${formData.deceasedFullName}" readonly>
+                <input type="text" class="form-control fw-bold" th:value="${formData.deceasedFullName ?: ''}" readonly>
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
@@ -16,11 +16,11 @@
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Nơi mất</label>
-                <input type="text" class="form-control" th:value="${formData.placeOfDeath}" readonly>
+                <input type="text" class="form-control" th:value="${formData.placeOfDeath ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Nơi cư trú cuối cùng</label>
-                <input type="text" class="form-control" th:value="${formData.lastResidence}" readonly>
+                <input type="text" class="form-control" th:value="${formData.lastResidence ?: ''}" readonly>
             </div>
         </div>
 
@@ -28,11 +28,11 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên người thân</label>
-                <input type="text" class="form-control" th:value="${formData.relativeFullName}" readonly>
+                <input type="text" class="form-control" th:value="${formData.relativeFullName ?: ''}" readonly>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Mối quan hệ</label>
-                <input type="text" class="form-control" th:value="${formData.relativeRelationship}" readonly>
+                <input type="text" class="form-control" th:value="${formData.relativeRelationship ?: ''}" readonly>
             </div>
         </div>
     </form>

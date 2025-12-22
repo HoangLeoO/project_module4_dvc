@@ -4,7 +4,7 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên</label>
-                <input type="text" class="form-control" th:value="${formData.husbandFullName}" readonly>
+                <input type="text" class="form-control" th:value="${formData.husbandFullName ?: ''}" readonly>
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
@@ -12,7 +12,7 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Số CCCD/CMND</label>
-                <input type="text" class="form-control" th:value="${formData.husbandIdNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.husbandIdNumber ?: ''}" readonly>
             </div>
         </div>
 
@@ -20,7 +20,7 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên</label>
-                <input type="text" class="form-control" th:value="${formData.wifeFullName}" readonly>
+                <input type="text" class="form-control" th:value="${formData.wifeFullName ?: ''}" readonly>
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
@@ -28,7 +28,7 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Số CCCD/CMND</label>
-                <input type="text" class="form-control" th:value="${formData.wifeIdNumber}" readonly>
+                <input type="text" class="form-control" th:value="${formData.wifeIdNumber ?: ''}" readonly>
             </div>
         </div>
 
@@ -40,7 +40,7 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Nơi đăng ký</label>
-                <input type="text" class="form-control" th:value="${formData.registeredPlace}" readonly>
+                <input type="text" class="form-control" th:value="${formData.registeredPlace ?: ''}" readonly>
             </div>
         </div>
 
