@@ -634,7 +634,7 @@ VALUES
      'NEW',
      NOW(),
      DATE_ADD(NOW(), INTERVAL 5 DAY),
-     '{"childFullName": "Nguyễn Văn Bi", "dateOfBirth": "2023-10-10", "gender": "MALE", "placeOfBirth": "Bệnh viện Phụ sản Nhi", "fatherFullName": "Nguyễn Văn An", "motherFullName": "Trần Thị Bình"}'
+     '{"childFullName": "Nguyễn Văn Bi", "dateOfBirth": "2023-10-10", "gender": "MALE", "placeOfBirth": "Bệnh viện Phụ sản Nhi", "fatherFullName": "Nguyễn Văn An", "fatherIdNumber": "012345679001", "motherFullName": "Trần Thị Bình", "motherIdNumber": "012345679002", "registeredAddress": "Phường Hải Châu, TP Đà Nẵng", "requestBhyt": true}'
     );
 
 -- Log cho HS 1
@@ -658,7 +658,7 @@ VALUES
      'PENDING',
      DATE_SUB(NOW(), INTERVAL 1 DAY),
      DATE_ADD(NOW(), INTERVAL 14 DAY),
-     '{"landCertificateNumber": "GCN-DN-0001", "changeType": "Tặng cho quyền sử dụng đất", "newOwner": "Nguyễn Thị Oanh"}'
+     '{"landCertificateNumber": "GCN-DN-0001", "landPlotNumber": "TH-001", "landMapSheet": "TBD-01", "currentOwner": "Nguyễn Văn An", "changeType": "Tặng cho quyền sử dụng đất", "changeReason": "Tặng cho con gái", "newOwner": "Nguyễn Thị Oanh"}'
     );
 
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -674,7 +674,7 @@ VALUES
 -- Người nộp: cd_04 (Phạm Thị Dung)
 -- Cán bộ xử lý: hc_pct (Trần Thị Bình -- HS 16: Hộ kinh doanh (Hải Châu)
 INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
-VALUES ('HS-KD01-0016', (SELECT id FROM cat_services WHERE service_code = 'KD01_HKD'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_04'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'NEW', NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), '{"businessName": "Tiệm làm tóc Dung"}');
+VALUES ('HS-KD01-0016', (SELECT id FROM cat_services WHERE service_code = 'KD01_HKD'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_04'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'NEW', NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), '{"businessName": "Tiệm làm tóc Dung", "businessAddress": "Phường Hòa Cường, TP Đà Nẵng", "businessLine": "Dịch vụ cắt tóc, gội đầu", "registeredCapital": 50000000, "numberOfEmployees": 2, "businessOwner": "Phạm Thị Dung", "ownerIdNumber": "012345679004"}');
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments) VALUES ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0016'), (SELECT id FROM sys_users WHERE username = 'cd_04'), 'NOP_HO_SO', NULL, 'NEW', NULL);
 
 
@@ -769,6 +769,7 @@ VALUES
      'Yêu cầu bổ sung hồ sơ',
      'Hồ sơ khai tử (HS-HK02-0005) cần bổ sung giấy báo tử bản gốc.',
      'STATUS_UPDATE');
+
 INSERT INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES
@@ -780,7 +781,7 @@ VALUES
      'VERIFIED',
      DATE_SUB(NOW(), INTERVAL 2 DAY),
      DATE_ADD(NOW(), INTERVAL 1 DAY),
-     '{"requesterFullName": "Võ Thị Lan", "purposeOfUse": "Vay vốn ngân hàng"}'
+     '{"requesterFullName": "Võ Thị Lan", "dateOfBirth": "1990-12-01", "idNumber": "012345679008", "currentMaritalStatus": "Độc thân", "confirmationPeriod": "Từ 2008 đến nay", "purposeOfUse": "Vay vốn ngân hàng"}'
     );
 
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -810,7 +811,7 @@ VALUES
      DATE_SUB(NOW(), INTERVAL 3 DAY),
      DATE_ADD(NOW(), INTERVAL 2 DAY),
      NOW(),
-     '{"businessName": "Tạp hóa Cô Bình", "registeredCapital": 50000000}'
+     '{"businessName": "Tạp hóa Cô Bình", "businessAddress": "Phường Hải Châu, TP Đà Nẵng", "businessLine": "Bán lẻ tạp hóa", "registeredCapital": 50000000, "numberOfEmployees": 1, "businessOwner": "Nguyễn Văn An", "ownerIdNumber": "012345679001"}'
     );
 
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -848,7 +849,7 @@ VALUES
      'REJECTED',
      DATE_SUB(NOW(), INTERVAL 1 DAY),
      'Thông tin người mất không khớp với cơ sở dữ liệu quốc gia (Sai số CCCD)',
-     '{"deceasedFullName": "Nguyễn Văn X", "dateOfDeath": "2023-12-01"}'
+     '{"deceasedFullName": "Nguyễn Văn X", "dateOfBirth": "1950-01-01", "dateOfDeath": "2023-12-01", "placeOfDeath": "Tại nhà", "lastResidence": "Phường Hải Châu, TP Đà Nẵng", "relativeFullName": "Lê Văn Cường", "relativeRelationship": "Con"}'
     );
 
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -878,7 +879,7 @@ VALUES
      'RESULT_RETURNED',
      DATE_SUB(NOW(), INTERVAL 20 DAY),
      DATE_SUB(NOW(), INTERVAL 2 DAY),
-     '{"landCertificateNumber": "GCN-DN-0003", "numberOfNewPlots": 2}'
+     '{"landCertificateNumber": "GCN-DN-0003", "landPlotNumber": "TH-102", "mapSheetNumber": "TBD-05", "originalAreaM2": 350.00, "requestedSplitAreas": "150.00, 200.00", "numberOfNewPlots": 2, "splitReason": "Chia cho con", "surveyCompleted": true}'
     );
 
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -938,7 +939,7 @@ VALUES (
            'VERIFIED',
            DATE_SUB(NOW(), INTERVAL 2 DAY),
            DATE_ADD(NOW(), INTERVAL 3 DAY),
-           '{"childFullName": "Ngô Văn G", "dateOfBirth": "2023-11-20", "gender": "MALE", "placeOfBirth": "Trạm y tế phường"}'
+           '{"childFullName": "Ngô Văn G", "dateOfBirth": "2023-11-20", "gender": "MALE", "placeOfBirth": "Trạm y tế phường", "fatherFullName": "Đặng Văn Khôi", "fatherIdNumber": "012345679007", "motherFullName": "Ngô Thị Hạnh", "motherIdNumber": "012345679006", "registeredAddress": "Phường An Khê, TP Đà Nẵng", "requestBhyt": true}'
        );
 -- Log
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -958,7 +959,7 @@ VALUES (
            'VERIFIED',
            DATE_SUB(NOW(), INTERVAL 5 DAY),
            DATE_ADD(NOW(), INTERVAL 10 DAY),
-           '{"landCertificateNumber": "GCN-DN-0007", "changeType": "Thừa kế", "newOwner": "Bùi Văn Minh muốn sang tên"}'
+           '{"landCertificateNumber": "GCN-DN-0007", "landPlotNumber": "TH-009", "landMapSheet": "TBD-01", "currentOwner": "Nguyễn Văn Phúc", "changeType": "Thừa kế", "changeReason": "Thừa kế theo di chúc", "newOwner": "Bùi Văn Minh muốn sang tên"}'
        );
 -- Log
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -978,7 +979,7 @@ VALUES (
            'VERIFIED',
            DATE_SUB(NOW(), INTERVAL 1 DAY),
            DATE_ADD(NOW(), INTERVAL 2 DAY),
-           '{"businessName": "Cửa hàng hoa tươi Ngọc", "registeredCapital": 30000000}'
+           '{"businessName": "Cửa hàng hoa tươi Ngọc", "businessAddress": "Phường Hòa Cường, TP Đà Nẵng", "businessLine": "Mua bán hoa tươi", "registeredCapital": 30000000, "numberOfEmployees": 1, "businessOwner": "Đỗ Thị Ngọc", "ownerIdNumber": "012345679010"}'
        );
 -- Log
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -998,7 +999,7 @@ VALUES (
            'VERIFIED',
            DATE_SUB(NOW(), INTERVAL 3 DAY),
            DATE_ADD(NOW(), INTERVAL 1 DAY),
-           '{"husbandFullName": "Phan Văn Long", "wifeFullName": "Lê Thị Hồng", "intendedMarriageDate": "2023-12-25"}'
+           '{"husbandFullName": "Phan Văn Long", "husbandDob": "1982-02-02", "husbandIdNumber": "012345679013", "wifeFullName": "Lê Thị Hồng", "wifeDob": "1985-05-05", "wifeIdNumber": "012345679999", "intendedMarriageDate": "2023-12-25", "registeredPlace": "UBND Phường Thanh Khê"}'
        );
 -- Log
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
@@ -1018,7 +1019,7 @@ VALUES (
            'VERIFIED',
            DATE_SUB(NOW(), INTERVAL 2 DAY),
            DATE_ADD(NOW(), INTERVAL 5 DAY),
-           '{"deceasedFullName": "Trương Văn Cụ", "dateOfDeath": "2023-12-15", "placeOfDeath": "Tại nhà"}'
+           '{"deceasedFullName": "Trương Văn Cụ", "dateOfBirth": "1940-01-01", "dateOfDeath": "2023-12-15", "placeOfDeath": "Tại nhà", "lastResidence": "Phường Thanh Khê, TP Đà Nẵng", "relativeFullName": "Trương Thị Quỳnh", "relativeRelationship": "Con"}'
        );
 -- Log
 INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)

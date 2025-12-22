@@ -156,7 +156,7 @@ public class WebSecurityConfig {
     @Bean
     @Order(4)
     public SecurityFilterChain citizenFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/citizen/**", "/login/citizen", "/process-login", "/logout/citizen");
+        http.securityMatcher("/citizen/**", "/api/**", "/login/citizen", "/process-login", "/logout/citizen");
 
         http.csrf(AbstractHttpConfigurer::disable);
 

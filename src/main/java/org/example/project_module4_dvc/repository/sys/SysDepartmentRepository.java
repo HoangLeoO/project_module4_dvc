@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface SysDepartmentRepository extends JpaRepository<SysDepartment, Long> {
     List<SysDepartment> getSysDepartmentById(Long id);
+    SysDepartment findByDeptCode(String deptCode);
 }

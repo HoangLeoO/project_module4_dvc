@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MockHouseholdMemberRepository extends JpaRepository<MockHouseholdMember, Long> {
+    java.util.List<MockHouseholdMember> findByCitizen_IdAndStatus(Long citizenId, Integer status);
+    java.util.List<MockHouseholdMember> findByCitizen_CccdAndStatus(String cccd, Integer status);
 }
