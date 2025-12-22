@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.project_module4_dvc.dto.formData.BirthRegistrationFormDTO;
 
 @Service
 public class OpsDossierService implements IOpsDossierService {
@@ -29,6 +32,8 @@ public class OpsDossierService implements IOpsDossierService {
     private org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository dossierLogRepository;
     @Autowired
     private org.example.project_module4_dvc.repository.sys.SysDepartmentRepository sysDepartmentRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public Page<OpsDossierSummaryDTO> getMyDossierList(Long userId, Pageable pageable) {
@@ -267,19 +272,37 @@ public class OpsDossierService implements IOpsDossierService {
         }
 
         // 6. Save Dossier
-        Map<String, Object> formData = new HashMap<>();
-        formData.put("childName", request.getChildName());
-        formData.put("childGender", request.getChildGender());
-        formData.put("childDob", request.getChildDob().toString());
-        formData.put("childEthnicity", request.getChildEthnicity());
-        formData.put("childBirthPlace", request.getChildBirthPlace());
-        formData.put("fatherName", request.getFatherName());
-        formData.put("fatherId", request.getFatherId());
-        formData.put("motherName", request.getMotherName());
-        formData.put("motherId", request.getMotherId());
+        String childGenderRaw = request.getChildGender();
+        String childGender = (childGenderRaw != null) ? childGenderRaw.trim() : "";
+        if ("Nam".equalsIgnoreCase(childGender))
+            childGender = "MALE";
+        else if ("Nữ".equalsIgnoreCase(childGender))
+            childGender = "FEMALE";
+        else
+            childGender = childGender.toUpperCase();
+
+        BirthRegistrationFormDTO formDto = new BirthRegistrationFormDTO();
+        formDto.setChildFullName(request.getChildName());
+        formDto.setDateOfBirth(request.getChildDob());
+        formDto.setGender(childGender);
+        formDto.setPlaceOfBirth(request.getChildBirthPlace());
+        formDto.setFatherFullName(request.getFatherName());
+        formDto.setFatherIdNumber(request.getFatherId());
+        formDto.setMotherFullName(request.getMotherName());
+        formDto.setMotherIdNumber(request.getMotherId());
+        formDto.setRegisteredAddress(request.getRegisteredAddress());
+        formDto.setRequestBhyt(request.isRequestBhyt());
+
+        // Convert DTO to Map for the Persistent Layer (JsonToMapConverter)
+        Map<String, Object> formData = objectMapper.convertValue(formDto, new TypeReference<Map<String, Object>>() {
+        });
+
+        // Add additional non-DTO fields if needed by other logic
+        formData.put("DEBUG_VERSION", "2.0");
+        formData.put("applicantGender", gender != null ? gender.toUpperCase() : null);
+        formData.put("applicantMaritalStatus", status != null ? status.toUpperCase() : null);
         formData.put("isPaternityRecognition", request.isPaternityRecognition());
-        formData.put("applicantGender", gender);
-        formData.put("applicantMaritalStatus", status);
+        formData.put("childEthnicity", request.getChildEthnicity());
 
         // Fallback for receivingDept if Service doesn't have one (DB missing data)
         var receivingDept = service.getDepartment();

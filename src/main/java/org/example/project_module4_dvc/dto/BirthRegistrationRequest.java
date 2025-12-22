@@ -37,4 +37,8 @@ public class BirthRegistrationRequest {
 
     // Logic Flags
     private boolean isPaternityRecognition; // "Nhận cha con"
+
+    // Additional Fields for BirthRegistrationFormDTO mapping
+    private String registeredAddress;
+    private boolean requestBhyt;
 }

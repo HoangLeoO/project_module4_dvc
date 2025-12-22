@@ -123,7 +123,7 @@
                     <input type="hidden" id="applicantId" th:value="${citizen.cccd}">
                     <input type="hidden" id="applicantName" th:value="${citizen.fullName}">
                     <input type="hidden" id="applicantGender"
-                        th:value="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? 'male' : 'female'}">
+                        th:value="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? 'MALE' : 'FEMALE'}">
                     <input type="hidden" id="applicantMaritalStatus"
                         th:value="${#strings.toLowerCase(citizen.maritalStatus)}">
                     <input type="hidden" id="serviceId" th:value="${s != null ? s.id : ''}">
@@ -249,8 +249,8 @@
                                 <label class="form-label">Giới tính <span class="text-danger">*</span></label>
                                 <select id="childGender" class="form-select" required>
                                     <option value="" selected disabled>Chọn giới tính</option>
-                                    <option value="Nam">Nam</option>
-                                    <option value="Nữ">Nữ</option>
+                                    <option value="MALE">Nam</option>
+                                    <option value="FEMALE">Nữ</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -266,6 +266,23 @@
                                         class="text-danger">*</span></label>
                                 <input type="text" id="childBirthPlace" class="form-control"
                                     placeholder="VD: Bệnh viện Phụ sản - Nhi Đà Nẵng" required>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <label class="form-label">Nơi đăng ký khai sinh <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="registeredAddress" class="form-control"
+                                    placeholder="VD: Phường Hải Châu, Quận Hải Châu, TP Đà Nẵng" required
+                                    th:value="${citizen.permanentAddress}">
+                            </div>
+                            <div class="col-12 mt-3">
+                                <div class="form-check form-switch p-3 border rounded bg-light">
+                                    <input class="form-check-input ms-0" type="checkbox" id="requestBhyt" checked>
+                                    <label class="form-check-label ms-2 fw-bold" for="requestBhyt">
+                                        Đăng ký cấp thẻ BHYT miễn phí cho trẻ
+                                    </label>
+                                    <p class="small text-muted mb-0 ms-2">Thẻ sẽ được chuyển phát về địa chỉ thường trú
+                                        của mẹ.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -459,7 +476,7 @@
                 const motherId = document.getElementById('motherId').value.trim();
 
                 // 1. Parent Validation
-                if (gender === 'male') {
+                if (gender === 'MALE') {
                     if (!motherId || !verificationState.mother) {
                         document.getElementById('motherId').classList.add('is-invalid');
                         showModal("Vì bạn là Cha, vui lòng tra cứu và xác thực thông tin Mẹ.", 'warning');
@@ -523,7 +540,7 @@
             // Logic: If NOT married AND valid parent info present -> Require Paternity Recognition
             // Note: status is mapped to 'single' or 'married' in hidden input, but lets be robust
             if (status !== 'married') {
-                if ((gender === 'male' && motherId) || (gender === 'female' && fatherId)) {
+                if ((gender === 'MALE' && motherId) || (gender === 'FEMALE' && fatherId)) {
                     section.classList.remove('d-none');
                     // check.checked = true; // Relaxed: let user decide
                     togglePaternityUpload();
@@ -603,7 +620,7 @@
 
                     // Validation: If Male applicant manually enters Mother info
                     const applicantGender = document.getElementById('applicantGender').value;
-                    if (role === 'mother' && applicantGender === 'male') {
+                    if (role === 'mother' && applicantGender === 'MALE') {
                         if (data.gender.toUpperCase() !== 'FEMALE') {
                             showModal("Công dân này không phải giới tính Nữ.", 'error');
                             idInput.classList.add('is-invalid');
@@ -660,7 +677,7 @@
             const childSection = document.getElementById('childSection');
 
             let canReveal = false;
-            if (gender === 'male') {
+            if (gender === 'MALE') {
                 if (verificationState.mother) canReveal = true;
             } else {
                 if (!fatherId) canReveal = true;
@@ -711,7 +728,7 @@
                 verificationState[role] = true;
             };
 
-            if (gender === 'male') {
+            if (gender === 'MALE') {
                 setDisplay('father', nameValue, idValue, dobValue);
                 if (status === 'married' && spouseCccdVal) {
                     setDisplay('mother', spouseNameVal, spouseCccdVal, spouseDobVal);
@@ -723,8 +740,8 @@
                 }
             }
 
-            document.querySelectorAll('.father-req').forEach(el => el.classList.toggle('d-none', gender === 'female'));
-            document.querySelectorAll('.mother-req').forEach(el => el.classList.toggle('d-none', gender === 'male'));
+            document.querySelectorAll('.father-req').forEach(el => el.classList.toggle('d-none', gender === 'FEMALE'));
+            document.querySelectorAll('.mother-req').forEach(el => el.classList.toggle('d-none', gender === 'MALE'));
 
             checkMotherSingleLogic();
             checkRevealChildSection();
@@ -751,10 +768,12 @@
             addField('applicantGender', document.getElementById('applicantGender').value);
             addField('applicantMaritalStatus', document.getElementById('applicantMaritalStatus').value);
             addField('childName', document.getElementById('childName').value);
-            addField('childGender', document.getElementById('childGender').value);
+            addField('childGender', document.getElementById('childGender').value.toUpperCase());
             addField('childDob', document.getElementById('childDob').value);
             addField('childEthnicity', document.getElementById('childEthnicity').value);
             addField('childBirthPlace', document.getElementById('childBirthPlace').value);
+            addField('registeredAddress', document.getElementById('registeredAddress').value);
+            addField('requestBhyt', document.getElementById('requestBhyt').checked);
             addField('fatherName', document.getElementById('fatherName').value);
             addField('fatherId', document.getElementById('fatherId').value);
             addField('motherName', document.getElementById('motherName').value);
@@ -771,8 +790,8 @@
 
             // Handle requirement indicators
             const gender = document.getElementById('applicantGender').value;
-            document.querySelectorAll('.father-req').forEach(el => el.classList.toggle('d-none', gender === 'female'));
-            document.querySelectorAll('.mother-req').forEach(el => el.classList.toggle('d-none', gender === 'male'));
+            document.querySelectorAll('.father-req').forEach(el => el.classList.toggle('d-none', gender === 'FEMALE'));
+            document.querySelectorAll('.mother-req').forEach(el => el.classList.toggle('d-none', gender === 'MALE'));
         });
     </script>
 </body>
