@@ -41,6 +41,7 @@
                             <option value="NEED_SUPPLEMENT" th:selected="${status == 'NEED_SUPPLEMENT'}">Cần bổ sung
                             </option>
                             <option value="APPROVED" th:selected="${status == 'APPROVED'}">Đã duyệt</option>
+                            <option value="VERIFIED" th:selected="${status == 'VERIFIED'}">Đã xác minh</option>
                             <option value="REJECTED" th:selected="${status == 'REJECTED'}">Từ chối</option>
                         </select>
                     </div>
@@ -91,13 +92,16 @@
                                 <span th:if="${d.dossierStatus == 'APPROVED'}"
                                     class="badge bg-success bg-opacity-10 text-success px-3 py-1 rounded-pill small">Đã
                                     duyệt</span>
+                                <span th:if="${d.dossierStatus == 'VERIFIED'}"
+                                    class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small">Đã
+                                    xác minh</span>
                                 <span th:if="${d.dossierStatus == 'REJECTED'}"
                                     class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill small">Từ
                                     chối</span>
                             </td>
                             <td class="pe-4 text-end">
                                 <a th:href="@{/citizen/hoso/{id}(id=${d.dossierId})}"
-                                   class="btn btn-sm btn-outline-primary fw-bold">Chi tiết</a>
+                                    class="btn btn-sm btn-outline-primary fw-bold">Chi tiết</a>
                             </td>
                         </tr>
                         <tr th:if="${dossierPage.empty}">
