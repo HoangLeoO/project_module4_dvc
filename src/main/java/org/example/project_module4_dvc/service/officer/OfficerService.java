@@ -19,7 +19,6 @@ import org.example.project_module4_dvc.repository.sys.SysUserRepository;
 import org.example.project_module4_dvc.service.websocket.IWebsocketService;
 import org.example.project_module4_dvc.entity.ops.OpsDossierLog;
 import org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep;
-import org.example.project_module4_dvc.entity.cat.CatWorkflowStep;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -116,16 +115,39 @@ public class OfficerService implements IOfficerService {
             if ("PENDING".equals(status)) {
                 recordStepCompletion(saved, specialistId, "ACCEPTED", oldStatus, "PENDING", "Hồ sơ đã được tiếp nhận");
             }
+
+            // Real-time updates
+            websocketService.broadcastDossierUpdate(saved.getReceivingDept().getDeptName(), saved);
+            websocketService.notifyStatusChange(saved.getApplicant().getUsername(), DossierUpdateMessage.builder()
+                    .dossierId(saved.getId())
+                    .dossierCode(saved.getDossierCode())
+                    .oldStatus(oldStatus)
+                    .newStatus(status)
+                    .handlerName(saved.getCurrentHandler() != null ? saved.getCurrentHandler().getFullName() : null)
+                    .build());
         }
     }
 
     @Override
+    @Transactional
     public void updateDossierRejectStatus(Long dossierId, String status, String reason) {
         OpsDossier opsDossier = opsDossierRepository.findById(dossierId).orElse(null);
         if (opsDossier != null) {
+            String oldStatus = opsDossier.getDossierStatus();
             opsDossier.setDossierStatus(status);
             opsDossier.setRejectionReason(reason);
-            opsDossierRepository.save(opsDossier);
+            OpsDossier saved = opsDossierRepository.save(opsDossier);
+
+            // Real-time updates
+            websocketService.broadcastDossierRemoval(saved.getReceivingDept().getDeptName(), saved.getId(),
+                    saved.getDossierCode());
+            websocketService.notifyStatusChange(saved.getApplicant().getUsername(), DossierUpdateMessage.builder()
+                    .dossierId(saved.getId())
+                    .dossierCode(saved.getDossierCode())
+                    .oldStatus(oldStatus)
+                    .newStatus(status)
+                    .comment(reason)
+                    .build());
         }
     }
 
