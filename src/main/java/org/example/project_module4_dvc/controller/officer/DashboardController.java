@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.project_module4_dvc.config.CustomUserDetails;
 import org.example.project_module4_dvc.dto.dossier.NewDossierDTO;
 import org.example.project_module4_dvc.dto.formData.*;
+import org.example.project_module4_dvc.dto.specialist.SpecialistAvailableDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossierFile;
 import org.example.project_module4_dvc.service.officer.IOfficerService;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -28,16 +31,14 @@ import java.util.Map;
 public class DashboardController {
     private final IOfficerService officerService;
 
-
     public DashboardController(IOfficerService officerService) {
         this.officerService = officerService;
     }
 
     @GetMapping("")
-    public String getDossierList(Model model, @PageableDefault(size = 5,
-                                         sort = "submissionDate",
-                                         direction = Sort.Direction.ASC) Pageable pageable,
-                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String getDossierList(Model model,
+            @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         System.out.println(userDetails.getDepartmentName());
@@ -46,14 +47,16 @@ public class DashboardController {
         model.addAttribute("nearDueCount", nearDueList.size());
         model.addAttribute("dossiers", page);
 
-
         return "pages/officer/officer-dashboard";
     }
 
     @GetMapping("/reception")
-    public String getReceptionForm(Model model, @RequestParam("id") Long id) {
+    public String getReceptionForm(Model model, @RequestParam("id") Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        model.addAttribute("officerName", userDetails.getFullName());
+        model.addAttribute("departmentName", userDetails.getDepartmentName());
         List<OpsDossierFile> opsDossierFile = officerService.findFileByDossierId(id);
-
+        List<SpecialistAvailableDTO> specialists = officerService.getAvailableSpecialists(id);
         NewDossierDTO newDossierDTO = officerService.findById(id);
         if (newDossierDTO == null) {
             // Redirect về trang danh sách và báo lỗi, hoặc trang 404
@@ -117,24 +120,25 @@ public class DashboardController {
         String fragmentPath = DossierFormDataViewHelper.getFormFragmentPath(serviceId);
 
         model.addAttribute("formData", formDataDTO);
+        model.addAttribute("specialists", specialists);
         model.addAttribute("formFragment", fragmentPath);
 
         return "pages/officer/officer-reception";
     }
 
-    //pdf
-
+    // pdf
 
     @GetMapping("reception/update")
-    public String updateDossierStatus(@RequestParam("id") Long id) {
-        officerService.updateDossierStatus(id, "PENDING", "");
-        return "redirect:/official/dashboard";
+    public String updateDossierStatus(@RequestParam("dossierId") Long id, @RequestParam("specialistId") Long specialistId,
+            @RequestParam("dueDate") LocalDateTime dueDate) {
+        officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate,"");
+        return "redirect:/officer/dashboard";
     }
 
     @PostMapping("reception/reject")
     public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
-        officerService.updateDossierStatus(id, "REJECTED", reason);
-        return "redirect:/official/dashboard";
+        officerService.updateDossierRejectStatus(id, "REJECTED", reason);
+        return "redirect:/officer/dashboard";
     }
 
     /**

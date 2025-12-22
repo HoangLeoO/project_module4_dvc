@@ -11,7 +11,7 @@
     <div th:fragment="rejectReasonModal" class="modal fade" id="actionModal" tabindex="-1">
 
         <div class="modal-dialog modal-dialog-centered">
-            <form th:action="@{/official/dashboard/reception/reject}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/officer/dashboard/reception/reject}" method="post" enctype="multipart/form-data">
 
                 <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
 
@@ -27,6 +27,7 @@
 
                         <!-- ID hồ sơ -->
                         <input type="hidden" name="id" th:value="${dossier.id}">
+                        <input type="hidden" name="userId" th:value="${dossier.applicantId}">
 
                         <!-- Nội dung -->
                         <div class="mb-4">
