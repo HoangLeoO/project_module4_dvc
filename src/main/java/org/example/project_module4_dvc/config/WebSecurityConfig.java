@@ -70,7 +70,7 @@ public class WebSecurityConfig {
 
         http.logout(form -> form
                 .logoutUrl("/logout/official")
-                .logoutSuccessUrl("/login/official?logout")
+                .logoutSuccessUrl("/process-login-official")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
         );
@@ -89,7 +89,7 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/official", "/register", "/assets/**", "/403", "/404").permitAll()
+                .requestMatchers("/login/official", "/register", "/assets/**", "/403", "/404").permitAll()
                 .anyRequest().hasAnyRole("CHU_TICH_UBND", "PHO_CHU_TICH_UBND")
         );
 
@@ -99,6 +99,12 @@ public class WebSecurityConfig {
                 .successHandler(successHandler)
                 .usernameParameter("username")
                 .passwordParameter("password")
+        );
+        http.logout(form -> form
+                .logoutUrl("/logout/official")
+                .logoutSuccessUrl("/process-login-official")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
         );
 
         return http.build();
@@ -120,7 +126,7 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login/officer", "/process-login-official","/css/**", "/js/**").permitAll()
-                .requestMatchers("/officer/**").hasAnyRole("CHUYEN_VIEN","CANBO_MOTCUA","CANBO_TU_PHAP","CANBO_DIA_CHINH","CANBO_KINH_TE")
+                .requestMatchers("/officer/**").hasAnyRole("CANBO_MOTCUA")
                 .anyRequest().authenticated()
         );
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
@@ -167,6 +173,52 @@ public class WebSecurityConfig {
                 .usernameParameter("username")
                 .passwordParameter("password")
         );
+        http.logout(form -> form
+                .logoutUrl("/logout/citizen")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+        );
+
+        return http.build();
+    }
+    @Bean
+    @Order(5)
+    public SecurityFilterChain specialistCommonFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher(
+                "/specialist/**",
+                "/login/specialist",
+                "/process-login-official",
+                "/logout/specialist",
+                "/css/**", "/js/**"
+        );
+
+        http.csrf(AbstractHttpConfigurer::disable);
+
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login/specialist", "/process-login-official","/css/**", "/js/**").permitAll()
+                .requestMatchers("/specialist/**").hasAnyRole("CANBO_TU_PHAP","CANBO_DIA_CHINH","CANBO_KINH_TE")
+                .anyRequest().authenticated()
+        );
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+
+        http.formLogin(form -> form
+                .loginPage("/login/specialist")
+                .loginProcessingUrl("/process-login-official")
+                .successHandler(successHandler)
+                .failureUrl("/login/officer?error=true")
+                .usernameParameter("username")
+                .passwordParameter("password")
+        );
+
+        http.logout(form -> form
+                .logoutUrl("/logout/specialist")
+                .logoutSuccessUrl("/login/specialist")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+        );
+
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
 
         return http.build();
     }

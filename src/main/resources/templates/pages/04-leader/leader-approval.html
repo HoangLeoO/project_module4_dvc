@@ -47,11 +47,17 @@
                             href="/leader/delegated-dossiers"><i class="bi bi-shield-lock-fill me-2"></i>Hồ sơ được Ủy
                             quyền</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold"
+                            th:classappend="${viewType == 'history'} ? 'active text-primary' : 'text-secondary'"
+                            href="/leader/history"><i class="bi bi-clock-history me-2"></i>Lịch sử duyệt</a>
+                    </li>
                 </ul>
 
                 <!-- TOOLBAR & FILTER -->
                 <!-- Dynamic Action based on viewType -->
-                <form th:action="@{${viewType == 'delegated' ? '/leader/delegated-dossiers' : '/leader/my-dossiers'}}"
+                <form
+                    th:action="@{${viewType == 'delegated' ? '/leader/delegated-dossiers' : (viewType == 'history' ? '/leader/history' : '/leader/my-dossiers')}}"
                     method="get"
                     class="bg-white p-3 border rounded shadow-sm mb-3 d-flex flex-wrap gap-3 align-items-center justify-content-between">
                     <!-- Batch Actions -->
@@ -70,8 +76,8 @@
                     <div class="d-flex gap-2">
                         <select name="domain" class="form-select form-select-sm" style="max-width: 180px;">
                             <option value="">-- Tất cả lĩnh vực --</option>
-                            <option th:each="c : ${catServices}" th:value="${c.domain}" th:text="${c.domain}"
-                                th:selected="${c.domain == param.domain}">
+                            <option th:each="d : ${domains}" th:value="${d}" th:text="${d}"
+                                th:selected="${d == param.domain}">
                             </option>
                         </select>
 
@@ -81,7 +87,7 @@
                         <button type="submit" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-search"></i>
                         </button>
-                        <a th:href="@{${viewType == 'delegated' ? '/leader/delegated-dossiers' : '/leader/my-dossiers'}}"
+                        <a th:href="@{${viewType == 'delegated' ? '/leader/delegated-dossiers' : (viewType == 'history' ? '/leader/history' : '/leader/my-dossiers')}}"
                             class="btn btn-outline-secondary btn-sm" title="Xóa lọc">
                             <i class="bi bi-x-lg"></i>
                         </a>
@@ -98,9 +104,11 @@
                                     <th>Mã hồ sơ</th>
                                     <th>Người nộp</th>
                                     <th>Lĩnh vực</th>
-                                    <th th:text="${viewType == 'delegated'} ? 'Người ủy quyền' : 'Người xử lý'">Người xử
-                                        lý</th>
-                                    <th>Độ khẩn / Hạn</th>
+                                    <th
+                                        th:text="${viewType == 'delegated'} ? 'Người ủy quyền' : (viewType == 'history' ? 'Người ký' : 'Người xử lý')">
+                                        Người xử lý</th>
+                                    <th th:if="${viewType != 'history'}">Độ khẩn / Hạn</th>
+                                    <th th:if="${viewType == 'history'}">Ngày ký</th>
                                     <th class="text-end pe-3">Tác vụ</th>
                                 </tr>
                             </thead>
@@ -112,7 +120,8 @@
                                             onchange="updateCount()" th:value="${d.id}">
                                     </td>
                                     <td class="cursor-pointer" th:data-id="${d.id}" th:data-domain="${d.domain}"
-                                        onclick="openSignModal(this.getAttribute('data-id'), this.getAttribute('data-domain'))">
+                                        th:data-status="${d.dossierStatus}"
+                                        onclick="openSignModal(this.getAttribute('data-id'), this.getAttribute('data-domain'), this.getAttribute('data-status'))">
                                         <div class="fw-bold text-primary" th:text="${d.dossierCode}">HS-2023-009</div>
                                     </td>
                                     <td class="fw-bold" th:text="${d.applicantName}">Nguyễn Văn A</td>
@@ -123,7 +132,7 @@
                                         </div>
                                     </td>
                                     <td th:text="${d.currentHandlerName}">Chuyên viên A</td>
-                                    <td>
+                                    <td th:if="${viewType != 'history'}">
                                         <span class="badge bg-danger animate-pulse" th:if="${d.daysLeft <= 2}">
                                             GẤP (Còn <span th:text="${d.daysLeft}">2</span> ngày)
                                         </span>
@@ -131,10 +140,19 @@
                                             Trong hạn
                                         </span>
                                     </td>
+                                    <td th:if="${viewType == 'history'}">
+                                        <span class="text-success fw-bold">
+                                            <i class="bi bi-check-all me-1"></i>Đã ký
+                                        </span>
+                                        <div class="small text-muted"
+                                            th:text="${#temporals.format(d.finishDate, 'dd/MM/yyyy HH:mm')}">12/12/2023
+                                        </div>
+                                    </td>
                                     <td class="text-end pe-3">
                                         <button class="btn btn-sm btn-outline-primary" th:data-id="${d.id}"
-                                            th:data-domain="${d.domain}"
-                                            onclick="openSignModal(this.getAttribute('data-id'), this.getAttribute('data-domain'))">Xem
+                                            th:data-domain="${d.domain}" th:data-status="${d.dossierStatus}"
+                                            onclick="openSignModal(this.getAttribute('data-id'), this.getAttribute('data-domain'), this.getAttribute('data-status'))"
+                                            th:text="${viewType == 'history'} ? 'Xem lại' : 'Xem & Ký'">Xem
                                             & Ký</button>
                                     </td>
                                 </tr>
@@ -151,7 +169,7 @@
                 <!-- Pagination -->
                 <br>
                 <nav aria-label="Page navigation" th:if="${dossiers.totalPages > 1}" class="mt-4"
-                    th:with="baseUrl=${viewType == 'delegated' ? '/leader/delegated-dossiers' : '/leader/my-dossiers'}">
+                    th:with="baseUrl=${viewType == 'delegated' ? '/leader/delegated-dossiers' : (viewType == 'history' ? '/leader/history' : '/leader/my-dossiers')}">
                     <ul class="pagination justify-content-center">
                         <!-- Previous -->
                         <li class="page-item" th:classappend="${dossiers.first} ? 'disabled'">
@@ -387,13 +405,18 @@
             }, 1000);
         }
 
-        function openSignModal(id, domain) {
+        function openSignModal(id, domain, status) {
             // Update form action
             document.getElementById('approvalForm').action = '/leader/approval/' + id;
 
             // Reset UI state
             const stamp = document.getElementById('stampPreview');
-            stamp.classList.add('d-none');
+            // Show stamp immediately if APPROVED, else hide
+            if (status === 'APPROVED') {
+                stamp.classList.remove('d-none');
+            } else {
+                stamp.classList.add('d-none');
+            }
 
             // 1. Hide all templates
             document.querySelectorAll('.preview-template').forEach(el => el.classList.add('d-none'));
@@ -442,11 +465,22 @@
 
             // Find the sign button and reset it
             const btn = modalElement.querySelector('button[onclick^="performSign"]');
-            if (btn) {
-                btn.innerHTML = '<i class="bi bi-vector-pen me-2"></i>Ký duyệt & Phát hành';
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-primary');
-                btn.disabled = false;
+            const otherActions = modalElement.querySelectorAll('.col-lg-4 button.btn-outline-secondary, .col-lg-4 button.btn-outline-danger');
+
+            if (status === 'APPROVED') {
+                // History mode: Hide actions
+                if (btn) btn.parentElement.style.display = 'none'; // Hide Sign button container
+                otherActions.forEach(b => b.style.display = 'none'); // Hide Return/Reject
+            } else {
+                // Normal mode: Show actions
+                if (btn) {
+                    btn.parentElement.style.display = 'grid'; // Restore grid layout
+                    btn.innerHTML = '<i class="bi bi-vector-pen me-2"></i>Ký duyệt & Phát hành';
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-primary');
+                    btn.disabled = false;
+                }
+                otherActions.forEach(b => b.style.display = 'block');
             }
 
             // Show modal using getOrCreateInstance to prevent duplicates

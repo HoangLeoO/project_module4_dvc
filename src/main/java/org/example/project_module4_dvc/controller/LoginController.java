@@ -19,7 +19,7 @@ public class LoginController {
         return "citizen/home";
     }
 
-    @RequestMapping(value = "/login/citizen", method = RequestMethod.GET)
+    @RequestMapping(value = "login/citizen", method = RequestMethod.GET)
     public String loginPageCitizen() {
         return "citizen/login";
     }
@@ -32,6 +32,11 @@ public class LoginController {
 
     @RequestMapping(value = "login/officer", method = RequestMethod.GET)
     public String loginPageOfficer() {
+        return "pages/official-login";
+    }
+
+    @RequestMapping(value = "login/specialist", method = RequestMethod.GET)
+    public String loginPageSpecialist() {
         return "pages/official-login";
     }
 
