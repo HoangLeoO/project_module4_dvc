@@ -10,7 +10,31 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../../static/assets/css/style.css">
     <link rel="stylesheet" href="../../../static/assets/css/internal.css">
-</head>
+
+    <style>
+        /* DOCUMENT PREVIEW STYLES */
+        @import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400&display=swap');
+
+        .document-preview {
+            font-family: 'Tinos', 'Times New Roman', serif;
+            color: #000;
+            background-color: #fff;
+            padding: 3rem;
+            min-height: 100%;
+        }
+
+        .font-times {
+            font-family: 'Tinos', 'Times New Roman', serif;
+        }
+
+        .border-dashed {
+            border-top: 1px dashed #999;
+        }
+
+        .document-body {
+            font-size: 1.1rem;
+        }
+    </style>
 
 <body class="bg-light">
 
@@ -225,101 +249,17 @@
                             <div class="bg-white shadow p-4"
                                 style="width: 80%; height: 500px; transform: scale(0.9); overflow-y: auto;">
 
-                                <!-- TEMPLATE: CIVIL (Hộ tịch) -->
-                                <div id="preview-civil" class="preview-template">
-                                    <div class="text-center mt-4">
-                                        <h6 class="fw-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
-                                        <div class="small fw-bold text-decoration-underline">Độc lập - Tự do - Hạnh phúc
-                                        </div>
-                                        <h4 class="fw-bold text-danger mt-4">GIẤY KHAI SINH</h4>
-                                        <div class="text-start mt-4 px-4">
-                                            <p>Họ và tên: <strong class="text-uppercase text-primary" id="civil-name">NO
-                                                    DATA</strong></p>
-                                            <p>Ngày sinh: <span id="civil-dob">...</span></p>
-                                            <p>Nơi sinh: <span id="civil-pob">...</span></p>
-                                            <p>Dân tộc: <span id="civil-ethnicity">...</span> - Quốc tịch: <span
-                                                    id="civil-nationality">...</span></p>
-                                            <p>Cha: <span id="civil-father">...</span> - Mẹ: <span
-                                                    id="civil-mother">...</span></p>
-                                        </div>
-                                        <div class="text-end mt-5 px-4 position-relative">
-                                            <p class="fst-italic">Đà Nẵng, ngày 18 tháng 12 năm 2025</p>
-                                            <p class="fw-bold">NGƯỜI KÝ</p>
-                                            <div class="my-5"></div>
-                                            <p class="fw-bold">Chủ tịch UBND</p>
-                                            <!-- Stamp Anchor -->
-                                            <div class="stamp-anchor position-absolute" style="top: 60px; right: 20px;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- TEMPLATE: LAND (Đất đai) -->
-                                <div id="preview-land" class="preview-template d-none">
-                                    <div class="text-center mt-2 border border-2 border-danger p-2 mb-2">
-                                        <h6 class="fw-bold text-danger mb-0">GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT</h6>
-                                    </div>
-                                    <div class="text-start px-3 small">
-                                        <p><strong>I. Người sử dụng đất:</strong></p>
-                                        <p class="ms-3">Ông/Bà: <strong class="text-uppercase"
-                                                id="land-owner">...</strong>
-                                        </p>
-                                        <p><strong>II. Thửa đất:</strong></p>
-                                        <ul class="ms-2">
-                                            <li>Thửa đất số: <strong id="land-parcel">...</strong> - Tờ bản đồ số:
-                                                <strong id="land-map">...</strong>
-                                            </li>
-                                            <li>Địa chỉ: <span id="land-address">...</span></li>
-                                            <li>Diện tích: <strong id="land-area">...</strong> m2</li>
-                                            <li>Mục đích sử dụng: <span
-                                                    class="text-decoration-line-through text-muted">Đất trồng cây lâu
-                                                    năm</span> <i class="bi bi-arrow-right"></i> <strong
-                                                    class="text-danger" id="land-purpose">Đất ở tại đô thị</strong></li>
-                                        </ul>
-                                        <div class="text-end mt-4 position-relative">
-                                            <p class="fst-italic">Đà Nẵng, ngày 18 tháng 12 năm 2025</p>
-                                            <p class="fw-bold">TM. UBND QUẬN</p>
-                                            <div class="my-5"></div>
-                                            <p class="fw-bold">Chủ tịch</p>
-                                            <!-- Stamp Anchor -->
-                                            <div class="stamp-anchor position-absolute" style="top: 50px; right: 10px;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- TEMPLATE: BUSINESS (Kinh doanh) -->
-                                <div id="preview-business" class="preview-template d-none">
-                                    <div class="text-center mt-4">
-                                        <h6 class="fw-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
-                                        <div class="small fw-bold text-decoration-underline">Độc lập - Tự do - Hạnh phúc
-                                        </div>
-                                        <h4 class="fw-bold text-primary mt-4">GIẤY CHỨNG NHẬN<br>ĐĂNG KÝ HỘ KINH DOANH
-                                        </h4>
-                                        <div class="text-start mt-4 px-4">
-                                            <p>Tên hộ kinh doanh: <strong class="text-uppercase"
-                                                    id="business-name">...</strong>
-                                            </p>
-                                            <p>Địa điểm kinh doanh: <span id="business-address">...</span></p>
-                                            <p>Ngành nghề: <span id="business-sector">...</span></p>
-                                            <p>Vốn kinh doanh: <strong id="business-capital">...</strong> VNĐ</p>
-                                            <p>Chủ hộ: <strong id="business-owner">...</strong></p>
-                                        </div>
-                                        <div class="text-end mt-5 px-4 position-relative">
-                                            <p class="fst-italic">Đà Nẵng, ngày 18 tháng 12 năm 2025</p>
-                                            <p class="fw-bold">TRƯỞNG PHÒNG TÀI CHÍNH - KẾ HOẠCH</p>
-                                            <div class="my-5"></div>
-                                            <p class="fw-bold">Đã ký</p>
-                                            <!-- Stamp Anchor -->
-                                            <div class="stamp-anchor position-absolute" style="top: 60px; right: 20px;">
-                                            </div>
-                                        </div>
+                                <!-- DYNAMIC CONTENT CONTAINER -->
+                                <div id="dossierDetailContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status"></div>
+                                        <p class="mt-2 text-muted">Đang tải chii tiết...</p>
                                     </div>
                                 </div>
 
                                 <!-- Shared Stamp (This moves to the active anchor) -->
                                 <div id="stampPreview" class="position-absolute d-none animate-stamp"
-                                    style="z-index: 10;">
+                                    style="z-index: 10; bottom: 50px; right: 50px;">
                                     <div class="border border-danger border-4 rounded px-3 py-2 text-danger fw-bold text-center"
                                         style="transform: rotate(-15deg); opacity: 0.9; background: rgba(255,255,255,0.8);">
                                         <div class="small">KÝ SỐ BỞI</div>
@@ -412,15 +352,7 @@
             }, 1000);
         }
 
-        function openSignModal(id, domain, status, jsonData) {
-            // Parse Data
-            let formData = {};
-            try {
-                formData = JSON.parse(jsonData);
-                console.log("Form Data:", formData);
-            } catch (e) {
-                console.error("Invalid JSON", e);
-            }
+        async function openSignModal(id, domain, status, jsonData) {
             // Update form action
             document.getElementById('approvalForm').action = '/leader/approval/' + id;
 
@@ -433,83 +365,39 @@
                 stamp.classList.add('d-none');
             }
 
-            // 1. Hide all templates
-            document.querySelectorAll('.preview-template').forEach(el => el.classList.add('d-none'));
+            // 1. Show loading state
+            const container = document.getElementById('dossierDetailContainer');
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Đang tải chi tiết hồ sơ...</p>
+                </div>
+            `;
 
-            // 2. Determine which template to show
-            let templateId = 'preview-civil'; // Default
-            if (domain) {
-                const d = domain.toUpperCase();
-                if (d.includes('ĐẤT ĐAI')) {
-                    templateId = 'preview-land';
-                } else if (d.includes('KINH DOANH')) {
-                    templateId = 'preview-business';
-                }
-            }
-
-            // --- POPULATE DATA ---
-            if (templateId === 'preview-civil') {
-                document.getElementById('civil-name').innerText = formData['ho_ten_nguoi_duoc_khai_sinh'] || formData['ho_ten'] || '...';
-                document.getElementById('civil-dob').innerText = formData['ngay_sinh'] || '...';
-                document.getElementById('civil-pob').innerText = formData['noi_sinh'] || '...';
-                document.getElementById('civil-ethnicity').innerText = formData['dan_toc'] || '...';
-                document.getElementById('civil-nationality').innerText = formData['quoc_tich'] || '...';
-
-                // Parent logic if available, or just generic
-                const father = formData['ho_ten_cha'] || '...';
-                const mother = formData['ho_ten_me'] || '...';
-                document.getElementById('civil-father').innerText = father;
-                document.getElementById('civil-mother').innerText = mother;
-
-            } else if (templateId === 'preview-land') {
-                document.getElementById('land-owner').innerText = formData['ho_ten_chu_so_huu'] || formData['ho_ten_nguoi_dang_ky'] || '...';
-                document.getElementById('land-parcel').innerText = formData['so_thua'] || '...';
-                document.getElementById('land-map').innerText = formData['to_ban_do'] || '...';
-                document.getElementById('land-address').innerText = formData['dia_chi_thua_dat'] || '...';
-                document.getElementById('land-area').innerText = formData['dien_tich'] || '...';
-
-                // Example of logic for "Purpose" if exists
-                // document.getElementById('land-purpose').innerText = formData['muc_dich_su_dung'] || 'Đất ở';
-            } else if (templateId === 'preview-business') {
-                document.getElementById('business-name').innerText = formData['ten_hkd'] || '...';
-                document.getElementById('business-address').innerText = formData['dia_chi_kd'] || '...';
-                document.getElementById('business-sector').innerText = formData['nganh_nghe'] || '...';
-                document.getElementById('business-capital').innerText = formData['von_kd'] || '...';
-                document.getElementById('business-owner').innerText = formData['chu_ho'] || '...';
-            }
-
-            // 3. Show selected template
-            const selectedTemplate = document.getElementById(templateId);
-            selectedTemplate.classList.remove('d-none');
-
-            // 4. Move Stamp to the correct anchor in the selected template
-            const anchor = selectedTemplate.querySelector('.stamp-anchor');
-            if (anchor) {
-                // We append the stamp element to the anchor's parent, positioned relative to it
-                // Or simply set top/right of stamp based on anchor?
-                // Easiest is to append the stamp *inside* the template's relative container if possible, 
-                // but stamp is absolute. Let's just manually position or append it.
-                // For simplicity in this mock, let's just make sure the stamp is visible effectively.
-                // Actually, let's loop the stamp to be a child of the current template's relative container if we want perfect positioning.
-                // BUT, our stamp is currently outside. Let's keep it simple:
-                // We will rely on CSS positioning relative to the shared container, 
-                // but differnt templates might need different positions.
-                // Hack: Just set specific top/right on the stamp based on template type?
-                if (templateId === 'preview-land') {
-                    stamp.style.top = '70%';
-                    stamp.style.right = '30px';
+            // 2. Fetch Dynamic Content
+            try {
+                const response = await fetch(`/leader/dossiers/${id}/detail`);
+                if (response.ok) {
+                    const html = await response.text();
+                    container.innerHTML = html;
                 } else {
-                    stamp.style.top = 'auto'; // relative to bottom block? No, it's absolute
-                    // Re-check HTML structure. stampPreview is absolute inside .bg-white wrapper.
-                    // The templates push content down.
-                    // Let's just hardcode reasonable positions.
-                    stamp.style.top = 'auto';
-                    stamp.style.bottom = '100px';
-                    stamp.style.right = '50px';
+                    container.innerHTML = `
+                        <div class="alert alert-danger text-center">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Không tải được chi tiết hồ sơ. (Mã lỗi: ${response.status})
+                        </div>`;
                 }
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `
+                    <div class="alert alert-danger text-center">
+                        <i class="bi bi-wifi-off me-2"></i>
+                        Lỗi kết nối đến máy chủ.
+                    </div>`;
             }
 
-            // Find the sign button and reset it
+
+            // 3. Find the sign button and reset it
             const btn = modalElement.querySelector('button[onclick^="performSign"]');
             const otherActions = modalElement.querySelectorAll('.col-lg-4 button.btn-outline-secondary, .col-lg-4 button.btn-outline-danger');
 

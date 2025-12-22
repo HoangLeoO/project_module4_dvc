@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Dossier PDF</title>
+    <style th:inline="text">
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        body {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 14px;
+        }
+
+        /* Float-based Grid for OpenHTMLtoPDF (No Flexbox support) */
+        .row {
+            width: 100%;
+            clear: both;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .col-6 {
+            float: left;
+            width: 50%;
+            box-sizing: border-box;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .col-12 {
+            float: left;
+            width: 100%;
+            box-sizing: border-box;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-uppercase {
+            text-transform: uppercase;
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .fst-italic {
+            font-style: italic;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+    </style>
+    <!-- Bootstrap CSS Disabled to avoid Flexbox issues in PDF -->
+    <!-- <link rel="stylesheet" href="assets/css/bootstrap.min.css" /> -->
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Dynamic Fragment Inclusion -->
+        <!-- We use the variable 'fragmentName' passed from the service -->
+        <!-- syntax: template :: fragment -->
+        <div th:replace="${fragmentName} :: form-detail"></div>
+    </div>
+</body>
+
+</html>

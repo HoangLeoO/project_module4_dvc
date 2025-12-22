@@ -1,0 +1,64 @@
+<div th:fragment="form-detail" class="document-preview font-times">
+    <div class="text-center mb-4">
+        <h6 class="fw-bold fs-5 mb-0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold small text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+
+        <h3 class="fw-bold text-danger mb-4">QUYẾT ĐỊNH<br />VỀ VIỆC CHO PHÉP CHUYỂN MỤC ĐÍCH SỬ DỤNG ĐẤT</h3>
+    </div>
+
+    <div class="document-body px-4" style="line-height: 1.6;">
+
+        <div class="mb-3">
+            <strong>Xét đơn của: </strong> <span class="fw-bold text-uppercase">Ông/Bà chủ sở hữu thửa đất số <span
+                    th:text="${formData.landPlotNumber}"></span></span>
+        </div>
+
+        <div class="mb-3">
+            <strong>1. Thông tin thửa đất:</strong>
+            <ul class="list-unstyled ms-4">
+                <li>- Số chứng chỉ: <span class="fw-bold" th:text="${formData.landCertificateNumber}"></span></li>
+                <li>- Thửa đất số: <span class="fw-bold" th:text="${formData.landPlotNumber}"></span></li>
+                <li>- Tờ bản đồ số: <span class="fw-bold" th:text="${formData.mapSheetNumber}"></span></li>
+                <li>- Diện tích: <span class="fw-bold" th:text="${formData.landAreaM2}"></span> m2</li>
+            </ul>
+        </div>
+
+        <div class="mb-3">
+            <strong>2. Nội dung chuyển mục đích:</strong>
+            <div class="ms-4">
+                <p>Chuyển từ mục đích: <span class="fw-bold text-decoration-line-through"
+                        th:text="${formData.currentLandPurpose}"></span>
+                    <br />
+                    Sang mục đích: <span class="fw-bold text-uppercase text-danger"
+                        th:text="${formData.requestedLandPurpose}"></span>
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <strong>3. Lý do:</strong>
+            <div class="ms-4 fst-italic">
+                <span th:text="${formData.reasonForChange}"></span>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-6">
+                <!-- <div class="small fw-bold">Nơi nhận:</div>
+                <ul class="small list-unstyled">
+                    <li>- Như Điều 3;</li>
+                    <li>- Lưu: VT, TNMT.</li>
+                </ul> -->
+            </div>
+            <div class="col-6 text-center">
+                <div class="fst-italic">Đà Nẵng, ngày .... tháng .... năm ....</div>
+                <div class="fw-bold text-uppercase mt-2">TM. UBND QUẬN</div>
+                <div class="fw-bold mt-1">CHỦ TỊCH</div>
+                <div class="fst-italic small">(Ký tên, đóng dấu)</div>
+                <div class="stamp-anchor position-relative mt-5" style="height: 100px;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

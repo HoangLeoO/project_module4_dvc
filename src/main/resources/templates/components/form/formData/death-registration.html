@@ -8,11 +8,11 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
-                <input type="date" class="form-control" th:value="${formData.dateOfBirth != null ? #temporals.format(formData.dateOfBirth, 'yyyy-MM-dd') : ''}" readonly>
+                <input type="date" class="form-control" th:value="${formData.dateOfBirth ?: ''}" readonly>
             </div>
             <div class="col-md-3">
                 <label class="form-label small">Ngày mất</label>
-                <input type="date" class="form-control" th:value="${formData.dateOfDeath != null ? #temporals.format(formData.dateOfDeath, 'yyyy-MM-dd') : ''}" readonly>
+                <input type="date" class="form-control" th:value="${formData.dateOfDeath ?: ''}" readonly>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Nơi mất</label>
@@ -41,4 +41,3 @@
         Không có dữ liệu chi tiết cho tờ khai này.
     </div>
 </div>
-

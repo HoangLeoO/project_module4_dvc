@@ -1,0 +1,78 @@
+<div th:fragment="form-detail" class="document-preview font-times">
+    <div class="text-center mb-4">
+        <h6 class="fw-bold fs-5 mb-0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold small text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+
+        <h3 class="fw-bold text-uppercase mb-4">GIẤY XÁC NHẬN TÌNH TRẠNG HÔN NHÂN</h3>
+    </div>
+
+    <div class="document-body px-4" style="line-height: 1.8;">
+        <div class="mb-3">
+            <strong>Ủy ban nhân dân: </strong> <span class="fw-bold">Phường Hải Châu I</span>
+        </div>
+        <div class="mb-3 text-center fw-bold text-uppercase">
+            XÁC NHẬN
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                Ông/Bà: <span class="fw-bold text-uppercase" th:text="${formData.requesterFullName}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6">
+                Ngày sinh: <span class="fw-bold" th:text="${formData.dateOfBirth}"></span>
+            </div>
+            <div class="col-6">
+                Giới tính: <span class="fw-bold">...</span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Dân tộc: <span class="fw-bold">Kinh</span> - Quốc tịch: <span class="fw-bold">Việt Nam</span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Giấy tờ tùy thân: <span class="fw-bold" th:text="${formData.idNumber}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Nơi cư trú: <span class="fw-bold">...</span>
+            </div>
+        </div>
+
+        <div class="row mb-2 mt-3">
+            <div class="col-12">
+                <strong>Tình trạng hôn nhân: </strong>
+                <p class="fw-bold fst-italic ms-3" th:text="${formData.currentMaritalStatus}"></p>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                <strong>Mục đích sử dụng: </strong> <span th:text="${formData.purposeOfUse}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                <strong>Thời hạn sử dụng: </strong> <span th:text="${formData.confirmationPeriod}"></span>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6 text-center">
+            </div>
+            <div class="col-6 text-center">
+                <div class="fst-italic">Đà Nẵng, ngày .... tháng .... năm ....</div>
+                <div class="fw-bold text-uppercase mt-2">CHỦ TỊCH</div>
+                <div class="fst-italic small">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                <div class="stamp-anchor position-relative mt-5" style="height: 100px;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
