@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+
+<body>
+<!-- Modal Action (Process) -->
+<div th:fragment="specialistRejectReasonModal" class="modal fade" id="actionModal" tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <form th:action="@{/specialist/dashboard/reception/reject}" method="post" enctype="multipart/form-data">
+
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <div class="modal-header px-4 py-3 border-bottom">
+          <h5 class="modal-title fw-bold text-danger d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            Xác nhận từ chối hồ sơ
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body p-4">
+
+          <!-- ID hồ sơ -->
+          <input type="hidden" name="id" th:value="${dossier.id}">
+          <input type="hidden" name="userId" th:value="${dossier.applicantId}">
+
+          <!-- Nội dung -->
+          <div class="mb-4">
+            <label class="form-label fw-bold text-secondary small text-uppercase mb-2">
+              <i class="bi bi-chat-left-text me-1"></i> Lý do / Nội dung <span
+                    class="text-danger">*</span>
+            </label>
+            <textarea class="form-control bg-light border-0 rounded-3 px-3 py-3" rows="5" name="reason"
+                      required style="resize: none;"
+                      placeholder="Nhập nội dung/ lý do chi tiết..."></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-top-0 px-4 pb-4">
+          <button type="button" class="btn btn-light text-muted fw-bold rounded-pill px-4"
+                  data-bs-dismiss="modal">
+            Đóng
+          </button>
+          <button type="submit" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+            Xác nhận
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+
+</html>
