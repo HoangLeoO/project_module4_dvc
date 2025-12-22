@@ -328,10 +328,12 @@
                                     <strong class="text-dark" th:text="${file.fileName}"></strong>
                                     <small class="text-muted mt-1">Đã điền đầy đủ theo mẫu TP/HT-2024</small>
                                 </div>
-                                <a th:href="@{/officer/dashboard/view-file/__${file.getId()}__}"
-                                    class="btn btn-sm btn-light border shadow-sm text-primary fw-bold">
+                                <button type="button"
+                                    class="btn btn-sm btn-light border shadow-sm text-primary fw-bold btn-view-file"
+                                    th:data-file-id="${file.getId()}" th:data-file-name="${file.fileName}"
+                                    th:data-file-type="${file.fileType}" data-bs-toggle="tooltip" title="Xem trước tệp">
                                     <i class="bi bi-eye me-1"></i> Xem
-                                </a>
+                                </button>
                             </label>
                         </div>
                     </div>
@@ -378,8 +380,138 @@
     <!-- Modals Include -->
     <th:block th:replace="~{components/modals/reject-reason-modal :: rejectReasonModal}"></th:block>
     <th:block th:replace="~{components/modals/assign-specialist-modal :: assignModal}"></th:block>
+    <th:block th:replace="~{components/modals/view-file-modal :: viewFileModal}"></th:block>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- File Preview Modal Script (Officer version) -->
+    <script>
+        // Event delegation for view file buttons
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btn-view-file');
+            if (btn) {
+                const fileId = btn.dataset.fileId;
+                const fileName = btn.dataset.fileName;
+                const fileType = btn.dataset.fileType;
+                openFileModal(fileId, fileName, fileType);
+            }
+        });
+
+        function openFileModal(fileId, fileName, fileType) {
+            const modal = new bootstrap.Modal(document.getElementById('viewFileModal'));
+
+            // Reset all containers
+            document.getElementById('fileLoadingState').classList.remove('d-none');
+            document.getElementById('fileLoadingState').classList.add('d-flex');
+            document.getElementById('fileErrorState').classList.remove('d-flex');
+            document.getElementById('fileErrorState').classList.add('d-none');
+            document.getElementById('pdfViewerContainer').classList.add('d-none');
+            document.getElementById('imageViewerContainer').classList.remove('d-flex');
+            document.getElementById('imageViewerContainer').classList.add('d-none');
+            document.getElementById('docxViewerContainer').classList.add('d-none');
+            document.getElementById('unsupportedFileContainer').classList.remove('d-flex');
+            document.getElementById('unsupportedFileContainer').classList.add('d-none');
+
+            // Set file name
+            document.getElementById('fileNameDisplay').textContent = fileName;
+            document.getElementById('viewFileModalLabel').textContent = fileName;
+
+            // Build file URL - OFFICER endpoint
+            const fileUrl = `/officer/dashboard/view-file/${fileId}`;
+
+            // Set download links
+            document.getElementById('downloadBtn').href = fileUrl;
+            document.getElementById('downloadBtn').setAttribute('download', fileName);
+            document.getElementById('fileDownloadFallback').href = fileUrl;
+            document.getElementById('fileDownloadFallback').setAttribute('download', fileName);
+            document.getElementById('unsupportedDownload').href = fileUrl;
+            document.getElementById('unsupportedDownload').setAttribute('download', fileName);
+
+            // Determine file type and show appropriate viewer
+            const fileExt = fileName.split('.').pop().toLowerCase();
+            let displayType = '';
+            let iconClass = 'bi-file-earmark';
+
+            modal.show();
+
+            setTimeout(() => {
+                // Hide loading
+                document.getElementById('fileLoadingState').classList.remove('d-flex');
+                document.getElementById('fileLoadingState').classList.add('d-none');
+
+                if (fileExt === 'pdf') {
+                    displayType = 'PDF';
+                    iconClass = 'bi-file-earmark-pdf';
+                    document.getElementById('pdfViewer').src = fileUrl;
+                    document.getElementById('pdfViewerContainer').classList.remove('d-none');
+
+                } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExt)) {
+                    displayType = fileExt.toUpperCase();
+                    iconClass = 'bi-file-earmark-image';
+                    document.getElementById('imageViewer').src = fileUrl;
+                    document.getElementById('imageViewerContainer').classList.remove('d-none');
+                    document.getElementById('imageViewerContainer').classList.add('d-flex');
+
+                } else if (['doc', 'docx'].includes(fileExt)) {
+                    displayType = fileExt.toUpperCase();
+                    iconClass = 'bi-file-earmark-word';
+                    const fullUrl = window.location.origin + fileUrl;
+                    document.getElementById('docxNotice').innerHTML = `
+                        <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                        <div>
+                            <strong>Lưu ý:</strong> Tệp Word (.${fileExt}) đang được tải trong trình xem tài liệu. 
+                            Nếu không hiển thị được, vui lòng <a href="${fileUrl}" download="${fileName}" class="fw-bold text-primary">tải về</a> và mở bằng Microsoft Word.
+                        </div>
+                    `;
+                    document.getElementById('docxViewer').src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
+                    document.getElementById('docxViewerContainer').classList.remove('d-none');
+
+                } else if (['xls', 'xlsx'].includes(fileExt)) {
+                    displayType = fileExt.toUpperCase();
+                    iconClass = 'bi-file-earmark-excel';
+                    document.getElementById('unsupportedFileType').textContent = `Tệp Excel (${fileExt.toUpperCase()}) không thể xem trước. Vui lòng tải về.`;
+                    document.getElementById('unsupportedFileContainer').classList.remove('d-none');
+                    document.getElementById('unsupportedFileContainer').classList.add('d-flex');
+
+                } else {
+                    displayType = fileExt.toUpperCase() || 'UNKNOWN';
+                    iconClass = 'bi-file-earmark';
+                    document.getElementById('unsupportedFileType').textContent = `Định dạng tệp (${displayType}) không hỗ trợ xem trước`;
+                    document.getElementById('unsupportedFileContainer').classList.remove('d-none');
+                    document.getElementById('unsupportedFileContainer').classList.add('d-flex');
+                }
+
+                // Update file type display
+                document.getElementById('fileTypeText').textContent = displayType;
+
+                // Update icon with file-type specific color
+                const iconEl = document.getElementById('fileTypeIcon');
+                iconEl.className = `bi ${iconClass}`;
+                iconEl.style.fontSize = '1.75rem';
+
+                // Set color based on file type
+                let iconColor = '#0f4c81';
+                if (fileExt === 'pdf') {
+                    iconColor = '#dc3545';
+                } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExt)) {
+                    iconColor = '#6f42c1';
+                } else if (['doc', 'docx'].includes(fileExt)) {
+                    iconColor = '#2b579a';
+                } else if (['xls', 'xlsx'].includes(fileExt)) {
+                    iconColor = '#217346';
+                }
+                iconEl.style.color = iconColor;
+
+            }, 300);
+        }
+
+        // Clean up when modal is closed
+        document.getElementById('viewFileModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('pdfViewer').src = '';
+            document.getElementById('imageViewer').src = '';
+            document.getElementById('docxViewer').src = '';
+        });
+    </script>
 </body>
 
 </html>
