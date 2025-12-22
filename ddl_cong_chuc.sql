@@ -168,9 +168,21 @@ CREATE TABLE sys_user_delegations
     start_time   TIMESTAMP NOT NULL COMMENT 'Thời điểm bắt đầu ủy quyền',
     end_time     TIMESTAMP NOT NULL COMMENT 'Thời điểm kết thúc ủy quyền',
     notes        VARCHAR(255) COMMENT 'Ghi chú về nội dung ủy quyền',
+    status       TINYINT DEFAULT 1 COMMENT 'Trạng thái (1: Active, 0: Inactive)',
     CONSTRAINT fk_dlg_from FOREIGN KEY (from_user_id) REFERENCES sys_users (id),
     CONSTRAINT fk_dlg_to FOREIGN KEY (to_user_id) REFERENCES sys_users (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin Ủy quyền xử lý công việc';
+
+-- 10.5. Phạm vi ủy quyền (System Delegation Scopes)
+/* Bảng giới hạn phạm vi ủy quyền (theo Lĩnh vực hoặc Dịch vụ cụ thể). */
+CREATE TABLE sys_delegation_scopes
+(
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính',
+    delegation_id BIGINT       NOT NULL COMMENT 'ID của ủy quyền',
+    scope_type    VARCHAR(20)  NOT NULL COMMENT 'Loại phạm vi: DOMAIN, SERVICE',
+    scope_value   VARCHAR(100) NOT NULL COMMENT 'Giá trị phạm vi (VD: ĐẤT ĐAI, HK01_TRE)',
+    CONSTRAINT fk_ds_delegation FOREIGN KEY (delegation_id) REFERENCES sys_user_delegations (id) ON DELETE CASCADE
+) ENGINE = InnoDB COMMENT ='Phạm vi chi tiết của ủy quyền';
 
 -- 11. Configs (System Configurations)
 /* Bảng lưu trữ các tham số cấu hình tĩnh của hệ thống. */
@@ -207,12 +219,12 @@ CREATE TABLE cat_services
     id           BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của dịch vụ',
     service_code VARCHAR(50)  NOT NULL UNIQUE COMMENT 'Mã dịch vụ công (Duy nhất)',
     service_name VARCHAR(255) NOT NULL COMMENT 'Tên đầy đủ của dịch vụ công',
-    id_role      BIGINT       NOT NULL COMMENT 'ID của vai trò cần thiết để thực hiện dịch vụ',
     domain       VARCHAR(50)  NOT NULL COMMENT 'Lĩnh vực/Ngành của dịch vụ (VD: Đất đai, Hộ tịch)',
     sla_hours    INT            DEFAULT 24 COMMENT 'Thời gian xử lý cam kết (Service Level Agreement) tính bằng giờ',
     fee_amount   DECIMAL(15, 2) DEFAULT 0 COMMENT 'Mức phí/lệ phí phải nộp',
+    role_id      BIGINT COMMENT 'Vai trò xử lý chính (nếu có)',
     form_schema  JSON COMMENT 'Cấu trúc JSON Schema của biểu mẫu nộp hồ sơ',
-        CONSTRAINT fk_sr_role FOREIGN KEY (id_role) REFERENCES sys_roles (id)
+    CONSTRAINT fk_service_role FOREIGN KEY (role_id) REFERENCES sys_roles (id)
 ) ENGINE = InnoDB COMMENT ='Danh sách Dịch vụ công';
 
 -- 14. Quy trình (Catalog Workflow Steps)
@@ -308,6 +320,20 @@ CREATE TABLE ops_dossier_logs
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm xảy ra hành động',
     CONSTRAINT fk_dl_dossier FOREIGN KEY (dossier_id) REFERENCES ops_dossiers (id) ON DELETE CASCADE
 ) ENGINE = InnoDB COMMENT ='Nhật ký xử lý chi tiết Hồ sơ';
+
+-- 19.5 Link Log & Workflow (Operations Log Workflow Steps)
+/* Bảng trung gian liên kết giữa Log xử lý và Bước quy trình. */
+CREATE TABLE ops_log_workflow_steps
+(
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính',
+    log_id           BIGINT NOT NULL COMMENT 'ID của Nhật ký xử lý (ops_dossier_logs)',
+    workflow_step_id BIGINT NOT NULL COMMENT 'ID của Bước quy trình (cat_workflow_steps)',
+    description      VARCHAR(255) COMMENT 'Mô tả thêm về liên kết này',
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo liên kết',
+    CONSTRAINT fk_lws_log FOREIGN KEY (log_id) REFERENCES ops_dossier_logs (id) ON DELETE CASCADE,
+    CONSTRAINT fk_lws_step FOREIGN KEY (workflow_step_id) REFERENCES cat_workflow_steps (id) ON DELETE CASCADE
+) ENGINE = InnoDB COMMENT ='Bảng trung gian Log và Workflow Steps';
+
 
 -- 20. Kết quả (Operations Dossier Results)
 /* Bảng lưu trữ thông tin về kết quả xử lý cuối cùng của hồ sơ. */

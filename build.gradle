@@ -42,7 +42,7 @@ dependencies {
 // Thư viện này giúp MapStruct hiểu được code do Lombok sinh ra (như @Builder, @Data)
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

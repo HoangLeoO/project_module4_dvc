@@ -7,6 +7,7 @@ import org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO;
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 
+import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,8 @@ import java.time.LocalDateTime;
 public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
     Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus,String departmentName, Pageable pageable);
+
+    Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndCurrentHandler_Id(String dossierStatus, String receivingDeptDeptName, Long currentHandlerId, Pageable pageable);
     @Query("""
     select hs
     from OpsDossier hs
@@ -259,4 +263,95 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     Page<CitizenNotificationProjection> findAllNotificationsByApplicant(@Param("currentUserId") Long currentUserId,
                                                                         Pageable pageable);
 
+    // lấy phân trang cảnh báo hồ sơ quá hạn và sắp đến hạn
+    @Query(value = """
+    SELECT 
+        d.id AS id,
+        d.dossier_code AS code,
+        s.domain AS domain,
+        ABS(DATEDIFF(d.due_date, NOW())) AS days,
+        'OVERDUE' AS type
+    FROM ops_dossiers d
+    JOIN cat_services s ON d.service_id = s.id
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date < NOW()
+    ORDER BY d.due_date ASC
+""",
+            countQuery = """
+    SELECT COUNT(*)
+    FROM ops_dossiers d
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date < NOW()
+""",
+            nativeQuery = true)
+    Page<Map<String, Object>> findOverdueAlerts(Pageable pageable);
+
+    // lấy phân trang cảnh báo hồ sơ sắp đến hạn
+    @Query(value = """
+    SELECT 
+        d.id AS id,
+        d.dossier_code AS code,
+        s.domain AS domain,
+        DATEDIFF(d.due_date, NOW()) AS days,
+        'NEARLY_DUE' AS type
+    FROM ops_dossiers d
+    JOIN cat_services s ON d.service_id = s.id
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+    ORDER BY d.due_date ASC
+""",
+            countQuery = """
+    SELECT COUNT(*)
+    FROM ops_dossiers d
+    WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+      AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
+""",
+            nativeQuery = true)
+    Page<Map<String, Object>> findNearlyDueAlerts(Pageable pageable);
+    // đem số hồ sơ hoàn thành
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE d.dossierStatus = 'COMPLETED'
+      AND d.finishDate IS NOT NULL
+""")
+    long countCompleted();
+    // đêm số hồ sơ hoàn thành đúng hạn
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE d.dossierStatus = 'COMPLETED'
+      AND d.finishDate IS NOT NULL
+      AND d.dueDate IS NOT NULL
+      AND d.finishDate <= d.dueDate
+""")
+    long countCompletedOnTime();
+
+    // đếm tổng số hồ sơ
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE d.dossierStatus <> 'REJECTED'
+""")
+    long countTotalForKpi();
+
+    // đếm số hồ sơ hoàn thành đúng hạn
+    @Query("""
+    SELECT COUNT(d)
+    FROM OpsDossier d
+    WHERE
+        (
+            d.dossierStatus = 'COMPLETED'
+            AND d.finishDate IS NOT NULL
+            AND d.dueDate IS NOT NULL
+            AND d.finishDate <= d.dueDate
+        )
+        OR
+        (
+            d.dossierStatus <> 'COMPLETED'
+            AND d.dueDate IS NOT NULL
+            AND d.dueDate >= CURRENT_TIMESTAMP
+        )
+""")
+    long countOnTimeForKpi();
 }

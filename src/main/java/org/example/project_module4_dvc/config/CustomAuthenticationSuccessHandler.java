@@ -29,7 +29,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String role = authority.getAuthority();
 
             if ("ROLE_ADMIN".equals(role)) {
-                redirectUrl = "/admin/dashboard";
+                redirectUrl = "/admin/";
                 break;
             }
 
@@ -38,20 +38,21 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 redirectUrl = "/leader/dashboard";
                 break;
             }
-            if (role.equals("ROLE_CHUYEN_VIEN") || role.equals("ROLE_CANBO_MOTCUA")
-                    || role.equals("ROLE_CANBO_TU_PHAP") || role.equals("ROLE_CANBO_DIA_CHINH")
-                    || role.equals("ROLE_CANBO_KINH_TE")) {
+            if (role.equals("ROLE_CANBO_MOTCUA")) {
 
                 // Chuyển hướng đến officer dashboard
                 response.sendRedirect("/officer/dashboard");
                 return; // Kết thúc
             }
+            if (role.equals("ROLE_CANBO_TU_PHAP") || role.equals("ROLE_CANBO_DIA_CHINH")
+                    || role.equals("ROLE_CANBO_KINH_TE")) {
 
-            // Redirect cho Cán bộ (Một cửa, Tư pháp, Địa chính, Kinh tế)
-            if (role.startsWith("ROLE_CANBO_")) {
-                redirectUrl = "/official/dashboard"; // Đã đổi path từ /officer thánh /official
-                break;
+                // Chuyển hướng đến officer dashboard
+                response.sendRedirect("/specialist/dashboard");
+                return; // Kết thúc
             }
+
+
 
             // Redirect cho Công dân
             if ("ROLE_CONG_DAN".equals(role) || "ROLE_USER".equals(role)) {

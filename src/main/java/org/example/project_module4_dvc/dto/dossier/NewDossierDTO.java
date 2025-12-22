@@ -21,6 +21,7 @@ public class NewDossierDTO {
     LocalDateTime submissionDate;
     LocalDateTime dueDate;
     String applicantFullName;
+    Long applicantId;
     String serviceName;
     String cccd;
     private Map<String, Object> formData;

@@ -51,7 +51,7 @@ public class CatService {
     private Map<String, Object> formSchema;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_role", referencedColumnName = "id")
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     private SysRole sysRole;
 
 }

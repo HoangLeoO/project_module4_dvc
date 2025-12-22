@@ -1,26 +1,33 @@
-//package org.example.project_module4_dvc.config;
-//
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-//import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-//import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-//import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-//
-//@Configuration
-//@EnableWebSocketMessageBroker
-//public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-//
-//    @Override
-//    public void configureMessageBroker(MessageBrokerRegistry config) {
-//        // Tin nhắn từ server đến client sẽ có tiền tố này
-//        config.enableSimpleBroker("/topic");
-//        // Tin nhắn từ client đến server sẽ có tiền tố này
-//        config.setApplicationDestinationPrefixes("/app");
-//    }
-//
-//    @Override
-//    public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        // Endpoint để client kết nối tới WebSocket server
-//        registry.addEndpoint("/ws-dvc").setAllowedOriginPatterns("*").withSockJS();
-//    }
-//}
+package org.example.project_module4_dvc.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework. web.socket.config.annotation. EnableWebSocketMessageBroker;
+import org.springframework.web. socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        // Enable simple in-memory message broker
+        // Prefix /topic for broadcasting, /queue for user-specific
+        config.enableSimpleBroker("/topic", "/queue");
+
+        // Prefix for messages from client to server
+        config.setApplicationDestinationPrefixes("/app");
+
+        // Prefix for user-specific messages
+        config.setUserDestinationPrefix("/user");
+    }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // WebSocket endpoint for connection
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("*")
+                .withSockJS(); // Fallback for browsers without WebSocket support
+    }
+}
