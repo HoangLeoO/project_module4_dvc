@@ -26,7 +26,6 @@ public class NewDossierDTO {
     String cccd;
     Long specialistId;
     String rejectionReason;
-    ;
     private Long receivingDeptId;
     private Map<String, Object> formData;
 
@@ -35,7 +34,8 @@ public class NewDossierDTO {
     }
 
     public boolean isNearDue() {
-        if (dueDate == null) return false;
+        if (dueDate == null)
+            return false;
         LocalDateTime now = LocalDateTime.now();
         return dueDate.isAfter(now) && dueDate.isBefore(now.plusHours(6));
     }
