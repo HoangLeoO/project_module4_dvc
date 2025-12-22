@@ -45,4 +45,9 @@ public class ModFeedbackService implements IModFeedbackService {
     public Page<ModFeedback> getUnresolvedFeedbacks(Pageable pageable) {
         return modFeedbackRepository.findByIsResolvedFalse(pageable);
     }
+
+    @Override
+    public Page<ModFeedback> getAllFeedbacks(Pageable pageable) {
+        return modFeedbackRepository.findAll(pageable);
+    }
 }
