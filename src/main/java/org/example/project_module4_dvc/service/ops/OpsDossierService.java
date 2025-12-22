@@ -19,6 +19,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.example.project_module4_dvc.dto.formData.BirthRegistrationFormDTO;
+import org.example.project_module4_dvc.service.websocket.IWebsocketService;
 
 @Service
 public class OpsDossierService implements IOpsDossierService {
@@ -34,6 +35,8 @@ public class OpsDossierService implements IOpsDossierService {
     private org.example.project_module4_dvc.repository.sys.SysDepartmentRepository sysDepartmentRepository;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private IWebsocketService websocketService;
 
     @Override
     public Page<OpsDossierSummaryDTO> getMyDossierList(Long userId, Pageable pageable) {
@@ -341,5 +344,10 @@ public class OpsDossierService implements IOpsDossierService {
         log.setCreatedAt(submissionDate);
 
         dossierLogRepository.save(log);
+
+        // 8. WebSocket Notify
+        if (receivingDept != null) {
+            websocketService.broadcastNewDossierToList(receivingDept.getDeptName(), dossier);
+        }
     }
 }
