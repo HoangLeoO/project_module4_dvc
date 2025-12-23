@@ -175,7 +175,7 @@ public class WebSecurityConfig {
         );
         http.logout(form -> form
                 .logoutUrl("/logout/citizen")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/login/citizen")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
         );

@@ -1,9 +1,10 @@
 <div th:fragment="form-detail" class="document-preview font-times">
     <div class="text-center mb-4">
-        <h6 class="fw-bold fs-5 mb-0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
-        <div class="fw-bold small text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+        <h6 class="fw-bold fs-5 mb-0 text-uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold fs-5 text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
 
-        <h3 class="fw-bold text-danger mb-4">GIẤY CHỨNG NHẬN<br />QUYỀN SỬ DỤNG ĐẤT, QUYỀN SỞ HỮU NHÀ Ở<br />VÀ TÀI SẢN
+        <h3 class="fw-bold text-uppercase mb-4">GIẤY CHỨNG NHẬN<br />QUYỀN SỬ DỤNG ĐẤT, QUYỀN SỞ HỮU NHÀ Ở<br />VÀ TÀI
+            SẢN
             KHÁC
             GẮN LIỀN VỚI ĐẤT</h3>
     </div>
@@ -14,7 +15,7 @@
             <strong>I. Người sử dụng đất: </strong>
             <div class="ps-4">
                 Ông/Bà: <span class="fw-bold text-uppercase fs-5"
-                    th:text="${formData.newOwner ?: formData.currentOwner}"></span>
+                    th:text="${formData['newOwner'] ?: formData['currentOwner']}"></span>
             </div>
         </div>
 
@@ -23,28 +24,29 @@
             <div class="ps-4 mt-2">
                 <div class="row mb-1">
                     <div class="col-12">
-                        1. Thửa đất số: <span class="fw-bold" th:text="${formData.landPlotNumber}"></span>
-                        - Tờ bản đồ số: <span class="fw-bold" th:text="${formData.landMapSheet}"></span>
+                        1. Thửa đất số: <span class="fw-bold" th:text="${formData['landPlotNumber']}"></span>
+                        - Tờ bản đồ số: <span class="fw-bold" th:text="${formData['landMapSheet']}"></span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-12">
-                        2. Địa chỉ: <span class="fw-bold">... (Dữ liệu mẫu) ...</span>
+                        2. Địa chỉ: <span class="fw-bold" th:text="${formData['landAddress'] ?: '...'}"></span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-12">
-                        3. Diện tích: <span class="fw-bold">... m2</span> (bằng chữ: ...)
+                        3. Diện tích: <span class="fw-bold" th:text="${(formData['landArea'] ?: '...') + ' m2'}"></span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-12">
-                        4. Hình thức sử dụng: <span class="fw-bold">Sử dụng riêng</span>
+                        4. Hình thức sử dụng: <span class="fw-bold"
+                            th:text="${formData['landUseType'] ?: '...'}"></span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-12">
-                        5. Mục đích sử dụng: <span class="fw-bold">Đất ở tại đô thị</span>
+                        5. Mục đích sử dụng: <span class="fw-bold" th:text="${formData['landPurpose'] ?: '...'}"></span>
                     </div>
                 </div>
             </div>
@@ -52,15 +54,15 @@
 
         <div class="mb-3">
             <strong>III. Thông tin biến động: </strong>
-            <div class="ps-4 mt-2 border p-3 bg-light">
+            <div class="ps-4 mt-2 border p-3">
                 <div class="row mb-1">
                     <div class="col-12">
-                        Loại biến động: <span class="fw-bold" th:text="${formData.changeType}"></span>
+                        Loại biến động: <span class="fw-bold" th:text="${formData['changeType']}"></span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-12">
-                        Lý do: <span class="fw-bold" th:text="${formData.changeReason}"></span>
+                        Lý do: <span class="fw-bold" th:text="${formData['changeReason']}"></span>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 package org.example.project_module4_dvc.service.learder;
 
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
+import org.example.project_module4_dvc.entity.ops.OpsDossierResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,4 +44,6 @@ public interface ILeaderService {
     void createDelegation(Long leaderId, org.example.project_module4_dvc.dto.leader.DelegationRequestDTO request);
     
     void revokeDelegation(Long delegationId);
+
+    void opsDossierResults(OpsDossierResult opsDossierResult);
 }

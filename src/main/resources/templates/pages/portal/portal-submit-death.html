@@ -105,8 +105,12 @@
             <p class="text-muted fs-5">Thủ tục: <strong>Đăng ký khai tử</strong></p>
         </div>
 
+
         <!-- 2. WIZARD NAV -->
         <div class="position-relative mb-5 mx-auto" style="max-width: 800px;">
+            <!-- Toast Container -->
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
             <div class="wizard-connector"></div>
             <div class="d-flex justify-content-between position-relative">
 
@@ -158,50 +162,7 @@
                             </div>
                         </div>
 
-                        <!-- AUTHORIZATION SECTION -->
-                        <div class="card mb-4 border shadow-sm-soft">
-                            <div class="card-body">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="authToggle"
-                                        onchange="toggleAuthorization()" style="cursor: pointer;">
-                                    <label class="form-check-label fw-bold" for="authToggle"
-                                        style="cursor: pointer;">Tôi
-                                        nộp hồ sơ thay cho người khác (Được ủy quyền)</label>
-                                </div>
 
-                                <div id="authSection"
-                                    class="d-none mt-3 ps-4 border-start border-3 border-primary animate-fade-in">
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted small text-uppercase fw-bold">Nhập Số CCCD
-                                            người
-                                            ủy quyền</label>
-                                        <div class="input-group" style="max-width: 450px;">
-                                            <input type="text" class="form-control form-control-lg bg-light"
-                                                id="authorizerCccd" placeholder="00123456789">
-                                            <button class="btn btn-outline-primary px-4" type="button"
-                                                onclick="lookupAuthorizer()">
-                                                <i class="bi bi-search me-1"></i> Tra cứu
-                                            </button>
-                                            <div class="invalid-feedback">Vui lòng nhập số CCCD hợp lệ và thực hiện tra
-                                                cứu.
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="authResult" class="d-none mb-2">
-                                        <div class="text-success fw-bold d-flex align-items-center">
-                                            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                                            <span>Hợp lệ: Ông NGUYỄN VĂN HÙNG (Chủ hộ)</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="small text-muted fst-italic">
-                                        <i class="bi bi-exclamation-circle me-1"></i> Yêu cầu đính kèm Giấy ủy quyền hợp
-                                        pháp ở Bước 3.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
@@ -214,16 +175,10 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted small text-uppercase fw-bold">Số CCCD/Định
                                     danh</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="relativeIdNumber"
-                                        id="searchCccdApplicant"
-                                        th:value="${opsDossier.formData != null ? opsDossier.formData['relativeIdNumber'] : ''}"
-                                        placeholder="Nhập số CCCD..." required>
-                                    <button class="btn btn-outline-primary" type="button" onclick="autoFillApplicant()">
-                                        <i class="bi bi-search"></i>
-                                    </button>
-                                    <div class="invalid-feedback">Vui lòng nhập số CCCD.</div>
-                                </div>
+                                <input type="text" class="form-control bg-light" name="relativeIdNumber"
+                                    id="searchCccdApplicant"
+                                    th:value="${opsDossier.formData != null ? opsDossier.formData['relativeIdNumber'] : ''}"
+                                    readonly required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-muted small text-uppercase fw-bold">Ngày sinh</label>
@@ -235,7 +190,8 @@
                                 <label class="form-label text-muted small text-uppercase fw-bold">Điện thoại</label>
                                 <input type="text" class="form-control bg-light" name="relativePhoneNumber"
                                     th:value="${opsDossier.formData != null ? opsDossier.formData['relativePhoneNumber'] : ''}"
-                                    required>
+                                    pattern="0[0-9]{9}" placeholder="0905123456" required>
+                                <div class="invalid-feedback">Số điện thoại phải có 10 số và bắt đầu bằng số 0.</div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label text-muted small text-uppercase fw-bold">Địa chỉ thường
@@ -248,6 +204,7 @@
                                 <label class="form-label text-muted small text-uppercase fw-bold">Mối quan hệ với người
                                     mất</label>
                                 <select class="form-select" name="relativeRelationship" required>
+                                    <option value="">-- Chọn Mối quan hệ --</option>
                                     <option value="con">Con</option>
                                     <option value="vo_chong">Vợ/Chồng</option>
                                     <option value="cha_me">Cha/Mẹ</option>
@@ -279,23 +236,28 @@
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="searchCccdDeceased"
                                             placeholder="Nhập số CCCD để tự động điền...">
+                                        <input type="hidden" name="deceasedIdNumber" id="deceasedIdNumber">
                                         <button class="btn btn-primary" type="button" onclick="autoFillDeceased()">
                                             <i class="bi bi-search"></i> Kiểm tra & Điền
                                         </button>
                                         <div class="invalid-feedback">Không tìm thấy công dân hoặc CCCD không hợp lệ.
                                         </div>
                                     </div>
+                                    <!-- Relationship Check Result -->
+                                    <div id="relationCheckResult" class="mt-2 small"></div>
+                                    <input type="hidden" id="isRelationValid" value="false">
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label required">Họ và tên người mất <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" class="form-control text-uppercase" name="deceasedFullName"
-                                        placeholder="VD: NGUYỄN VĂN A" required>
+                                    <input type="text" class="form-control text-uppercase bg-light"
+                                        name="deceasedFullName" placeholder="VD: NGUYỄN VĂN A" readonly required>
                                     <div class="invalid-feedback">Vui lòng nhập họ tên người mất.</div>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Giới tính <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="gender" required>
+                                    <select class="form-select bg-light" name="gender" style="pointer-events: none;"
+                                        required>
                                         <option value="MALE">Nam</option>
                                         <option value="FEMALE">Nữ</option>
                                     </select>
@@ -303,18 +265,21 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="dateOfBirth" required>
+                                    <input type="date" class="form-control bg-light" name="dateOfBirth" readonly
+                                        required>
                                     <div class="invalid-feedback">Vui lòng nhập ngày sinh.</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Dân tộc</label>
-                                    <input type="text" class="form-control" name="ethnicity" value="Kinh">
+                                    <input type="text" class="form-control bg-light" name="ethnicity" value="Kinh"
+                                        readonly>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Nơi thường trú cuối cùng <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="lastResidence"
-                                        placeholder="VD: Tổ 5, Phường Hòa Hiệp Bắc, Liên Chiểu, Đà Nẵng" required>
+                                    <input type="text" class="form-control bg-light" name="lastResidence"
+                                        placeholder="VD: Tổ 5, Phường Hòa Hiệp Bắc, Liên Chiểu, Đà Nẵng" readonly
+                                        required>
                                     <div class="invalid-feedback">Vui lòng nhập nơi thường trú cuối cùng.</div>
                                 </div>
                                 <div class="col-12">
@@ -348,7 +313,18 @@
                     <div id="step3" class="d-none">
                         <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Thành phần Hồ sơ</h5>
 
-                        <div class="border border-2 border-dashed p-5 text-center bg-light rounded-3 mb-4">
+                        <div class="alert alert-warning border-0 shadow-sm-soft mb-4">
+                            <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2"></i>Danh mục tài liệu bắt buộc:
+                            </h6>
+                            <ul class="mb-0 small ps-3">
+                                <li id="reqDeathNotice">Giấy báo tử hoặc giấy tờ thay thế (Bản chính/Bản chụp hơp lệ)
+                                    <span class="text-danger">*</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="border border-2 border-dashed p-5 text-center bg-light rounded-3 mb-4 transition-all"
+                            id="dropZone" style="border-color: #dee2e6 !important;">
                             <i class="bi bi-cloud-arrow-up text-secondary" style="font-size: 3rem;"></i>
                             <h6 class="mt-3 fw-bold">Kéo thả file vào đây hoặc Chọn file từ máy</h6>
                             <p class="small text-muted">Hỗ trợ PDF, JPG, PNG. Tối đa 10MB/file.</p>
@@ -356,37 +332,20 @@
                             <div class="d-flex justify-content-center gap-2 mt-3">
                                 <input type="file" id="fileInput" name="files" multiple style="display: none;"
                                     onchange="handleFileSelect(this)">
-                                <button class="btn btn-primary btn-sm rounded-pill px-3" type="button"
+                                <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" type="button"
                                     onclick="document.getElementById('fileInput').click()">
                                     <i class="bi bi-folder2-open me-1"></i>Chọn file
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm">
                                     <i class="bi bi-safe me-1"></i>Kho dữ liệu (Vault)
                                 </button>
                             </div>
                         </div>
 
                         <!-- File List -->
-                        <div class="list-group" id="fileList">
+                        <div class="list-group shadow-sm-soft rounded-3" id="fileList">
                             <!-- Files will be added here dynamically -->
-
-                            <!-- AUTHORIZATION FILE (Hidden by default) -->
-                            <div id="authFileItem"
-                                class="list-group-item d-flex justify-content-between align-items-center d-none animate-fade-in bg-light-warning">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-lock2-fill text-warning fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold text-dark">
-                                            Giay-uy-quyen-hoac-Minh-chung-quan-he.pdf
-                                            <span class="text-danger">*</span>
-                                        </h6>
-                                        <small class="text-secondary fst-italic">Bắt buộc đối với hồ sơ nộp thay</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
-                            </div>
                         </div>
-
                     </div>
 
                     <!-- STEP 4: PAYMENT & SUBMIT -->
@@ -472,10 +431,70 @@
         </div>
     </footer>
 
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary">Xác nhận nộp hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-question-circle-fill text-warning display-4 mb-3"></i>
+                    <p class="mb-0 fs-5">Bạn có chắc chắn muốn nộp hồ sơ này không?</p>
+                    <p class="text-muted small mt-2">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Xem lại</button>
+                    <button type="button" class="btn btn-primary px-4 fw-bold" onclick="onModalConfirm()">
+                        <i class="bi bi-check-circle me-2"></i>Đồng ý nộp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JS Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentStep = 1;
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+            let bgClass = 'bg-primary';
+            let icon = 'bi-info-circle';
+
+            if (type === 'success') {
+                bgClass = 'bg-success';
+                icon = 'bi-check-circle-fill';
+            } else if (type === 'error' || type === 'danger') {
+                bgClass = 'bg-danger';
+                icon = 'bi-exclamation-triangle-fill';
+            } else if (type === 'warning') {
+                bgClass = 'bg-warning text-dark';
+                icon = 'bi-exclamation-circle-fill';
+            }
+
+            const html = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            <i class="bi ${icon} fs-5 me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', html);
+            const toastEl = document.getElementById(toastId);
+            const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            bsToast.show();
+            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+        }
 
         // ON LOAD: Auto-fill Applicant Info
         document.addEventListener('DOMContentLoaded', async () => {
@@ -486,17 +505,15 @@
                     // Fill Applicant Info
                     document.querySelector('input[name="relativeFullName"]').value = data.fullName || '';
                     document.querySelector('input[name="relativeDateOfBirth"]').value = data.dob ? new Date(data.dob).toLocaleDateString('en-GB') : '';
-                    document.querySelector('input[name="relativePhoneNumber"]').value = data.phoneNumber || ''; // Expecting phoneNumber in MockCitizen
+                    document.querySelector('input[name="relativePhoneNumber"]').value = data.phoneNumber || '';
                     document.querySelector('input[name="relativeAddress"]').value = data.permanentAddress || '';
 
                     // Fill ID if exists
                     const cccdInput = document.getElementById('searchCccdApplicant');
                     if (cccdInput) cccdInput.value = data.cccd || '';
-
-                    console.log("Auto-filled applicant info for: " + data.fullName);
                 }
             } catch (e) {
-                console.log("User not logged in or auto-fill failed", e);
+                console.error("User not logged in or auto-fill failed", e);
             }
         });
 
@@ -522,6 +539,22 @@
             // Reset validations
             stepEl.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
+            // --- New relationship check for Step 2 ---
+            if (step === 2) {
+                const deceasedId = document.getElementById('searchCccdDeceased').value;
+                const isValidRelation = document.getElementById('isRelationValid').value;
+
+                if (!deceasedId) {
+                    isValid = false;
+                    showToast("Vui lòng nhập và tra cứu thông tin Công dân (Người mất).", 'warning');
+                } else if (isValidRelation === "false") {
+                    isValid = false;
+                    // Requirement: "phải có mối quan hệ" -> Strict
+                    showToast("Bắt buộc: Người đi khai phải có mối quan hệ (Cùng hộ khẩu) với Người mất", 'error');
+                }
+            }
+            // --- End new relationship check ---
+
             const inputs = stepEl.querySelectorAll('input[required], select[required], textarea[required]');
             for (let input of inputs) {
                 // Check validity (HTML5)
@@ -537,13 +570,45 @@
                 }
             }
 
-            // Specific validation for Authorizer CCCD in Step 1
-            if (step === 1 && document.getElementById('authToggle').checked) {
-                const authCccd = document.getElementById('authorizerCccd');
-                if (!authCccd.value.trim()) {
-                    authCccd.classList.add('is-invalid');
-                    if (isValid) authCccd.focus();
+
+
+            // Step 2 Logic Validation: Dates
+            if (step === 2) {
+                const dobInput = document.querySelector('input[name="dateOfBirth"]');
+                const dodInput = document.querySelector('input[name="dateOfDeath"]');
+                const dob = new Date(dobInput.value);
+                const dod = new Date(dodInput.value);
+                const today = new Date();
+
+                if (dod > today) {
+                    dodInput.classList.add('is-invalid');
+                    showToast("Ngày chết không thể ở tương lai!", 'warning');
                     isValid = false;
+                }
+
+                if (dob > today) {
+                    dobInput.classList.add('is-invalid');
+                    showToast("Ngày sinh không thể ở tương lai!", 'warning');
+                    isValid = false;
+                }
+
+                if (dod <= dob) {
+                    dodInput.classList.add('is-invalid');
+                    showToast("Ngày chết phải sau ngày sinh!", 'warning');
+                    isValid = false;
+                }
+            }
+
+            // --- Validation for Step 3: Files ---
+            if (step === 3) {
+                const fileCount = fileStore.files.length;
+
+                if (fileCount === 0) {
+                    showToast("Vui lòng tải lên tài liệu bắt buộc (Giấy báo tử)!", 'warning');
+                    document.getElementById('dropZone').style.borderColor = '#dc3545';
+                    isValid = false;
+                } else {
+                    document.getElementById('dropZone').style.borderColor = '#dee2e6';
                 }
             }
 
@@ -585,7 +650,7 @@
                 btnNext.classList.remove('btn-primary');
                 btnNext.classList.add('btn-success');
                 btnNext.onclick = function () {
-                    submitDossier();
+                    showConfirmModal();
                 };
             } else {
                 btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
@@ -595,92 +660,152 @@
             }
         }
 
-        // AUTOFILL LOGIC
+        // --- CITIZEN AUTO-FILL ---
+        // Shared function to fetch citizen data
+        async function fetchCitizenData(cccd) {
+            try {
+                const response = await fetch(`/api/autofill/citizen/${cccd}`);
+                if (response.ok) {
+                    return await response.json();
+                }
+                return null;
+            } catch (error) {
+                console.error("Lỗi khi gọi API:", error);
+                return null;
+            }
+        }
+
+        // Check relationship with deceased
+        async function checkRelationship(deceasedCccd) {
+            const resultDiv = document.getElementById('relationCheckResult');
+            const isValidInput = document.getElementById('isRelationValid');
+
+            resultDiv.innerHTML = '<span class="text-primary"><i class="bi bi-hourglass-split"></i> Đang kiểm tra mối quan hệ...</span>';
+
+            try {
+                const response = await fetch(`/api/autofill/relation?targetCccd=${deceasedCccd}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.valid) {
+                        resultDiv.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Xác thực quan hệ: ${result.detail} (${result.authorizedPersonName})</span>`;
+                        isValidInput.value = "true";
+                    } else {
+                        resultDiv.innerHTML = `<span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo: ${result.message}</span>`;
+                        isValidInput.value = "false";
+                    }
+                } else {
+                    resultDiv.innerHTML = '<span class="text-warning">Không thể kiểm tra mối quan hệ lúc này.</span>';
+                    isValidInput.value = "true"; // Allow manual bypass if API fails? Strict: "false"
+                }
+            } catch (error) {
+                console.error("Check relation error:", error);
+                resultDiv.innerHTML = '';
+            }
+        }
+
         async function autoFillDeceased() {
-            const cccdInput = document.getElementById('searchCccdDeceased');
-            const cccd = cccdInput.value.trim();
+            const cccdInput = document.getElementById("searchCccdDeceased");
+            const cccd = cccdInput.value;
+            const deceasedIdInput = document.getElementById("deceasedIdNumber");
 
-            // Reset
-            cccdInput.classList.remove('is-invalid', 'is-valid');
-
-            if (!cccd) {
-                cccdInput.classList.add('is-invalid');
+            if (!cccd || cccd.length !== 12) {
+                showToast("Vui lòng nhập số CCCD hợp lệ (12 số).", 'warning');
                 return;
             }
 
-            try {
-                const response = await fetch(`/api/autofill/citizen/${cccd}`);
-                if (response.ok) {
-                    const data = await response.json();
-
-                    // Mapping fields
-                    document.querySelector('input[name="deceasedFullName"]').value = data.fullName || '';
-                    document.querySelector('input[name="dateOfBirth"]').value = data.dob || '';
-                    document.querySelector('select[name="gender"]').value = data.gender || 'MALE';
-                    document.querySelector('input[name="ethnicity"]').value = data.ethnicGroup || 'Kinh';
-                    document.querySelector('input[name="lastResidence"]').value = data.permanentAddress || '';
-
-                    cccdInput.classList.add('is-valid');
-                    // alert("Đã tìm thấy thông tin công dân: " + data.fullName);
-                } else {
-                    cccdInput.classList.add('is-invalid');
-                    // Clear fields if not found? Maybe better to leave them so user can type.
-                }
-            } catch (error) {
-                console.error(error);
-                cccdInput.classList.add('is-invalid');
-            }
-        }
-        async function autoFillApplicant() {
-            // Use the ID input value if no separate search input
-            const cccdInput = document.getElementById('searchCccdApplicant');
-            // If the ID input is the search input itself:
-            const cccd = cccdInput ? cccdInput.value.trim() : document.querySelector('input[name="relativeIdNumber"]').value.trim();
-
-            // Reset
-            if (cccdInput) cccdInput.classList.remove('is-invalid', 'is-valid');
-
-            if (!cccd) {
-                if (cccdInput) cccdInput.classList.add('is-invalid');
+            // CHECK: Cannot declare oneself as deceased
+            const applicantCccd = document.getElementById('searchCccdApplicant').value.trim();
+            if (cccd === applicantCccd) {
+                showToast("Không thể đăng ký khai tử cho chính mình (CCCD trùng với người đi khai).", 'error');
+                cccdInput.value = '';
                 return;
             }
 
-            try {
-                const response = await fetch(`/api/autofill/citizen/${cccd}`);
-                if (response.ok) {
-                    const data = await response.json();
+            const data = await fetchCitizenData(cccd);
 
-                    document.querySelector('input[name="relativeFullName"]').value = data.fullName || '';
-                    // Format DOB if needed, assuming input type=text for now based on previous Step
-                    document.querySelector('input[name="relativeDateOfBirth"]').value = data.dob ? new Date(data.dob).toLocaleDateString('en-GB') : '';
-                    document.querySelector('input[name="relativePhoneNumber"]').value = '0905123456';
-                    document.querySelector('input[name="relativeAddress"]').value = data.permanentAddress || '';
+            if (data) {
+                // NEW VALIDATION: Check if citizen is already deceased
+                if (data.isDeceased) {
+                    showToast("Cảnh báo: Công dân này đã có trạng thái 'Đã mất' trên hệ thống CSDL. Không thể thực hiện đăng ký khai tử.", 'error');
 
-                    if (cccdInput) cccdInput.classList.add('is-valid');
-                } else {
-                    if (cccdInput) cccdInput.classList.add('is-invalid');
+                    // Clear fields if they were previously filled or ensure they are empty
+                    document.querySelector('[name="deceasedFullName"]').value = '';
+                    document.querySelector('[name="gender"]').value = 'MALE';
+                    document.querySelector('[name="dateOfBirth"]').value = '';
+                    document.querySelector('[name="ethnicity"]').value = 'Kinh';
+                    document.querySelector('[name="lastResidence"]').value = '';
+                    if (deceasedIdInput) deceasedIdInput.value = '';
+
+                    document.getElementById('relationCheckResult').innerHTML = '';
+                    document.getElementById('isRelationValid').value = "false";
+                    return;
                 }
-            } catch (error) {
-                console.error(error);
-                if (cccdInput) cccdInput.classList.add('is-invalid');
-            }
-        }
 
-        // AUTHORIZATION LOGIC
-        function toggleAuthorization() {
-            const isChecked = document.getElementById('authToggle').checked;
-            const section = document.getElementById('authSection');
-            const authFileItem = document.getElementById('authFileItem');
+                // Fill fields
+                document.querySelector('[name="deceasedFullName"]').value = data.fullName || '';
+                document.querySelector('[name="gender"]').value = data.gender || 'MALE';
+                document.querySelector('[name="dateOfBirth"]').value = data.dob || '';
+                document.querySelector('[name="ethnicity"]').value = data.ethnicGroup || 'Kinh';
+                document.querySelector('[name="lastResidence"]').value = data.permanentAddress || '';
 
-            if (isChecked) {
-                section.classList.remove('d-none');
-                if (authFileItem) authFileItem.classList.remove('d-none');
-                // Auto focus for better UX
-                setTimeout(() => document.getElementById('authorizerCccd').focus(), 100);
+                // Set Hidden ID
+                if (deceasedIdInput) deceasedIdInput.value = cccd;
+
+                // Trigger Validation Check
+                checkRelationship(cccd);
+
+                // Toast
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed bottom-0 end-0 p-3';
+                toast.style.zIndex = '1100';
+                toast.innerHTML = `
+            <div class="toast show align-items-center text-white bg-success border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle me-2"></i>Đã tìm thấy thông tin công dân!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+
             } else {
-                section.classList.add('d-none');
-                if (authFileItem) authFileItem.classList.add('d-none');
+                showToast("Không tìm thấy thông tin công dân với CCCD này trong CSDL.", 'error');
+                // Reset validation if not found
+                document.getElementById('relationCheckResult').innerHTML = '';
+                document.getElementById('isRelationValid').value = "false";
             }
+        }
+
+        async function autoFillApplicant() {
+            const input = document.getElementById('searchCccdApplicant');
+            const data = await fetchCitizenData(input.value.trim());
+
+            input.classList.toggle('is-valid', !!data);
+            input.classList.toggle('is-invalid', !data);
+
+            if (data) {
+                document.querySelector('input[name="relativeFullName"]').value = data.fullName || '';
+                document.querySelector('input[name="relativeDateOfBirth"]').value = data.dob ? new Date(data.dob).toLocaleDateString('en-GB') : '';
+                document.querySelector('input[name="relativePhoneNumber"]').value = data.phoneNumber || '';
+                document.querySelector('input[name="relativeAddress"]').value = data.permanentAddress || '';
+            }
+        }
+
+
+
+        // CONFIRMATION MODAL LOGIC
+        function showConfirmModal() {
+            const modal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+            modal.show();
+        }
+
+        function onModalConfirm() {
+            const modalEl = document.getElementById('confirmSubmitModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            submitDossier();
         }
 
         async function submitDossier() {
@@ -712,86 +837,21 @@
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    window.location.href = '/citizen/tracking?newDossier=true';
+                    window.location.href = '/citizen/hoso';
                 } else {
-                    alert("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'));
+                    showToast("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'), 'error');
                     btnNext.disabled = false;
                     btnNext.innerHTML = originalText;
                 }
             } catch (error) {
                 console.error('Submission error:', error);
-                alert("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.");
+                showToast("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.", 'error');
                 btnNext.disabled = false;
                 btnNext.innerHTML = originalText;
             }
         }
 
-        async function lookupAuthorizer() {
-            const cccdInput = document.getElementById('authorizerCccd');
-            const cccd = cccdInput.value.trim();
-            const resultDiv = document.getElementById('authResult');
 
-            // Reset
-            cccdInput.classList.remove('is-invalid', 'is-valid');
-
-            if (!cccd) {
-                cccdInput.classList.add('is-invalid');
-                cccdInput.focus();
-                return;
-            }
-
-            // Spinner
-            const btn = document.querySelector('button[onclick="lookupAuthorizer()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang kiểm tra...';
-            btn.disabled = true;
-            resultDiv.classList.add('d-none');
-
-            try {
-                const response = await fetch(`/api/autofill/relation?targetCccd=${cccd}`);
-                if (response.ok) {
-                    const data = await response.json();
-
-                    if (data.valid) {
-                        cccdInput.classList.add('is-valid');
-                        // Success: Show relationship
-                        resultDiv.innerHTML = `
-                            <div class="text-success fw-bold d-flex align-items-center">
-                                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                                <div>
-                                    <span>Hợp lệ: Ông/Bà ${data.authorizedPersonName}</span><br>
-                                    <small class="text-secondary">${data.message}</small>
-                                </div>
-                            </div>
-                        `;
-                        resultDiv.classList.remove('d-none');
-                    } else {
-                        // Invalid relation
-                        cccdInput.classList.add('is-invalid');
-                        resultDiv.innerHTML = `
-                            <div class="text-danger fw-bold d-flex align-items-center">
-                                <i class="bi bi-x-circle-fill me-2 fs-5"></i>
-                                <span>${data.message}</span>
-                            </div>
-                        `;
-                        resultDiv.classList.remove('d-none');
-                    }
-                } else if (response.status === 401 || response.status === 403) {
-                    alert("Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!");
-                    window.location.href = '/login/citizen'; // Redirect if needed, or just alert
-                } else {
-                    cccdInput.classList.add('is-invalid');
-                    alert(`Lỗi khi kiểm tra thông tin! (Mã lỗi: ${response.status})`);
-                }
-            } catch (error) {
-                console.error(error);
-                cccdInput.classList.add('is-invalid');
-                alert("Có lỗi xảy ra khi gọi API!");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
 
         // --- FILE HANDLING LOGIC ---
         // Global array to store selected files
@@ -821,12 +881,8 @@
 
         function renderFileList() {
             const fileList = document.getElementById('fileList');
-            // Clear current list items EXCEPT authFileItem
-            Array.from(fileList.children).forEach(child => {
-                if (child.id !== 'authFileItem') {
-                    child.remove();
-                }
-            });
+            // Clear current list items
+            fileList.innerHTML = '';
 
             // Re-render from fileStore
             Array.from(fileStore.files).forEach((file, index) => {
@@ -845,13 +901,7 @@
                     </button>
                  `;
 
-                // Insert before authItem
-                const authItem = document.getElementById('authFileItem');
-                if (authItem) {
-                    fileList.insertBefore(item, authItem);
-                } else {
-                    fileList.appendChild(item);
-                }
+                fileList.appendChild(item);
             });
         }
 
