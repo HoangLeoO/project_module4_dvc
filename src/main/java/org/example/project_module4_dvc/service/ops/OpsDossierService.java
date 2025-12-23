@@ -344,7 +344,6 @@ public class OpsDossierService implements IOpsDossierService {
                 .service(service)
                 .applicant(applicant)
                 .formData(formData)
-                .note(internalNote)
                 .build();
 
         opsDossierRepository.save(dossier);

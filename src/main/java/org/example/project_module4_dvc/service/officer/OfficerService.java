@@ -113,7 +113,11 @@ public class OfficerService implements IOfficerService {
             OpsDossier saved = opsDossierRepository.save(opsDossier);
 
             if ("PENDING".equals(status)) {
-                recordStepCompletion(saved, specialistId, "ACCEPTED", oldStatus, "PENDING", "Hồ sơ đã được tiếp nhận");
+                recordStepCompletion(saved, specialistId, "ACCEPTED", oldStatus, "PENDING", "Hồ sơ đã được tiếp nhận",
+                        1);
+            } else if ("RESULT_RETURNED".equals(status)) {
+                recordStepCompletion(saved, specialistId, "TRA_KET_QUA", oldStatus, "RESULT_RETURNED",
+                        "Hồ sơ đã được trả kết quả cho công dân", 4);
             }
 
             // Real-time updates
@@ -198,11 +202,12 @@ public class OfficerService implements IOfficerService {
                         .build());
 
         // 4. Record Workflow Step Completion (Step 1: Tiếp nhận hồ sơ)
-        recordStepCompletion(saved, specialistId, "ASSIGNED", oldStatus, "PENDING", "Đã tiếp nhận và phân công xử lý");
+        recordStepCompletion(saved, specialistId, "ASSIGNED", oldStatus, "PENDING", "Đã tiếp nhận và phân công xử lý",
+                1);
     }
 
     private void recordStepCompletion(OpsDossier dossier, Long actorId, String action, String prevStatus,
-            String nextStatus, String comments) {
+            String nextStatus, String comments, int stepOrder) {
         // Create Log
         OpsDossierLog log = OpsDossierLog.builder()
                 .dossier(dossier)
@@ -214,9 +219,10 @@ public class OfficerService implements IOfficerService {
                 .build();
         OpsDossierLog savedLog = opsDossierLogRepository.save(log);
 
-        // Find Step 1 for this service
+        // Find Step for this service
         catWorkflowStepRepository.findAll().stream()
-                .filter(s -> s.getService().getId().equals(dossier.getService().getId()) && s.getStepOrder() == 1)
+                .filter(s -> s.getService().getId().equals(dossier.getService().getId())
+                        && s.getStepOrder() == stepOrder)
                 .findFirst()
                 .ifPresent(step -> {
                     OpsLogWorkflowStep lws = new OpsLogWorkflowStep();
@@ -227,4 +233,5 @@ public class OfficerService implements IOfficerService {
                     opsLogWorkflowStepRepository.save(lws);
                 });
     }
+
 }

@@ -77,7 +77,4 @@ public class OpsDossier {
 
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
-
-    @Column(name = "note", columnDefinition = "TEXT")
-    private String note;
 }

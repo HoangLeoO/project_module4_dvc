@@ -43,10 +43,15 @@
                             <span th:if="${d.dossierStatus == 'PENDING'}"
                                 class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-2 rounded-pill fw-bold">Đang
                                 xử lý</span>
+                            <span th:if="${d.dossierStatus == 'VERIFIED'}"
+                                class="badge bg-purple bg-opacity-10 text-purple border border-purple px-3 py-2 rounded-pill fw-bold"
+                                style="--bs-bg-opacity: .1; background-color: rgba(111, 66, 193, 0.1); color: #6f42c1; border-color: #6f42c1;">Đã
+                                thẩm định</span>
                             <span th:if="${d.dossierStatus == 'NEED_SUPPLEMENT'}"
                                 class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill fw-bold">Cần
                                 bổ sung</span>
-                            <span th:if="${d.dossierStatus == 'APPROVED'}"
+                            <span
+                                th:if="${d.dossierStatus == 'APPROVED' or d.dossierStatus == 'COMPLETED' or d.dossierStatus == 'RESULT_RETURNED'}"
                                 class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill fw-bold">Đã
                                 hoàn tất</span>
                             <span th:if="${d.dossierStatus == 'REJECTED'}"
@@ -159,6 +164,35 @@
                     </div>
                 </div>
 
+                <!-- Uploaded Files -->
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4"
+                    th:if="${d.dossierFiles != null and !d.dossierFiles.isEmpty()}">
+                    <h5 class="fw-bold text-dark mb-4 border-start border-4 border-warning ps-3">Tệp tin đính kèm</h5>
+                    <div class="list-group list-group-flush">
+                        <div th:each="file : ${d.dossierFiles}"
+                            class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-light">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i th:if="${file.fileType != null and file.fileType.contains('image')}"
+                                        class="bi bi-file-earmark-image fs-4 text-primary"></i>
+                                    <i th:if="${file.fileType != null and file.fileType.contains('pdf')}"
+                                        class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
+                                    <i th:if="${file.fileType == null or (!file.fileType.contains('image') and !file.fileType.contains('pdf'))}"
+                                        class="bi bi-file-earmark fs-4 text-secondary"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark small" th:text="${file.fileName}">filename.jpg</div>
+                                    <div class="text-muted smallest" th:text="${file.fileType}">image/jpeg</div>
+                                </div>
+                            </div>
+                            <a th:href="@{'/officer/dashboard/view-file/' + ${file.id}}" target="_blank"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                <i class="bi bi-eye me-1"></i>Xem tệp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- History Timeline -->
                 <div class="card card-modern border-0 shadow-sm p-4 mb-4">
                     <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Lịch sử xử lý</h5>
@@ -175,9 +209,12 @@
                                     style="left: -6px; top: 5px; font-size: 10px;"></i>
                                 <h6 class="fw-bold text-dark mb-1" th:switch="${log.action}">
                                     <span th:case="'NOP_HO_SO'">Nộp hồ sơ</span>
+                                    <span th:case="'ACCEPTED'">Tiếp nhận hồ sơ</span>
+                                    <span th:case="'ASSIGNED'">Phân công xử lý</span>
                                     <span th:case="'CHUYEN_BUOC'">Chuyển bước xử lý</span>
-                                    <span th:case="'TRINH_KY'">Trình ký</span>
-                                    <span th:case="'PHE_DUYET'">Phê duyệt hồ sơ</span>
+                                    <span th:case="'THAM_DINH'">Thẩm định hồ sơ</span>
+                                    <span th:case="'TRINH_KY'">Trình ký phê duyệt</span>
+                                    <span th:case="'PHE_DUYET'">Lãnh đạo phê duyệt</span>
                                     <span th:case="'YEU_CAU_BO_SUNG'">Yêu cầu bổ sung</span>
                                     <span th:case="'TRA_KET_QUA'">Trả kết quả</span>
                                     <span th:case="'TU_CHOI'">Từ chối hồ sơ</span>
