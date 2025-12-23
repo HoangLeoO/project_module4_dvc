@@ -336,31 +336,16 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             """)
     long countCompletedOnTime();
 
-    // đếm tổng số hồ sơ
-    @Query("""
-                SELECT COUNT(d)
-                FROM OpsDossier d
-                WHERE d.dossierStatus <> 'REJECTED'
-            """)
-    long countTotalForKpi();
+    // tìm hồ sơ theo trạng thái
+    List<OpsDossier> findByDossierStatus(String status);
 
-    // đếm số hồ sơ hoàn thành đúng hạn
-    @Query("""
-                SELECT COUNT(d)
-                FROM OpsDossier d
-                WHERE
-                    (
-                        d.dossierStatus = 'COMPLETED'
-                        AND d.finishDate IS NOT NULL
-                        AND d.dueDate IS NOT NULL
-                        AND d.finishDate <= d.dueDate
-                    )
-                    OR
-                    (
-                        d.dossierStatus <> 'COMPLETED'
-                        AND d.dueDate IS NOT NULL
-                        AND d.dueDate >= CURRENT_TIMESTAMP
-                    )
-            """)
-    long countOnTimeForKpi();
+    // tìm hồ sơ theo người nộp
+    List<OpsDossier> findByApplicantId(Long applicantId);
+
+    // tìm hồ sơ theo cán bộ thụ lý hiện tại
+    List<OpsDossier> findByCurrentHandlerId(Long handlerId);
+
+    // tìm hồ sơ mới theo phòng ban nhận
+    @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus = 'NEW' AND d.receivingDept.id = ?1")
+    List<OpsDossier> findNewDossiersByDept(Long deptId);
 }
