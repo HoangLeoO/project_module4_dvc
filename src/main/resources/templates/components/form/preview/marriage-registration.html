@@ -1,19 +1,19 @@
 <div th:fragment="form-detail" class="document-preview font-times">
     <div class="text-center mb-4">
-        <h6 class="fw-bold fs-5 mb-0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
-        <div class="fw-bold small text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+        <h6 class="fw-bold fs-5 mb-0 text-uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold fs-5 text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
 
-        <h3 class="fw-bold text-danger mb-4">GIẤY CHỨNG NHẬN KẾT HÔN</h3>
+        <h3 class="fw-bold text-uppercase mb-4">GIẤY CHỨNG NHẬN KẾT HÔN</h3>
     </div>
 
-    <div class="" style="line-height: 1.6; border: 5px double #dc3545; padding: 20px;">
+    <div class="" style="line-height: 1.6; border: 5px double #000; padding: 20px;">
 
         <div class="row">
             <!-- HUSBAND -->
             <div class="col-6 border-end">
                 <div class="text-center fw-bold text-uppercase mb-3">Bên Vợ</div>
                 <div class="mb-2">
-                    Họ và tên: <br /> <span class="fw-bold text-uppercase text-primary fs-5"
+                    Họ và tên: <br /> <span class="fw-bold text-uppercase fs-5"
                         th:text="${formData.wifeFullName}"></span>
                 </div>
                 <div class="mb-2">
@@ -37,7 +37,7 @@
             <div class="col-6">
                 <div class="text-center fw-bold text-uppercase mb-3">Bên Chồng</div>
                 <div class="mb-2">
-                    Họ và tên: <br /> <span class="fw-bold text-uppercase text-primary fs-5"
+                    Họ và tên: <br /> <span class="fw-bold text-uppercase fs-5"
                         th:text="${formData.husbandFullName}"></span>
                 </div>
                 <div class="mb-2">

@@ -53,7 +53,8 @@ public class PortalController {
     @Autowired
     private SysDepartmentService sysDepartmentService;
 
-    @GetMapping("service/death/{serviceCode}")
+
+    @GetMapping("services/death/{serviceCode}")
     public String death(Model mode, @PathVariable String serviceCode) {
         OpsDossier opsDossier = new OpsDossier();
 
@@ -72,22 +73,22 @@ public class PortalController {
                         formData.put("relativeDateOfBirth",
                                 DateTimeFormatter.ofPattern("dd/MM/yyyy").format(citizen.getDob()));
                     }
-                    formData.put("relativePhoneNumber", "123456789"); // citizen.getPhoneNumber() does not exist in
-                                                                      // MockCitizen
+                    formData.put("relativePhoneNumber","123456789"); // citizen.getPhoneNumber() does not exist in MockCitizen
                     formData.put("relativeAddress", citizen.getPermanentAddress());
-
+                    
                     opsDossier.setFormData(formData);
                 }
             }
         }
-
+        
         mode.addAttribute("opsDossier", opsDossier);
         mode.addAttribute("serviceCode", serviceCode);
-        mode.addAttribute("sysDepartment", sysDepartmentService.getAll());
+        mode.addAttribute("sysDepartment",sysDepartmentService.getAllByLevel(2));
         return "pages/portal/portal-submit-death";
     }
 
-    @GetMapping("service/land/{serviceCode}")
+
+    @GetMapping("services/land/{serviceCode}")
     public String landHL(Model mode, @PathVariable String serviceCode) {
         OpsDossier opsDossier = new OpsDossier();
 
@@ -122,7 +123,7 @@ public class PortalController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
             if (userDetails == null) {
-                return ResponseEntity.status(401).body("Vui lòng đăng nhập");
+                return ResponseEntity.status(401).body(Map.of("status", "error", "message", "Vui lòng đăng nhập"));
             }
 
             String serviceIdStr = allParams.get("serviceId");
@@ -136,10 +137,9 @@ public class PortalController {
             }
 
             if (service == null) {
-                return ResponseEntity.badRequest()
-                        .body("Không tìm thấy thông tin Dịch vụ (serviceId hoặc serviceCode)");
+                return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Không tìm thấy thông tin Dịch vụ (serviceId hoặc serviceCode)"));
             }
-
+            
             NewDossierDTO dto = new NewDossierDTO();
             dto.setServiceId(BigInteger.valueOf(service.getId()));
 

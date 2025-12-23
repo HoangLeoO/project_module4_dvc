@@ -5,6 +5,7 @@ import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.example.project_module4_dvc.service.cat.ICatServiceService;
 import org.example.project_module4_dvc.service.learder.ILeaderService;
+import org.example.project_module4_dvc.service.pdf.PdfService;
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,8 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.example.project_module4_dvc.entity.cat.CatService;
+import org.example.project_module4_dvc.entity.ops.OpsDossierResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,9 @@ public class LeaderController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PdfService pdfService;
 
     public LeaderController(ILeaderService leaderService){
         this.leaderService = leaderService;
@@ -235,8 +241,7 @@ public class LeaderController {
         return "pages/04-leader/leader-approval";
     }
 
-    @Autowired
-    private org.example.project_module4_dvc.service.pdf.PdfService pdfService;
+
 
     @PostMapping("approval/{dossiersId}")
     public String approval(@PathVariable(name = "dossiersId",required = false) Long dossiersId, RedirectAttributes redirectAttributes,Principal principal){
@@ -248,8 +253,17 @@ public class LeaderController {
         try {
             OpsDossier dossier = opsDossierRepository.findById(dossiersId).orElse(null);
             if (dossier != null) {
-                String pdfPath = pdfService.generateDossierPdf(dossier);
+                String pdfPath = pdfService.generateSignedDossierPdf(dossier, sysUser.getFullName());
                 System.out.println("PDF Signed: " + pdfPath);
+
+                // Save Result
+                OpsDossierResult result = OpsDossierResult.builder()
+                        .dossier(dossier)
+                        .decisionNumber("QD-" + dossier.getDossierCode())
+                        .signerName(sysUser.getFullName())
+                        .eFileUrl("/uploads/pdf/" + new File(pdfPath).getName())
+                        .build();
+                leaderService.opsDossierResults(result);
             }
         } catch (Exception e) {
             e.printStackTrace();

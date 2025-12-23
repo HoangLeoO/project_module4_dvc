@@ -1,9 +1,9 @@
 <div th:fragment="form-detail" class="document-preview font-times">
     <div class="text-center mb-4">
-        <h6 class="fw-bold fs-5 mb-0">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
-        <div class="fw-bold small text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+        <h6 class="fw-bold fs-5 mb-0 text-uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold fs-5 text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
 
-        <h3 class="fw-bold text-danger mb-4">TRÍCH LỤC KHAI TỬ</h3>
+        <h3 class="fw-bold text-uppercase mb-4">TRÍCH LỤC KHAI TỬ</h3>
         <div class="fst-italic">(Bản sao)</div>
     </div>
 
@@ -35,7 +35,7 @@
         </div>
         <div class="row mb-2">
             <div class="col-12">
-                Số giấy tờ tùy thân: <span class="fw-bold" th:text="${formData['idNumber'] ?: '...'}"></span>
+                Số giấy tờ tùy thân: <span class="fw-bold" th:text="${formData['deceasedIdNumber'] ?: '...'}"></span>
             </div>
         </div>
 
@@ -68,7 +68,7 @@
         </div>
         <div class="row mb-2">
             <div class="col-12">
-                Nguyên nhân chết: <span class="fw-bold" th:text="${formData.causeOfDeath}"></span>
+                Nguyên nhân chết: <span class="fw-bold" th:text="${formData.deathReason}"></span>
             </div>
         </div>
 

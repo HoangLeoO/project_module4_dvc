@@ -8,4 +8,5 @@ public interface ISysDepartmentService {
     SysDepartment getDept();
 
     List<SysDepartment> getAll();
+    List<SysDepartment> getAllByLevel(Integer level);
 }

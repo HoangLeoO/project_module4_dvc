@@ -24,6 +24,9 @@ public class PdfService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private SimulatedDigitalSigningService signingService;
+
     private final String UPLOAD_DIR = "uploads/pdf";
 
     public String generateDossierPdf(OpsDossier dossier) throws Exception {
@@ -101,4 +104,9 @@ public class PdfService {
             default: return "components/common/no-data";
         }
     }
+    public String generateSignedDossierPdf(OpsDossier dossier, String signerName) throws Exception {
+        String pdfPath = generateDossierPdf(dossier);
+        return signingService.signPdf(pdfPath, signerName);
+    }
+
 }
