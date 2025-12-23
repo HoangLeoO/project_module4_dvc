@@ -21,9 +21,11 @@ public class BirthRegistrationFormDTO {
 
     private String fatherFullName;
     private String fatherIdNumber;
+    private Integer fatherYearOfBirth;
 
     private String motherFullName;
     private String motherIdNumber;
+    private Integer motherYearOfBirth;
 
     private String registeredAddress;
     private Boolean requestBhyt;

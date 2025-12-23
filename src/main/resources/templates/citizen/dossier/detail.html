@@ -59,6 +59,7 @@
                                 chối</span>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Process Timeline (Workflow Steps) -->
@@ -84,7 +85,7 @@
 
                 <!-- Form Data Display (Added) -->
                 <div class="card card-modern border-0 shadow-sm p-4 mb-4"
-                    th:if="${d.serviceCode == 'HK01_TRE' && d.formData != null}">
+                    th:if="${(d.serviceCode == 'HK01_TRE' || d.serviceCode == 'HS-KS-TRE') && d.formData != null}">
                     <h5 class="fw-bold text-dark mb-4 border-start border-4 border-success ps-3">Thông tin đăng ký khai
                         sinh
                     </h5>
@@ -144,6 +145,11 @@
                                             <span class="small text-muted">CCCD:</span>
                                             <span class="fw-bold" th:text="${d.formData['fatherIdNumber']}">---</span>
                                         </div>
+                                        <div>
+                                            <span class="small text-muted">Năm sinh:</span>
+                                            <span class="fw-bold"
+                                                th:text="${d.formData['fatherYearOfBirth']}">---</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -156,6 +162,11 @@
                                         <div>
                                             <span class="small text-muted">CCCD:</span>
                                             <span class="fw-bold" th:text="${d.formData['motherIdNumber']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">Năm sinh:</span>
+                                            <span class="fw-bold"
+                                                th:text="${d.formData['motherYearOfBirth']}">---</span>
                                         </div>
                                     </div>
                                 </div>
@@ -253,6 +264,20 @@
                         <span class="fw-bold font-monospace" th:text="${d.dossierCode}">G01-2405001</span>
                     </div>
                     <hr class="opacity-10">
+
+                    <!-- Result Section -->
+                    <div th:if="${d.resultFileUrl != null}"
+                        class="mt-4 p-3 bg-success bg-opacity-10 border border-success border-opacity-20 rounded-3 text-center">
+                        <div class="mb-2">
+                            <i class="bi bi-patch-check-fill text-success fs-3"></i>
+                        </div>
+                        <h6 class="fw-bold text-success mb-2">Hồ sơ đã có kết quả</h6>
+                        <p class="small text-muted mb-3">Bạn có thể xem và tải về bản tệp kết quả điện tử bên dưới.</p>
+                        <a th:href="@{'/officer/dashboard/view-file-by-path?path=' + ${d.resultFileUrl}}"
+                            target="_blank" class="btn btn-success rounded-pill w-100 fw-bold">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Xem kết quả PDF
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

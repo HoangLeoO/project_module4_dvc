@@ -50,10 +50,45 @@ public class OpsDossierService implements IOpsDossierService {
         return opsDossierRepository.searchDossiersByApplicant(userId, searchKeyword, searchStatus, pageable);
     }
 
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsDossierResultRepository opsDossierResultRepository;
+
+    @Autowired
+    private org.example.project_module4_dvc.repository.mock.MockCitizenRepository mockCitizenRepository;
+
     @Override
     public OpsDossierDetailDTO getDossierDetail(Long id) {
-        return opsDossierRepository.findDossierDetailById(id)
+        OpsDossierDetailDTO detail = opsDossierRepository.findDossierDetailById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ với ID: " + id));
+
+        // Lấy thông tin tệp PDF kết quả nếu có
+        opsDossierResultRepository.findByDossier_Id(id).ifPresent(result -> {
+            detail.setResultFileUrl(result.getEFileUrl());
+        });
+
+        // Fallback cho năm sinh cha mẹ nếu hồ sơ khai sinh thiếu thông tin này
+        if (detail.getServiceCode() != null
+                && (detail.getServiceCode().equals("HK01_TRE") || detail.getServiceCode().equals("HS-KS-TRE"))) {
+            Map<String, Object> formData = detail.getFormData();
+            if (formData != null) {
+                // Father
+                if (formData.get("fatherYearOfBirth") == null && formData.get("fatherIdNumber") != null) {
+                    mockCitizenRepository.findByCccd(formData.get("fatherIdNumber").toString()).ifPresent(c -> {
+                        if (c.getDob() != null)
+                            formData.put("fatherYearOfBirth", c.getDob().getYear());
+                    });
+                }
+                // Mother
+                if (formData.get("motherYearOfBirth") == null && formData.get("motherIdNumber") != null) {
+                    mockCitizenRepository.findByCccd(formData.get("motherIdNumber").toString()).ifPresent(c -> {
+                        if (c.getDob() != null)
+                            formData.put("motherYearOfBirth", c.getDob().getYear());
+                    });
+                }
+            }
+        }
+
+        return detail;
     }
 
     @Override
@@ -296,8 +331,10 @@ public class OpsDossierService implements IOpsDossierService {
         formDto.setPlaceOfBirth(request.getChildBirthPlace());
         formDto.setFatherFullName(request.getFatherName());
         formDto.setFatherIdNumber(request.getFatherId());
+        formDto.setFatherYearOfBirth(request.getFatherYearOfBirth());
         formDto.setMotherFullName(request.getMotherName());
         formDto.setMotherIdNumber(request.getMotherId());
+        formDto.setMotherYearOfBirth(request.getMotherYearOfBirth());
         formDto.setRegisteredAddress(request.getRegisteredAddress());
         formDto.setRequestBhyt(request.isRequestBhyt());
 
@@ -322,16 +359,6 @@ public class OpsDossierService implements IOpsDossierService {
 
             if (receivingDept == null) {
                 receivingDept = sysDepartmentRepository.findById(2L).orElse(null);
-            }
-        }
-
-        // Check Overdue Note
-        String internalNote = null;
-        if (request.getChildDob() != null) {
-            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(request.getChildDob(),
-                    java.time.LocalDate.now());
-            if (daysBetween > 60) {
-                internalNote = "CẢNH BÁO: Đăng ký khai sinh quá hạn (quá " + daysBetween + " ngày).";
             }
         }
 
@@ -365,4 +392,5 @@ public class OpsDossierService implements IOpsDossierService {
             websocketService.broadcastNewDossierToList(receivingDept.getDeptName(), dossier);
         }
     }
+
 }

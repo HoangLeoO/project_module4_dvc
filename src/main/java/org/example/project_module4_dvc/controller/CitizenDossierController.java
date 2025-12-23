@@ -63,9 +63,19 @@ public class CitizenDossierController {
         model.addAttribute("pageSize", size);
 
         model.addAttribute("newCount", statusCounts.getOrDefault("NEW", 0L));
-        model.addAttribute("processingCount", statusCounts.getOrDefault("PENDING", 0L));
+
+        // Processing = PENDING + VERIFIED
+        long processing = statusCounts.getOrDefault("PENDING", 0L) + statusCounts.getOrDefault("VERIFIED", 0L);
+        model.addAttribute("processingCount", processing);
+
         model.addAttribute("supplementCount", statusCounts.getOrDefault("NEED_SUPPLEMENT", 0L));
-        model.addAttribute("completedCount", statusCounts.getOrDefault("APPROVED", 0L));
+
+        // Completed = APPROVED + COMPLETED + RESULT_RETURNED
+        long completed = statusCounts.getOrDefault("APPROVED", 0L) +
+                statusCounts.getOrDefault("COMPLETED", 0L) +
+                statusCounts.getOrDefault("RESULT_RETURNED", 0L);
+        model.addAttribute("completedCount", completed);
+
         model.addAttribute("rejectedCount", statusCounts.getOrDefault("REJECTED", 0L));
         model.addAttribute("notificationsTop3", opsDossierService.getTop3MyNotifications(userId));
         model.addAttribute("activePage", "hoso");
@@ -113,7 +123,8 @@ public class CitizenDossierController {
             }
 
             // Nếu hồ sơ đã hoàn tất, đánh dấu tất cả bước đã xong
-            if ("APPROVED".equals(detail.getDossierStatus())) {
+            String status = detail.getDossierStatus();
+            if ("APPROVED".equals(status) || "COMPLETED".equals(status) || "RESULT_RETURNED".equals(status)) {
                 currentStepOrder = 999;
             }
 
@@ -215,4 +226,5 @@ public class CitizenDossierController {
             return "redirect:/citizen/submit-wizard";
         }
     }
+
 }

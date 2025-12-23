@@ -29,6 +29,7 @@ public class OpsDossierDetailDTO {
     private LocalDateTime finishDate;
     private Map<String, Object> formData;
     private String rejectionReason;
+    private String resultFileUrl;
 
     // === Thông tin người nộp hồ sơ (từ bảng sys_users) ===
     private Long applicantId;

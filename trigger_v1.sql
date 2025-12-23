@@ -74,10 +74,37 @@ BEGIN
         -- Ở đây ta giả định người thực hiện hành động chính là người được gán trong câu UPDATE (nếu hệ thống truyền vào)
         -- HOẶC tốt nhất là ứng dụng nên insert log. Trigger chỉ là giải pháp backup.
 
-        -- [REMOVED] INSERT into ops_dossier_logs moved to Java Services to avoid duplicates
-        -- and support ops_log_workflow_steps correctly.
-        NULL;
+        INSERT INTO ops_dossier_logs
+        (
+            dossier_id,
+            actor_id,
+            action,
+            prev_status,
+            next_status,
+            comments
+        )
+        VALUES
+            (
+                NEW.id,
+                -- Logic fix: Khi Approve, người thực hiện là người đang giữ hồ sơ (OLD handler) chứ không phải người nhận tiếp theo
+                -- Nhưng nếu câu update thay đổi cả handler, thì OLD.current_handler_id là người vừa xử lý xong.
+                -- Logic fix: Khi Approve, người thực hiện là người đang giữ hồ sơ (OLD handler) chứ không phải người nhận tiếp theo
+                -- Nhưng nếu câu update thay đổi cả handler, thì OLD.current_handler_id là người vừa xử lý xong.
+                -- Fix: Ensure actor_id is not null by coalescing
+                COALESCE(OLD.current_handler_id, NEW.current_handler_id, NEW.applicant_id),
+                CASE
+                    WHEN NEW.dossier_status = 'PENDING'         THEN 'CHUYEN_BUOC'
+                    WHEN NEW.dossier_status = 'VERIFIED'        THEN 'THAM_DINH'
+                    WHEN NEW.dossier_status = 'APPROVED'        THEN 'PHE_DUYET'
+                    WHEN NEW.dossier_status = 'RESULT_RETURNED' THEN 'TRA_KET_QUA'
+                    WHEN NEW.dossier_status = 'REJECTED'        THEN 'TU_CHOI'
+                    ELSE 'CAP_NHAT_TRANG_THAI'
+                    END,
+                OLD.dossier_status,
+                NEW.dossier_status,
+                v_comment
+            );
+
     END IF;
 END$$
 DELIMITER ;
-

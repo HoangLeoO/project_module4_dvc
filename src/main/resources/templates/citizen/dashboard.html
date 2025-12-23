@@ -154,6 +154,10 @@
                                             <span th:if="${d.dossierStatus == 'APPROVED'}"
                                                 class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1 rounded-pill small">Đã
                                                 duyệt</span>
+                                            <span
+                                                th:if="${d.dossierStatus == 'COMPLETED' or d.dossierStatus == 'RESULT_RETURNED'}"
+                                                class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1 rounded-pill small">Đã
+                                                hoàn tất</span>
                                             <span th:if="${d.dossierStatus == 'REJECTED'}"
                                                 class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-1 rounded-pill small">Từ
                                                 chối</span>
