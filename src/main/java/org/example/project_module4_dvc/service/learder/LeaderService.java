@@ -2,8 +2,10 @@ package org.example.project_module4_dvc.service.learder;
 
 import jakarta.transaction.Transactional;
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
+import org.example.project_module4_dvc.entity.ops.OpsDossierResult;
 import org.example.project_module4_dvc.entity.sys.SysUserDelegation;
 import org.example.project_module4_dvc.repository.leader.LeaderOpsDossierRepository;
+import org.example.project_module4_dvc.repository.ops.OpsDossierResultRepository;
 import org.example.project_module4_dvc.repository.sys.SysDelegationScopeRepository;
 import org.example.project_module4_dvc.repository.sys.SysUserDelegationRepository;
 import org.example.project_module4_dvc.repository.sys.SysUserRepository;
@@ -25,6 +27,8 @@ public class LeaderService implements ILeaderService {
     private SysUserDelegationRepository sysUserDelegationRepository;
     @Autowired
     private SysDelegationScopeRepository sysDelegationScopeRepository;
+    @Autowired
+    private OpsDossierResultRepository opsDossierResultRepository;
 
     @Override
     public Page<DossierApprovalSummaryDTO> getMyDossiers(Long leaderId, String applicantName, String domain, Pageable pageable) {
@@ -137,5 +141,10 @@ public class LeaderService implements ILeaderService {
     @Override
     public void revokeDelegation(Long delegationId) {
         sysUserDelegationRepository.deleteById(delegationId);
+    }
+
+    @Override
+    public void opsDossierResults(OpsDossierResult opsDossierResult) {
+        opsDossierResultRepository.save(opsDossierResult);
     }
 }

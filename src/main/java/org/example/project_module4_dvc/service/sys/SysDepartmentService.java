@@ -21,4 +21,9 @@ public class SysDepartmentService implements ISysDepartmentService {
     public List<SysDepartment> getAll() {
         return sysDepartmentRepository.findAll();
     }
+
+    @Override
+    public List<SysDepartment> getAllByLevel(Integer level) {
+        return sysDepartmentRepository.findAllByLevel(level);
+    }
 }

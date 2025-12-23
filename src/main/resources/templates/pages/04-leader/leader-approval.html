@@ -16,11 +16,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400&display=swap');
 
         .document-preview {
-            font-family: 'Tinos', 'Times New Roman', serif;
-            color: #000;
+            font-family: 'Tinos',
+                'Times New Roman',
+                serif;
+            color: #000 !important;
             background-color: #fff;
             padding: 3rem;
             min-height: 100%;
+        }
+
+        .document-preview h1,
+        .document-preview h2,
+        .document-preview h3,
+        .document-preview h4,
+        .document-preview h5,
+        .document-preview h6,
+        .document-preview span,
+        .document-preview div {
+            color: #000 !important;
         }
 
         .font-times {
@@ -235,19 +248,18 @@
 
         <!-- Modal Digital Sign -->
         <div class="modal fade" id="digitalSignModal" tabindex="-1">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title fw-bold"><i class="bi bi-pen-fill me-2"></i>Ký số & Phát hành Hồ sơ</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body row">
+                    <div class="modal-body row g-0">
 
                         <!-- PDF Preview -->
                         <div
-                            class="col-lg-8 border-end bg-secondary bg-opacity-10 d-flex justify-content-center align-items-center position-relative overflow-hidden">
-                            <div class="bg-white shadow p-4"
-                                style="width: 80%; height: 500px; transform: scale(0.9); overflow-y: auto;">
+                            class="col-lg-9 border-end bg-secondary bg-opacity-10 d-flex justify-content-center align-items-start position-relative overflow-hidden pt-4">
+                            <div class="bg-white shadow p-5" style="width: 850px; height: 85vh; overflow-y: auto;">
 
                                 <!-- DYNAMIC CONTENT CONTAINER -->
                                 <div id="dossierDetailContainer">
@@ -274,7 +286,7 @@
                         </div>
 
                         <!-- Sign Controls -->
-                        <div class="col-lg-4 p-4">
+                        <div class="col-lg-3 p-4">
                             <h6 class="fw-bold mb-3 border-bottom pb-2">Thiết bị Ký số (Token)</h6>
 
                             <div class="alert alert-success d-flex align-items-center mb-4">
