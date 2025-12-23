@@ -38,14 +38,13 @@ public class OpsDossier {
     @JoinColumn(name = "receiving_dept_id", nullable = false)
     private SysDepartment receivingDept;
 
-
     // --- Quan hệ: Dịch vụ công (FK) ---
     @NotNull(message = "Dịch vụ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false, referencedColumnName = "id")
     private CatService service;
 
-    // --- Quan hệ: Người nộp hồ sơ (FK -> SysUser  ) ---
+    // --- Quan hệ: Người nộp hồ sơ (FK -> SysUser ) ---
     @NotNull(message = "Người nộp hồ sơ không được để trống")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "applicant_id", nullable = false, referencedColumnName = "id")
@@ -56,7 +55,6 @@ public class OpsDossier {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_handler_id", referencedColumnName = "id")
     private SysUser currentHandler;
-
 
     // --- Trạng thái & Dữ liệu ---
     @Column(name = "dossier_status", length = 20)
@@ -76,7 +74,6 @@ public class OpsDossier {
     @Column(name = "form_data", columnDefinition = "json")
     @Convert(converter = JsonToMapConverter.class)
     private Map<String, Object> formData;
-
 
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;

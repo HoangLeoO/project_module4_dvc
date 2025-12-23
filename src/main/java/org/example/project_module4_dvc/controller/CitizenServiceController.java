@@ -25,6 +25,9 @@ public class CitizenServiceController {
     @Autowired
     private IMockCitizenService mockCitizenService;
 
+    @Autowired
+    private org.example.project_module4_dvc.service.sys.SysDepartmentService sysDepartmentService;
+
     @GetMapping("/services")
     public String showServices(@RequestParam(required = false) String keyword,
             @RequestParam(required = false) String domain,
@@ -81,6 +84,7 @@ public class CitizenServiceController {
         }
 
         model.addAttribute("activePage", "services");
+        model.addAttribute("sysDepartments", sysDepartmentService.getAll());
 
         return "citizen/portal-submit-wizard";
     }

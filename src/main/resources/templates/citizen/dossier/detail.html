@@ -43,10 +43,15 @@
                             <span th:if="${d.dossierStatus == 'PENDING'}"
                                 class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-2 rounded-pill fw-bold">Đang
                                 xử lý</span>
+                            <span th:if="${d.dossierStatus == 'VERIFIED'}"
+                                class="badge bg-purple bg-opacity-10 text-purple border border-purple px-3 py-2 rounded-pill fw-bold"
+                                style="--bs-bg-opacity: .1; background-color: rgba(111, 66, 193, 0.1); color: #6f42c1; border-color: #6f42c1;">Đã
+                                thẩm định</span>
                             <span th:if="${d.dossierStatus == 'NEED_SUPPLEMENT'}"
                                 class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill fw-bold">Cần
                                 bổ sung</span>
-                            <span th:if="${d.dossierStatus == 'APPROVED'}"
+                            <span
+                                th:if="${d.dossierStatus == 'APPROVED' or d.dossierStatus == 'COMPLETED' or d.dossierStatus == 'RESULT_RETURNED'}"
                                 class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill fw-bold">Đã
                                 hoàn tất</span>
                             <span th:if="${d.dossierStatus == 'REJECTED'}"
@@ -54,6 +59,7 @@
                                 chối</span>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Process Timeline (Workflow Steps) -->
@@ -77,6 +83,127 @@
                     </div>
                 </div>
 
+                <!-- Form Data Display (Added) -->
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4"
+                    th:if="${(d.serviceCode == 'HK01_TRE' || d.serviceCode == 'HS-KS-TRE') && d.formData != null}">
+                    <h5 class="fw-bold text-dark mb-4 border-start border-4 border-success ps-3">Thông tin đăng ký khai
+                        sinh
+                    </h5>
+
+                    <div class="row g-3">
+                        <!-- Child Info -->
+                        <div class="col-12">
+                            <h6 class="text-primary fw-bold mb-3"><i class="bi bi-person-badge me-2"></i>Thông tin Trẻ
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-muted d-block">Họ và tên</label>
+                                    <span class="fw-bold" th:text="${d.formData['childFullName']}">---</span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="small text-muted d-block">Giới tính</label>
+                                    <span class="fw-bold" th:switch="${d.formData['gender']}">
+                                        <span th:case="'MALE'">Nam</span>
+                                        <span th:case="'FEMALE'">Nữ</span>
+                                        <span th:case="*">---</span>
+                                    </span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="small text-muted d-block">Ngày sinh</label>
+                                    <span class="fw-bold" th:if="${d.formData['dateOfBirth'] != null}"
+                                        th:with="dobStr=${d.formData['dateOfBirth'].toString()}"
+                                        th:text="${dobStr.contains('-') ? #strings.substring(dobStr,8,10) + '/' + #strings.substring(dobStr,5,7) + '/' + #strings.substring(dobStr,0,4) : dobStr}">---</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-muted d-block">Dân tộc</label>
+                                    <span class="fw-bold" th:text="${d.formData['childEthnicity']}">---</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-muted d-block">Nơi sinh</label>
+                                    <span class="fw-bold" th:text="${d.formData['placeOfBirth']}">---</span>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="small text-muted d-block">Nơi đăng ký khai sinh</label>
+                                    <span class="fw-bold" th:text="${d.formData['registeredAddress']}">---</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parents Info -->
+                        <div class="col-12">
+                            <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-people me-2"></i>Thông
+                                tin Cha Mẹ</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="bg-light p-3 rounded h-100">
+                                        <div class="fw-bold mb-2 text-dark">THÔNG TIN CHA</div>
+                                        <div class="mb-1">
+                                            <span class="small text-muted">Họ tên:</span>
+                                            <span class="fw-bold" th:text="${d.formData['fatherFullName']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">CCCD:</span>
+                                            <span class="fw-bold" th:text="${d.formData['fatherIdNumber']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">Năm sinh:</span>
+                                            <span class="fw-bold"
+                                                th:text="${d.formData['fatherYearOfBirth']}">---</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bg-light p-3 rounded h-100">
+                                        <div class="fw-bold mb-2 text-dark">THÔNG TIN MẸ</div>
+                                        <div class="mb-1">
+                                            <span class="small text-muted">Họ tên:</span>
+                                            <span class="fw-bold" th:text="${d.formData['motherFullName']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">CCCD:</span>
+                                            <span class="fw-bold" th:text="${d.formData['motherIdNumber']}">---</span>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">Năm sinh:</span>
+                                            <span class="fw-bold"
+                                                th:text="${d.formData['motherYearOfBirth']}">---</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Uploaded Files -->
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4"
+                    th:if="${d.dossierFiles != null and !d.dossierFiles.isEmpty()}">
+                    <h5 class="fw-bold text-dark mb-4 border-start border-4 border-warning ps-3">Tệp tin đính kèm</h5>
+                    <div class="list-group list-group-flush">
+                        <div th:each="file : ${d.dossierFiles}"
+                            class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-light">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i th:if="${file.fileType != null and file.fileType.contains('image')}"
+                                        class="bi bi-file-earmark-image fs-4 text-primary"></i>
+                                    <i th:if="${file.fileType != null and file.fileType.contains('pdf')}"
+                                        class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
+                                    <i th:if="${file.fileType == null or (!file.fileType.contains('image') and !file.fileType.contains('pdf'))}"
+                                        class="bi bi-file-earmark fs-4 text-secondary"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark small" th:text="${file.fileName}">filename.jpg</div>
+                                    <div class="text-muted smallest" th:text="${file.fileType}">image/jpeg</div>
+                                </div>
+                            </div>
+                            <a th:href="@{'/officer/dashboard/view-file/' + ${file.id}}" target="_blank"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                <i class="bi bi-eye me-1"></i>Xem tệp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- History Timeline -->
                 <div class="card card-modern border-0 shadow-sm p-4 mb-4">
                     <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Lịch sử xử lý</h5>
@@ -93,9 +220,12 @@
                                     style="left: -6px; top: 5px; font-size: 10px;"></i>
                                 <h6 class="fw-bold text-dark mb-1" th:switch="${log.action}">
                                     <span th:case="'NOP_HO_SO'">Nộp hồ sơ</span>
+                                    <span th:case="'ACCEPTED'">Tiếp nhận hồ sơ</span>
+                                    <span th:case="'ASSIGNED'">Phân công xử lý</span>
                                     <span th:case="'CHUYEN_BUOC'">Chuyển bước xử lý</span>
-                                    <span th:case="'TRINH_KY'">Trình ký</span>
-                                    <span th:case="'PHE_DUYET'">Phê duyệt hồ sơ</span>
+                                    <span th:case="'THAM_DINH'">Thẩm định hồ sơ</span>
+                                    <span th:case="'TRINH_KY'">Trình ký phê duyệt</span>
+                                    <span th:case="'PHE_DUYET'">Lãnh đạo phê duyệt</span>
                                     <span th:case="'YEU_CAU_BO_SUNG'">Yêu cầu bổ sung</span>
                                     <span th:case="'TRA_KET_QUA'">Trả kết quả</span>
                                     <span th:case="'TU_CHOI'">Từ chối hồ sơ</span>
@@ -134,6 +264,20 @@
                         <span class="fw-bold font-monospace" th:text="${d.dossierCode}">G01-2405001</span>
                     </div>
                     <hr class="opacity-10">
+
+                    <!-- Result Section -->
+                    <div th:if="${d.resultFileUrl != null}"
+                        class="mt-4 p-3 bg-success bg-opacity-10 border border-success border-opacity-20 rounded-3 text-center">
+                        <div class="mb-2">
+                            <i class="bi bi-patch-check-fill text-success fs-3"></i>
+                        </div>
+                        <h6 class="fw-bold text-success mb-2">Hồ sơ đã có kết quả</h6>
+                        <p class="small text-muted mb-3">Bạn có thể xem và tải về bản tệp kết quả điện tử bên dưới.</p>
+                        <a th:href="@{'/officer/dashboard/view-file-by-path?path=' + ${d.resultFileUrl}}"
+                            target="_blank" class="btn btn-success rounded-pill w-100 fw-bold">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Xem kết quả PDF
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

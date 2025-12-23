@@ -80,7 +80,14 @@
                 <div class="wizard-step" id="navStep3">
                     <div class="text-center">
                         <div class="btn-circle mx-auto mb-2">3</div>
-                        <small class="text-muted">Lệ phí & Nộp</small>
+                        <small class="text-muted">Đơn vị & Lệ phí</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep4">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">4</div>
+                        <small class="text-muted">Kiểm tra & Nộp</small>
                     </div>
                 </div>
 
@@ -127,6 +134,7 @@
                     <input type="hidden" id="applicantMaritalStatus"
                         th:value="${#strings.toLowerCase(citizen.maritalStatus)}">
                     <input type="hidden" id="serviceId" th:value="${s != null ? s.id : ''}">
+                    <input type="hidden" id="serviceCode" th:value="${s != null ? s.serviceCode : ''}">
                     <input type="hidden" id="spouseName" th:value="${spouse != null ? spouse.fullName : ''}">
                     <input type="hidden" id="spouseCccd" th:value="${spouse != null ? spouse.cccd : ''}">
                     <input type="hidden" id="spouseDob" th:value="${spouse != null ? spouse.dob : ''}">
@@ -244,6 +252,7 @@
                                 <label class="form-label">Họ và tên trẻ <span class="text-danger">*</span></label>
                                 <input type="text" id="childName" class="form-control text-uppercase"
                                     placeholder="VD: LÊ VĂN A" required>
+                                <p class="invalid-feedback" id="childNameError" style="display: none;"></p>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Giới tính <span class="text-danger">*</span></label>
@@ -252,20 +261,24 @@
                                     <option value="MALE">Nam</option>
                                     <option value="FEMALE">Nữ</option>
                                 </select>
+                                <p class="invalid-feedback" id="childGenderError" style="display: none;"></p>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
                                 <input type="date" id="childDob" class="form-control" required>
+                                <p class="invalid-feedback" id="childDobError" style="display: none;"></p>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Dân tộc <span class="text-danger">*</span></label>
                                 <input type="text" id="childEthnicity" class="form-control" value="Kinh" required>
+                                <p class="invalid-feedback" id="childEthnicityError" style="display: none;"></p>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Nơi sinh (Cơ sở y tế) <span
                                         class="text-danger">*</span></label>
                                 <input type="text" id="childBirthPlace" class="form-control"
                                     placeholder="VD: Bệnh viện Phụ sản - Nhi Đà Nẵng" required>
+                                <p class="invalid-feedback" id="childBirthPlaceError" style="display: none;"></p>
                             </div>
                             <div class="col-12 mt-2">
                                 <label class="form-label">Nơi đăng ký khai sinh <span
@@ -273,16 +286,7 @@
                                 <input type="text" id="registeredAddress" class="form-control"
                                     placeholder="VD: Phường Hải Châu, Quận Hải Châu, TP Đà Nẵng" required
                                     th:value="${citizen.permanentAddress}">
-                            </div>
-                            <div class="col-12 mt-3">
-                                <div class="form-check form-switch p-3 border rounded bg-light">
-                                    <input class="form-check-input ms-0" type="checkbox" id="requestBhyt" checked>
-                                    <label class="form-check-label ms-2 fw-bold" for="requestBhyt">
-                                        Đăng ký cấp thẻ BHYT miễn phí cho trẻ
-                                    </label>
-                                    <p class="small text-muted mb-0 ms-2">Thẻ sẽ được chuyển phát về địa chỉ thường trú
-                                        của mẹ.</p>
-                                </div>
+                                <p class="invalid-feedback" id="registeredAddressError" style="display: none;"></p>
                             </div>
                         </div>
 
@@ -293,16 +297,11 @@
                         </div>
 
                         <div id="paternitySection" class="alert alert-warning mt-3 d-none">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="confirmPaternity"
-                                    onchange="togglePaternityUpload()">
-                                <label class="form-check-label fw-bold" for="confirmPaternity">
-                                    Đăng ký đồng thời thủ tục Nhận cha, mẹ, con
-                                </label>
-                            </div>
-                            <div id="paternityUploadHint" class="mt-1 ps-4 small text-muted d-none">
-                                * Sẽ yêu cầu đính kèm văn bản chứng minh quan hệ ở bước tiếp theo.
-                            </div>
+                            <i class="bi bi-bell-fill me-2 animated-bell"></i>
+                            <strong>Thông báo:</strong> Người cha chưa đăng ký kết hôn với mẹ của trẻ. Vui lòng nộp bổ
+                            sung hồ sơ thủ tục nhận con để hoàn tất thông tin khai sinh.
+                            <!-- Hidden input to track state -->
+                            <input type="hidden" id="isPaternityRequired" value="false">
                         </div>
                     </div>
                 </div>
@@ -316,15 +315,21 @@
                             <div class="card border shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="fw-bold mb-1">Giấy chứng sinh <span class="text-danger">*</span>
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Giấy chứng sinh / Giấy tờ thay thế <span
+                                                    class="text-danger">*</span>
                                             </h6>
                                             <p class="small text-muted mb-0">Đính kèm bản quét hoặc ảnh chụp Giấy chứng
-                                                sinh bản chính.</p>
+                                                sinh bản chính. Bạn có thể chọn nhiều ảnh.</p>
                                         </div>
-                                        <button class="btn btn-outline-primary btn-sm"><i
-                                                class="bi bi-upload me-2"></i>Chọn File</button>
+                                        <div>
+                                            <input type="file" id="birthFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'birth')">
+                                        </div>
                                     </div>
+                                    <!-- File List Display -->
+                                    <div id="birthFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
                         </div>
@@ -333,25 +338,35 @@
                             <div class="card border-warning shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="fw-bold mb-1 text-warning">Văn bản chứng minh quan hệ Cha -
-                                                Con</span>
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1 text-warning">Hồ sơ thủ tục nhận con / Giấy tờ khác
                                             </h6>
-                                            <p class="small text-muted mb-0">Cần thiết cho thủ tục nhận Cha, Mẹ, Con.
+                                            <p class="small text-muted mb-0">Văn bản chứng minh quan hệ Cha - Con và các
+                                                giấy tờ liên quan (nếu có).
                                             </p>
                                         </div>
-                                        <button class="btn btn-warning btn-sm text-white"><i
-                                                class="bi bi-upload me-2"></i>Chọn File</button>
+                                        <div>
+                                            <input type="file" id="paternityFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'paternity')">
+                                        </div>
                                     </div>
+                                    <!-- File List Display -->
+                                    <div id="paternityFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Add File List for Birth Files -->
+                        <script>
+                            // Move birhFiles input to have list display
+                        </script>
                     </div>
                 </div>
 
-                <!-- STEP 3: PAYMENT & SUBMIT -->
+                <!-- STEP 3: DEPARTMENT & FEE -->
                 <div id="step3" class="d-none">
-                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Xác nhận & Nộp hồ sơ</h5>
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Đơn vị tiếp nhận & Lệ phí</h5>
 
                     <div class="alert alert-success border-0 shadow-sm text-center py-4">
                         <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
@@ -359,7 +374,25 @@
                         <p class="text-muted">Vui lòng kiểm tra lại thông tin trước khi nộp.</p>
                     </div>
 
-                    <div class="bg-white p-3 border rounded     mb-4">
+                    <!-- RECEIVING DEPARTMENT SELECTION -->
+                    <div class="card border shadow-sm mb-4">
+                        <div class="card-body">
+                            <label class="form-label fw-bold">Đơn vị tiếp nhận hồ sơ <span
+                                    class="text-danger">*</span></label>
+                            <select id="receivingDeptId" class="form-select border-primary" required>
+                                <option value="" selected disabled>-- Chọn Phường/Xã tiếp nhận --</option>
+                                <option th:each="dept : ${sysDepartments}" th:if="${dept.level == 2}"
+                                    th:value="${dept.id}" th:text="${dept.deptName}">Phường A</option>
+                            </select>
+                            <p class="invalid-feedback" id="receivingDeptIdError" style="display: none;"></p>
+                            <small class="text-muted mt-2 d-block">
+                                <i class="bi bi-info-circle me-1"></i> Vui lòng chọn đúng đơn vị hành chính nơi bạn cư
+                                trú để hồ sơ được xử lý nhanh nhất.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-3 border rounded mb-4">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Lệ phí thủ tục:</span>
                             <span class="fw-bold" id="totalFeeDisplay"
@@ -367,10 +400,116 @@
                                 VNĐ</span>
                         </div>
                     </div>
+                </div>
 
-                    <p class="text-center small text-muted">
-                        Bằng việc nhấn "Nộp hồ sơ", bạn cam kết chịu trách nhiệm về tính chính xác của thông tin.
-                    </p>
+                <!-- STEP 4: REVIEW & SUBMIT -->
+                <div id="step4" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 4: Kiểm tra thông tin & Nộp hồ sơ</h5>
+
+                    <div class="alert alert-warning border-0 shadow-sm mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                            <div>
+                                <strong>Lưu ý:</strong> Vui lòng rà soát kỹ các thông tin dưới đây. Sau khi nộp, bạn sẽ
+                                không thể tự chỉnh sửa thông tin này.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REVIEW CARDS -->
+                    <div class="review-summary">
+                        <!-- 1. Parents Info -->
+                        <div class="card border border-light shadow-sm mb-4">
+                            <div class="card-header bg-light py-2">
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2"></i>Thông tin Cha/Mẹ</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6 border-end">
+                                        <p class="small text-muted mb-1">Thông tin Cha</p>
+                                        <div id="reviewFatherInfo">
+                                            <span class="text-muted italic small">Chưa cung cấp</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="small text-muted mb-1">Thông tin Mẹ</p>
+                                        <div id="reviewMotherInfo">
+                                            <span class="text-muted italic small">Chưa cung cấp</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Child Info -->
+                        <div class="card border border-light shadow-sm mb-4">
+                            <div class="card-header bg-light py-2">
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-person-badge-fill me-2"></i>Thông tin Trẻ</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="small text-muted d-block">Họ và tên trẻ</label>
+                                        <span id="reviewChildName" class="fw-bold text-uppercase">---</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="small text-muted d-block">Giới tính</label>
+                                        <span id="reviewChildGender" class="fw-bold">---</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="small text-muted d-block">Ngày sinh</label>
+                                        <span id="reviewChildDob" class="fw-bold">---</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small text-muted d-block">Nơi sinh</label>
+                                        <span id="reviewChildBirthPlace" class="fw-bold">---</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small text-muted d-block">Nơi đăng ký</label>
+                                        <span id="reviewRegisteredAddress" class="fw-bold">---</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Documents & Fees -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border border-light shadow-sm">
+                                    <div class="card-header bg-light py-2">
+                                        <h6 class="mb-0 fw-bold"><i class="bi bi-file-earmark-medical-fill me-2"></i>Tệp
+                                            đính kèm</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="reviewFilesList" class="d-flex flex-wrap gap-2">
+                                            <span class="text-muted small">Không có tệp tải lên</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border border-light shadow-sm">
+                                    <div class="card-header bg-light py-2">
+                                        <h6 class="mb-0 fw-bold"><i class="bi bi-wallet2 me-2"></i>Đơn vị & Lệ phí</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="small mb-2"><strong>Cơ quan tiếp nhận:</strong> <span
+                                                id="reviewDeptName">---</span></p>
+                                        <p class="small mb-0"><strong>Tổng lệ phí:</strong> <span id="reviewFee"
+                                                class="text-danger fw-bold">0 VNĐ</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check p-3 bg-light rounded border mb-1 mt-4">
+                        <input class="form-check-input ms-0 me-3" type="checkbox" id="confirmDataCorrect" required>
+                        <label class="form-check-label fw-bold" for="confirmDataCorrect">
+                            Tôi cam đoan toàn bộ thông tin đã cung cấp là chính xác và hoàn toàn chịu trách nhiệm trước
+                            pháp luật.
+                        </label>
+                    </div>
                 </div>
 
                 <!-- ACTION BUTTONS -->
@@ -455,7 +594,7 @@
             if (delta === 1 && !validateStep(currentStep)) return;
             currentStep += delta;
             if (currentStep < 1) currentStep = 1;
-            if (currentStep > 3) currentStep = 3;
+            if (currentStep > 4) currentStep = 4;
             updateWizardUI();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -463,11 +602,25 @@
         function validateStep(step) {
             if (step === 1) {
                 let isValid = true;
-                const setError = (id, cond) => {
+                const setError = (id, cond, msg = '') => {
                     const el = document.getElementById(id);
+                    const errorEl = document.getElementById(id + 'Error');
                     if (el) {
-                        if (!cond) { el.classList.add('is-invalid'); isValid = false; }
-                        else el.classList.remove('is-invalid');
+                        if (!cond) {
+                            el.classList.add('is-invalid');
+                            isValid = false;
+                            if (errorEl) {
+                                errorEl.innerText = msg;
+                                errorEl.style.display = 'block';
+                            }
+                        }
+                        else {
+                            el.classList.remove('is-invalid');
+                            if (errorEl) {
+                                errorEl.style.display = 'none';
+                                errorEl.innerText = '';
+                            }
+                        }
                     }
                 };
 
@@ -497,63 +650,147 @@
                     return false;
                 }
 
-                setError('childName', document.getElementById('childName').value.trim() !== '');
-                setError('childGender', document.getElementById('childGender').value !== '');
+                // Name Validation (Strict Vietnamese Reference)
+                const childNameEl = document.getElementById('childName');
+                let childNameVal = childNameEl.value.trim();
+
+                // Auto-format to Title Case (e.g., "nguyen  van  a" -> "Nguyễn Văn A")
+                if (childNameVal) {
+                    childNameVal = childNameVal
+                        .toLowerCase()
+                        .split(' ')
+                        .filter(word => word.length > 0)
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    childNameEl.value = childNameVal;
+                }
+
+                // Regex for validation: 
+                // 1. No special chars/numbers (only letters and spaces)
+                const hasSpecialChars = /[^a-zA-Z\sàáâãèéêìíòóôõùúăđĩũơưạ-ỹÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯẠ-Ỹ]/.test(childNameVal);
+                const words = childNameVal.split(' ');
+
+                if (childNameVal === '') {
+                    setError('childName', false, 'Vui lòng nhập họ và tên trẻ.');
+                } else if (hasSpecialChars) {
+                    setError('childName', false, 'Tên trẻ chỉ được chứa chữ cái tiếng Việt (không chứa số hay ký tự đặc biệt)!');
+                } else if (words.length < 2) {
+                    setError('childName', false, 'Tên trẻ ít nhất 2 từ  (Họ + Tên)!');
+                } else {
+                    setError('childName', true);
+                }
+
+                setError('childGender', document.getElementById('childGender').value !== '', 'Vui lòng chọn giới tính.');
 
                 // Date Validation
                 const childDobVal = document.getElementById('childDob').value;
                 if (!childDobVal) {
-                    setError('childDob', false);
-                    isValid = false;
+                    setError('childDob', false, 'Vui lòng chọn ngày sinh.');
                 } else {
                     const dobDate = new Date(childDobVal);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0); // normalize today
 
                     if (dobDate > today) {
-                        setError('childDob', false);
-                        showModal("Ngày sinh của trẻ không được lớn hơn ngày hiện tại!", 'error');
-                        return false;
+                        setError('childDob', false, 'Ngày sinh của trẻ không được lớn hơn ngày hiện tại!');
                     } else {
-                        setError('childDob', true);
+                        // Check overdue (> 60 days)
+                        // Time difference in milliseconds
+                        const diffTime = today.getTime() - dobDate.getTime();
+                        // Convert to days
+                        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (diffDays > 60) {
+                            // Use warning style for this specific case if 'is-invalid' is too strong,
+                            // or just keep it valid but show warning text? 
+                            // The request was "hien thi loi", so warning might not count as error blocking submit.
+                            // Current logic was: warning only, valid stays true.
+                            // Let's implement inline warning:
+                            const dobErrorEl = document.getElementById('childDobError');
+                            if (dobErrorEl) {
+                                dobErrorEl.innerText = "CẢNH BÁO: Đăng ký khai sinh quá hạn (quá 60 ngày kể từ ngày sinh)!";
+                                dobErrorEl.className = "small text-danger d-block mt-1"; // Use danger text for visibility even if valid
+                            }
+                            // We still allow it valid
+                            document.getElementById('childDob').classList.remove('is-invalid');
+                        } else {
+                            setError('childDob', true);
+                        }
                     }
                 }
 
-                setError('childEthnicity', document.getElementById('childEthnicity').value.trim() !== '');
-                setError('childBirthPlace', document.getElementById('childBirthPlace').value.trim() !== '');
+                setError('childEthnicity', document.getElementById('childEthnicity').value.trim() !== '', 'Vui lòng nhập dân tộc.');
+                setError('childBirthPlace', document.getElementById('childBirthPlace').value.trim() !== '', 'Vui lòng nhập nơi sinh.');
+                setError('registeredAddress', document.getElementById('registeredAddress').value.trim() !== '', 'Vui lòng nhập nơi đăng ký khai sinh.');
 
                 return isValid;
+            }
+            if (step === 3) {
+                const deptEl = document.getElementById('receivingDeptId');
+                if (!deptEl.value) {
+                    deptEl.classList.add('is-invalid');
+                    const errorEl = document.getElementById('receivingDeptIdError');
+                    if (errorEl) {
+                        errorEl.innerText = "Vui lòng chọn đơn vị tiếp nhận.";
+                        errorEl.style.display = 'block';
+                    }
+                    return false;
+                }
+                deptEl.classList.remove('is-invalid');
+                return true;
+            }
+            if (step === 4) {
+                const check = document.getElementById('confirmDataCorrect');
+                if (!check.checked) {
+                    showModal("Vui lòng xác nhận cam đoan thông tin là chính xác trước khi nộp.", 'warning');
+                    return false;
+                }
+                return true;
             }
             return true;
         }
 
-        // ... (keep updateWizardUI, verifyCitizen, resetVerification, checkRevealChildSection, autoFillParents ...)
+
 
         function checkMotherSingleLogic() {
             const gender = document.getElementById('applicantGender').value;
-            const status = document.getElementById('applicantMaritalStatus').value; // 'single' or 'married' (mapped from server)
+            const status = document.getElementById('applicantMaritalStatus').value;
             const fatherId = document.getElementById('fatherId').value.trim();
-            const motherId = document.getElementById('motherId').value.trim();
             const section = document.getElementById('paternitySection');
             const check = document.getElementById('confirmPaternity');
 
-            // Logic: If NOT married AND valid parent info present -> Require Paternity Recognition
-            // Note: status is mapped to 'single' or 'married' in hidden input, but lets be robust
-            if (status !== 'married') {
-                if ((gender === 'MALE' && motherId) || (gender === 'FEMALE' && fatherId)) {
+            // Đã kết hôn -> Ẩn hoàn toàn
+            if (status === 'married') {
+                section.classList.add('d-none');
+                check.checked = false;
+                check.disabled = false;
+            } else {
+                // Chưa kết hôn (Single)
+                if (gender === 'MALE') {
+                    // Nam độc thân: Bắt buộc
                     section.classList.remove('d-none');
-                    // check.checked = true; // Relaxed: let user decide
-                    togglePaternityUpload();
-                    return;
+                    check.checked = true;
+                    check.disabled = true;
+                } else {
+                    // Nữ độc thân:
+                    if (fatherId) {
+                        // Có nhập cha -> Bắt buộc
+                        section.classList.remove('d-none');
+                        check.checked = true;
+                        check.disabled = true;
+                    } else {
+                        // Không nhập cha -> Ẩn
+                        section.classList.add('d-none');
+                        check.checked = false;
+                        check.disabled = false;
+                    }
                 }
             }
-            section.classList.add('d-none');
-            check.checked = false; // Reset if conditions not met
             togglePaternityUpload();
         }
 
         function updateWizardUI() {
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const el = document.getElementById(`step${i}`);
                 const navEl = document.getElementById(`navStep${i}`);
                 if (i === currentStep) {
@@ -577,7 +814,8 @@
             if (currentStep === 1) btnBack.classList.add('disabled');
             else btnBack.classList.remove('disabled');
 
-            if (currentStep === 3) {
+            if (currentStep === 4) {
+                populateReviewStep();
                 btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
                 btnNext.className = 'btn btn-success px-4 fw-bold';
                 btnNext.onclick = function () { submitForm(); };
@@ -587,7 +825,7 @@
                 btnNext.onclick = function () { changeStep(1); };
             }
 
-            const paternityCheck = document.getElementById('confirmPaternity').checked;
+            const paternityCheck = document.getElementById('confirmPaternity') ? document.getElementById('confirmPaternity').checked : false;
             const item = document.getElementById('paternityUploadItem');
             if (item) item.classList.toggle('d-none', !paternityCheck);
 
@@ -597,6 +835,68 @@
             if (feeDisplay) {
                 feeDisplay.innerText = Number(baseFeeValue).toLocaleString() + ' VNĐ';
             }
+        }
+
+        function populateReviewStep() {
+            // 1. Father Info
+            const fatherName = document.getElementById('fatherDisplayName').innerText || document.getElementById('fatherName').value;
+            const fatherCccd = document.getElementById('fatherDisplayId').innerText || document.getElementById('fatherId').value;
+            const fatherDob = document.getElementById('fatherDisplayDob').innerText;
+
+            let fatherHtml = fatherName ? `
+                <div class="fw-bold text-dark">${fatherName}</div>
+                <div class="small">CCCD: ${fatherCccd}</div>
+                <div class="small text-muted">Ngày sinh: ${fatherDob || '---'}</div>
+            ` : '<span class="text-muted italic small">Chưa cung cấp</span>';
+            document.getElementById('reviewFatherInfo').innerHTML = fatherHtml;
+
+            // 2. Mother Info
+            const motherName = document.getElementById('motherDisplayName').innerText || document.getElementById('motherName').value;
+            const motherCccd = document.getElementById('motherDisplayId').innerText || document.getElementById('motherId').value;
+            const motherDob = document.getElementById('motherDisplayDob').innerText;
+
+            let motherHtml = motherName ? `
+                <div class="fw-bold text-dark">${motherName}</div>
+                <div class="small">CCCD: ${motherCccd}</div>
+                <div class="small text-muted">Ngày sinh: ${motherDob || '---'}</div>
+            ` : '<span class="text-muted italic small">Chưa cung cấp</span>';
+            document.getElementById('reviewMotherInfo').innerHTML = motherHtml;
+
+            // 3. Child Info
+            document.getElementById('reviewChildName').innerText = document.getElementById('childName').value;
+            const genderMap = { 'MALE': 'Nam', 'FEMALE': 'Nữ' };
+            document.getElementById('reviewChildGender').innerText = genderMap[document.getElementById('childGender').value] || '---';
+            const dob = document.getElementById('childDob').value;
+            document.getElementById('reviewChildDob').innerText = dob ? formatDate(dob) : '---';
+            document.getElementById('reviewChildBirthPlace').innerText = document.getElementById('childBirthPlace').value;
+            document.getElementById('reviewRegisteredAddress').innerText = document.getElementById('registeredAddress').value;
+
+            // 4. Files
+            let fileListHtml = '';
+            if (selectedBirthFiles.length > 0) {
+                fileListHtml += `<p class="small fw-bold mb-1 text-primary">Giấy chứng sinh:</p><div class="d-flex flex-wrap gap-1 mb-2">`;
+                selectedBirthFiles.forEach(f => {
+                    fileListHtml += `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">${f.name}</span>`;
+                });
+                fileListHtml += `</div>`;
+            }
+            if (selectedPaternityFiles.length > 0) {
+                fileListHtml += `<p class="small fw-bold mb-1 mt-2 text-warning">Hồ sơ nhận con:</p><div class="d-flex flex-wrap gap-1">`;
+                selectedPaternityFiles.forEach(f => {
+                    fileListHtml += `<span class="badge bg-warning-subtle text-warning border border-warning-subtle">${f.name}</span>`;
+                });
+                fileListHtml += `</div>`;
+            }
+            if (selectedBirthFiles.length === 0 && selectedPaternityFiles.length === 0) {
+                fileListHtml = '<span class="text-muted small">Không có tệp tải lên</span>';
+            }
+            document.getElementById('reviewFilesList').innerHTML = fileListHtml;
+
+            // 5. Dept & Fee
+            const deptSelect = document.getElementById('receivingDeptId');
+            const selectedDeptName = deptSelect.options[deptSelect.selectedIndex]?.text || '---';
+            document.getElementById('reviewDeptName').innerText = selectedDeptName;
+            document.getElementById('reviewFee').innerText = document.getElementById('totalFeeDisplay').innerText;
         }
 
         async function verifyCitizen(role) {
@@ -652,8 +952,6 @@
                     idInput.classList.add('is-invalid');
                     showModal("Không tìm thấy thông tin công dân.", 'error');
                 }
-            } catch (error) {
-                showModal("Lỗi kết nối.", 'error');
             } finally {
                 btn.innerHTML = '<i class="bi bi-search"></i>';
                 btn.disabled = false;
@@ -668,24 +966,45 @@
             document.getElementById(role + 'Display').classList.add('d-none');
             document.getElementById(role + 'Input').classList.remove('d-none');
             checkRevealChildSection();
+            checkMotherSingleLogic();
         }
 
         function checkRevealChildSection() {
             const gender = document.getElementById('applicantGender').value;
             const fatherId = document.getElementById('fatherId').value.trim();
-            const motherId = document.getElementById('motherId').value.trim();
             const childSection = document.getElementById('childSection');
+            const childInputs = childSection.querySelectorAll('input, select, textarea');
 
             let canReveal = false;
+            let canEdit = false;
+
             if (gender === 'MALE') {
-                if (verificationState.mother) canReveal = true;
+                // Nam: Luôn hiện child section
+                canReveal = true;
+                // Chỉ cho phép nhập khi đã xác thực Mẹ
+                canEdit = verificationState.mother;
             } else {
-                if (!fatherId) canReveal = true;
-                else if (verificationState.father) canReveal = true;
+                // Nữ: Luôn hiện child section
+                canReveal = true;
+                // Cho phép nhập nếu không có Cha HOẶC đã xác thực Cha
+                if (!fatherId) canEdit = true;
+                else if (verificationState.father) canEdit = true;
             }
 
-            if (canReveal) childSection.classList.remove('d-none');
-            else childSection.classList.add('d-none');
+            if (canReveal) {
+                childSection.classList.remove('d-none');
+                // Enable/Disable child inputs based on canEdit
+                childInputs.forEach(input => {
+                    input.disabled = !canEdit;
+                    if (!canEdit) {
+                        input.classList.add('bg-light');
+                    } else {
+                        input.classList.remove('bg-light');
+                    }
+                });
+            } else {
+                childSection.classList.add('d-none');
+            }
         }
 
         function formatDate(dateStr) {
@@ -750,41 +1069,152 @@
 
 
         function togglePaternityUpload() {
-            const isChecked = document.getElementById('confirmPaternity').checked;
-            const hint = document.getElementById('paternityUploadHint');
-            if (hint) hint.classList.toggle('d-none', !isChecked);
+            const isChecked = document.getElementById('confirmPaternity') ? document.getElementById('confirmPaternity').checked : false;
+            const paternityUploadItem = document.getElementById('paternityUploadItem');
+            if (paternityUploadItem) paternityUploadItem.classList.toggle('d-none', !isChecked);
         }
 
-        function submitForm() {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/citizen/dossier/submit-birth-registration';
-            const addField = (n, v) => {
-                const i = document.createElement('input');
-                i.type = 'hidden'; i.name = n; i.value = v;
-                form.appendChild(i);
-            };
-            addField('serviceId', document.getElementById('serviceId').value);
-            addField('applicantGender', document.getElementById('applicantGender').value);
-            addField('applicantMaritalStatus', document.getElementById('applicantMaritalStatus').value);
-            addField('childName', document.getElementById('childName').value);
-            addField('childGender', document.getElementById('childGender').value.toUpperCase());
-            addField('childDob', document.getElementById('childDob').value);
-            addField('childEthnicity', document.getElementById('childEthnicity').value);
-            addField('childBirthPlace', document.getElementById('childBirthPlace').value);
-            addField('registeredAddress', document.getElementById('registeredAddress').value);
-            addField('requestBhyt', document.getElementById('requestBhyt').checked);
-            addField('fatherName', document.getElementById('fatherName').value);
-            addField('fatherId', document.getElementById('fatherId').value);
-            addField('motherName', document.getElementById('motherName').value);
-            addField('motherId', document.getElementById('motherId').value);
-            addField('isPaternityRecognition', document.getElementById('confirmPaternity').checked);
-            document.body.appendChild(form);
-            form.submit();
+        let selectedBirthFiles = [];
+        let selectedPaternityFiles = [];
+
+        function handleFileSelect(event, type) {
+            const files = Array.from(event.target.files);
+            if (type === 'birth') {
+                selectedBirthFiles = [...selectedBirthFiles, ...files];
+                renderFileList('birth');
+            } else {
+                selectedPaternityFiles = [...selectedPaternityFiles, ...files];
+                renderFileList('paternity');
+            }
+            // Reset input so same file can be selected again if removed
+            event.target.value = '';
+        }
+
+        function renderFileList(type) {
+            const files = type === 'birth' ? selectedBirthFiles : selectedPaternityFiles;
+            const listEl = document.getElementById(type + 'FilesList');
+            listEl.innerHTML = '';
+
+            files.forEach((file, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'badge bg-light border text-dark p-2 d-flex align-items-center gap-2';
+                badge.innerHTML = `
+                    <i class="bi bi-file-earmark-arrow-up text-primary"></i>
+                    <span class="text-truncate" style="max-width: 150px;">${file.name}</span>
+                    <button type="button" class="btn-close" style="font-size: 0.5rem;" onclick="removeFile('${type}', ${index})"></button>
+                `;
+                listEl.appendChild(badge);
+            });
+        }
+
+        function removeFile(type, index) {
+            if (type === 'birth') {
+                selectedBirthFiles.splice(index, 1);
+                renderFileList('birth');
+            } else {
+                selectedPaternityFiles.splice(index, 1);
+                renderFileList('paternity');
+            }
+        }
+
+        async function submitForm() {
+            const btn = document.getElementById('btnNext');
+            const originalContent = btn.innerHTML;
+
+            const deptSelect = document.getElementById('receivingDeptId');
+            if (!deptSelect.value) {
+                deptSelect.classList.add('is-invalid');
+                document.getElementById('receivingDeptIdError').innerText = 'Vui lòng chọn đơn vị hành chính tiếp nhận hồ sơ.';
+                document.getElementById('receivingDeptIdError').style.display = 'block';
+                showModal('Vui lòng chọn Đơn vị tiếp nhận hồ sơ tại Bước 3.', 'warning');
+                return;
+            }
+
+            try {
+                if (selectedBirthFiles.length === 0) {
+                    currentStep = 2;
+                    updateWizardUI();
+                    showModal('Vui lòng đính kèm Giấy chứng sinh hoặc giấy tờ thay thế.', 'warning');
+                    return;
+                }
+
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+                btn.disabled = true;
+
+                const formData = new FormData();
+
+                // Add basic fields
+                formData.append('serviceId', document.getElementById('serviceId').value);
+                formData.append('serviceCode', document.getElementById('serviceCode').value || 'HS-KS-TRE');
+                formData.append('receivingDeptId', deptSelect.value);
+                formData.append('applicantGender', document.getElementById('applicantGender').value);
+                formData.append('applicantMaritalStatus', document.getElementById('applicantMaritalStatus').value);
+                formData.append('childFullName', document.getElementById('childName').value);
+                formData.append('gender', document.getElementById('childGender').value.toUpperCase());
+                formData.append('dateOfBirth', document.getElementById('childDob').value);
+                formData.append('childEthnicity', document.getElementById('childEthnicity').value);
+                formData.append('placeOfBirth', document.getElementById('childBirthPlace').value);
+                formData.append('registeredAddress', document.getElementById('registeredAddress').value);
+                formData.append('fatherFullName', document.getElementById('fatherName').value);
+                formData.append('fatherIdNumber', document.getElementById('fatherId').value);
+                formData.append('motherFullName', document.getElementById('motherName').value);
+                formData.append('motherIdNumber', document.getElementById('motherId').value);
+
+                // Add parent's Year of Birth (Extracted from display DOB)
+                const getYear = (id) => {
+                    const dob = document.getElementById(id).innerText;
+                    if (dob && dob.includes('/')) {
+                        const parts = dob.split('/');
+                        return parts[parts.length - 1];
+                    }
+                    return null;
+                };
+                const fatherYear = getYear('fatherDisplayDob');
+                if (fatherYear) formData.append('fatherYearOfBirth', fatherYear);
+                const motherYear = getYear('motherDisplayDob');
+                if (motherYear) formData.append('motherYearOfBirth', motherYear);
+
+                const isPaternity = document.getElementById('isPaternityRequired') ? (document.getElementById('isPaternityRequired').value === 'true') : false;
+                formData.append('isPaternityRecognition', isPaternity);
+
+                // Add all files from arrays
+                selectedBirthFiles.forEach(file => formData.append('files', file));
+                selectedPaternityFiles.forEach(file => formData.append('files', file));
+
+                const response = await fetch('/citizen/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('Nộp hồ sơ thành công!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/citizen/hoso';
+                    }, 2000);
+                } else {
+                    throw new Error(result.message || 'Có lỗi xảy ra khi nộp hồ sơ');
+                }
+
+            } catch (error) {
+                console.error('Error in submitForm:', error);
+                showModal('Lỗi: ' + error.message, 'error');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Already mostly rendered by Thymeleaf, just sync visibility logic
+            // ... already mostly rendered ...
+            const deptSelect = document.getElementById('receivingDeptId');
+            if (deptSelect) {
+                deptSelect.addEventListener('change', function () {
+                    this.classList.remove('is-invalid');
+                    document.getElementById('receivingDeptIdError').style.display = 'none';
+                });
+            }
+
             checkMotherSingleLogic();
             checkRevealChildSection();
 
