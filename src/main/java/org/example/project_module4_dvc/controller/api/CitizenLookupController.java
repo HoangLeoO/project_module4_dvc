@@ -15,12 +15,18 @@ public class CitizenLookupController {
     @GetMapping("/lookup/{cccd}")
     public ResponseEntity<?> lookupCitizen(@PathVariable String cccd) {
         return mockCitizenRepository.findByCccd(cccd)
-                .map(citizen -> ResponseEntity.ok(java.util.Map.of(
-                        "fullName", citizen.getFullName(),
-                        "dob", citizen.getDob(),
-                        "gender", citizen.getGender(),
-                        "maritalStatus", citizen.getMaritalStatus(),
-                        "address", citizen.getPermanentAddress())))
+                .map(citizen -> {
+                    String dobStr = citizen.getDob() != null ? citizen.getDob().toString() : "";
+                    String genderStr = citizen.getGender() != null ? citizen.getGender() : "";
+                    String maritalStr = citizen.getMaritalStatus() != null ? citizen.getMaritalStatus() : "";
+
+                    return ResponseEntity.ok(java.util.Map.of(
+                            "fullName", citizen.getFullName(),
+                            "dob", dobStr,
+                            "gender", genderStr,
+                            "maritalStatus", maritalStr,
+                            "address", citizen.getPermanentAddress() != null ? citizen.getPermanentAddress() : ""));
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 }

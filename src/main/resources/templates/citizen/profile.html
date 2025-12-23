@@ -67,7 +67,8 @@
                                 <label class="form-label small fw-bold text-muted text-uppercase">Số định danh /
                                     CCCD</label>
                                 <input type="text" class="form-control bg-light font-monospace"
-                                    th:value="${#authentication.principal.username}" readonly>
+                                    th:value="${citizen != null ? citizen.cccd : #authentication.principal.username}"
+                                    readonly>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Ngày sinh</label>
@@ -78,7 +79,8 @@
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Giới tính</label>
                                 <input type="text" class="form-control bg-light"
-                                    th:value="${citizen != null ? citizen.gender : 'Chưa cập nhật'}" readonly>
+                                    th:value="${citizen != null ? (citizen.gender == 'MALE' ? 'Nam' : (citizen.gender == 'FEMALE' ? 'Nữ' : citizen.gender)) : 'Chưa cập nhật'}"
+                                    readonly>
                             </div>
                             <div class="col-12">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Địa chỉ thường trú (Hộ
@@ -87,7 +89,43 @@
                                     th:text="${citizen != null ? citizen.permanentAddress : 'Chưa cập nhật'}">Hải Châu, Đà Nẵng</textarea>
                             </div>
 
-                            <div class="col-12 mt-5">
+                            <!-- FAMILY MEMBERS SECTION -->
+                            <div class="col-12 mt-4" th:if="${familyMembers != null && !familyMembers.isEmpty()}">
+                                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Thành viên hộ gia đình</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover border">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="small text-muted text-uppercase">Họ và tên</th>
+                                                <th class="small text-muted text-uppercase">Quan hệ</th>
+                                                <th class="small text-muted text-uppercase">Ngày sinh</th>
+                                                <th class="small text-muted text-uppercase">Giới tính</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="m : ${familyMembers}">
+                                                <td class="fw-bold text-primary" th:text="${m.citizen.fullName}">Nguyễn
+                                                    Văn B</td>
+                                                <td>
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary"
+                                                        th:text="${m.relationToHead}">Vợ</span>
+                                                </td>
+                                                <td th:text="${#temporals.format(m.citizen.dob, 'dd/MM/yyyy')}">
+                                                    01/01/1980</td>
+                                                <td>
+                                                    <span th:if="${m.citizen.gender == 'MALE'}">Nam</span>
+                                                    <span th:if="${m.citizen.gender == 'FEMALE'}">Nữ</span>
+                                                    <span
+                                                        th:if="${m.citizen.gender != 'MALE' and m.citizen.gender != 'FEMALE'}"
+                                                        th:text="${m.citizen.gender}">---</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
                                 <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Thông tin liên hệ bổ sung</h6>
                             </div>
 

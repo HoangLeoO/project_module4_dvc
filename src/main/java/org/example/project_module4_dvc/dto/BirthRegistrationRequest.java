@@ -32,8 +32,10 @@ public class BirthRegistrationRequest {
     // Parent Info
     private String fatherName;
     private String fatherId;
+    private Integer fatherYearOfBirth;
     private String motherName;
     private String motherId;
+    private Integer motherYearOfBirth;
 
     // Logic Flags
     private boolean isPaternityRecognition; // "Nhận cha con"
