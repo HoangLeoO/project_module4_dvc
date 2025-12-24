@@ -53,7 +53,12 @@ public class TuPhapController {
     private ObjectMapper objectMapper;
     private MockCitizenRepository mockCitizenRepository;
 
-    public TuPhapController(ICatServiceService catServiceService, IMockCitizenService mockCitizenService, SysDepartmentService sysDepartmentService, CatServiceRepository catServiceRepository, SysUserRepository sysUserRepository, SysDepartmentRepository sysDepartmentRepository, OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository, FileStorageService fileStorageService, ObjectMapper objectMapper, MockCitizenRepository mockCitizenRepository) {
+    public TuPhapController(ICatServiceService catServiceService, IMockCitizenService mockCitizenService,
+            SysDepartmentService sysDepartmentService, CatServiceRepository catServiceRepository,
+            SysUserRepository sysUserRepository, SysDepartmentRepository sysDepartmentRepository,
+            OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
+            FileStorageService fileStorageService, ObjectMapper objectMapper,
+            MockCitizenRepository mockCitizenRepository) {
         this.catServiceService = catServiceService;
         this.mockCitizenService = mockCitizenService;
         this.sysDepartmentService = sysDepartmentService;
@@ -189,76 +194,4 @@ public class TuPhapController {
         }
     }
 
-    /**
-     * Kiểm tra tình trạng hôn nhân với CSDL dân cư
-     * Dùng cho chuyên viên khi xử lý hồ sơ xác nhận tình trạng hôn nhân
-     */
-    @GetMapping("/verify-marital-status")
-    @ResponseBody
-    public ResponseEntity<?> verifyMaritalStatus(
-            @RequestParam("idNumber") String idNumber,
-            @RequestParam("declaredStatus") String declaredStatus) {
-        try {
-            // 1. Tìm công dân theo CCCD trong CSDL dân cư
-            MockCitizen citizen = mockCitizenRepository.findByCccd(idNumber).orElse(null);
-
-            Map<String, Object> response = new HashMap<>();
-
-            if (citizen == null) {
-                response.put("isMatch", false);
-                response.put("declaredStatus", declaredStatus);
-                response.put("actualStatus", "NOT_FOUND");
-                response.put("message", "Không tìm thấy công dân trong CSDL với số CCCD: " + idNumber);
-                return ResponseEntity.ok(response);
-            }
-
-            // 2. So sánh tình trạng hôn nhân (không phân biệt hoa thường)
-            String actualStatus = citizen.getMaritalStatus() != null ? citizen.getMaritalStatus() : "UNKNOWN";
-            boolean isMatch = actualStatus.equalsIgnoreCase(declaredStatus);
-
-            // 3. Trả về kết quả
-            response.put("isMatch", isMatch);
-            response.put("declaredStatus", declaredStatus);
-            response.put("actualStatus", actualStatus);
-            response.put("citizenName", citizen.getFullName());
-
-            if (isMatch) {
-                response.put("message", "Thông tin tình trạng hôn nhân trùng khớp với CSDL dân cư.");
-            } else {
-                response.put("message", "CẢNH BÁO: Thông tin khai báo không khớp! Công dân khai '"
-                        + getStatusLabel(declaredStatus) + "' nhưng CSDL ghi nhận '" + getStatusLabel(actualStatus)
-                        + "'.");
-            }
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("isMatch", false);
-            errorResponse.put("message", "Lỗi khi kiểm tra: " + e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-    }
-
-    /**
-     * Chuyển đổi mã trạng thái sang nhãn tiếng Việt
-     */
-    private String getStatusLabel(String status) {
-        if (status == null)
-            return "Không xác định";
-        switch (status.toUpperCase()) {
-            case "SINGLE":
-                return "Chưa kết hôn";
-            case "MARRIED":
-                return "Đã kết hôn";
-            case "DIVORCED":
-                return "Đã ly hôn";
-            case "WIDOWED":
-                return "Góa";
-            case "NOT_FOUND":
-                return "Không tìm thấy";
-            default:
-                return status;
-        }
-    }
 }
