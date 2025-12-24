@@ -13,10 +13,9 @@ BEGIN
     DECLARE v_c_dob        DATE;
     DECLARE v_gender       VARCHAR(20);
     DECLARE v_father_cccd, v_mother_cccd, v_new_cccd VARCHAR(20);
-    DECLARE v_father_id, v_mother_id, v_p_id, v_h_id, v_new_child_id, v_new_household_id BIGINT;
-    DECLARE v_h_town, v_relig, v_addr, v_new_hh_code VARCHAR(255);
-    DECLARE v_parent_gender VARCHAR(10);
-    DECLARE v_last_hh_num INT;
+    DECLARE v_father_id, v_mother_id, v_p_id, v_h_id, v_new_child_id BIGINT;
+    DECLARE v_h_town, v_relig, v_addr VARCHAR(255);
+
 
     -- Chỉ chạy khi trạng thái chuyển sang 'RESULT_RETURNED'
     IF NEW.dossier_status = 'RESULT_RETURNED'
@@ -69,47 +68,15 @@ BEGIN
                     SET v_p_id = v_mother_id;
                 END IF;
 
-                -- Nếu tìm thấy hộ khẩu, lấy thông tin kế thừa
-                IF v_h_id IS NOT NULL THEN
-                    SELECT hometown, religion INTO v_h_town, v_relig FROM mock_citizens WHERE id = v_p_id LIMIT 1;
-                    SET v_addr = (SELECT address FROM mock_households WHERE id = v_h_id LIMIT 1);
-                ELSE
-                    -- ===== TẠO HỘ KHẨU MỚI NẾU CHA/MẸ CHƯA CÓ HỘ KHẨU =====
-                    
-                    -- Xác định ai sẽ là Chủ hộ (Ưu tiên Cha)
-                    IF v_father_id IS NOT NULL THEN
-                        SET v_p_id = v_father_id;
-                    ELSE
-                        SET v_p_id = v_mother_id;
-                    END IF;
-
-                    -- Lấy thông tin từ phụ huynh làm Chủ hộ
-                    IF v_p_id IS NOT NULL THEN
-                        SELECT hometown, religion, permanent_address 
-                        INTO v_h_town, v_relig, v_addr 
-                        FROM mock_citizens WHERE id = v_p_id LIMIT 1;
-
-                        -- Sinh mã Hộ khẩu tuần tự (HK-DN-XXXX)
-                        SET v_last_hh_num = (
-                            SELECT COALESCE(MAX(CAST(SUBSTRING(household_code, 7) AS UNSIGNED)), 0) 
-                            FROM mock_households 
-                            WHERE household_code LIKE 'HK-DN-%'
-                        );
-                        SET v_new_hh_code = CONCAT('HK-DN-', LPAD(v_last_hh_num + 1, 4, '0'));
-
-                        -- Tạo Hộ khẩu mới
-                        INSERT INTO mock_households (household_code, head_citizen_id, address)
-                        VALUES (v_new_hh_code, v_p_id, COALESCE(v_addr, 'Đà Nẵng'));
-
-                        SET v_new_household_id = LAST_INSERT_ID();
-
-                        -- Thêm phụ huynh vào Hộ khẩu với vai trò CHU_HO
-                        INSERT INTO mock_household_members (household_id, citizen_id, relation_to_head, move_in_date, status)
-                        VALUES (v_new_household_id, v_p_id, 'CHU_HO', CURDATE(), 1);
-
-                        -- Gán lại v_h_id để thêm con vào hộ mới này
-                        SET v_h_id = v_new_household_id;
-                    END IF;
+                -- Lấy thông tin kế thừa từ phụ huynh (ưu tiên cha, sau đó mẹ)
+                IF v_father_id IS NOT NULL THEN
+                    SELECT hometown, religion, permanent_address 
+                    INTO v_h_town, v_relig, v_addr 
+                    FROM mock_citizens WHERE id = v_father_id LIMIT 1;
+                ELSEIF v_mother_id IS NOT NULL THEN
+                    SELECT hometown, religion, permanent_address 
+                    INTO v_h_town, v_relig, v_addr 
+                    FROM mock_citizens WHERE id = v_mother_id LIMIT 1;
                 END IF;
 
                 -- 1. Tạo bản ghi Công dân mới (CCCD 12 số định dạng chuẩn)
@@ -123,12 +90,25 @@ BEGIN
 
                 SET v_new_child_id = LAST_INSERT_ID();
 
-                -- 2. Thêm vào sổ Hộ khẩu (Hộ cũ hoặc Hộ mới vừa tạo)
+                -- 2. Thêm vào sổ Hộ khẩu (nếu tìm thấy hộ khẩu của cha/mẹ)
                 IF v_h_id IS NOT NULL THEN
                     INSERT INTO mock_household_members
                         (household_id, citizen_id, relation_to_head, move_in_date, status)
                     VALUES
                         (v_h_id, v_new_child_id, 'CON', CURDATE(), 1);
+                END IF;
+
+                -- 3. Ghi mối quan hệ gia đình vào bảng mock_citizen_relationships
+                -- Nếu có cha: ghi mối quan hệ CON (trẻ là con của cha)
+                IF v_father_id IS NOT NULL THEN
+                    INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+                    VALUES (v_new_child_id, v_father_id, 'CHA');
+                END IF;
+
+                -- Nếu có mẹ: ghi mối quan hệ CON (trẻ là con của mẹ)
+                IF v_mother_id IS NOT NULL THEN
+                    INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+                    VALUES (v_new_child_id, v_mother_id, 'ME');
                 END IF;
 
             END IF;

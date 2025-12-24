@@ -9,7 +9,9 @@ import org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository;
 import org.example.project_module4_dvc.repository.ops.OpsLogWorkflowStepRepository;
 import org.example.project_module4_dvc.service.ops.IOpsDossierService;
 import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
+import org.example.project_module4_dvc.repository.mock.MockCitizenRelationshipRepository;
 import org.example.project_module4_dvc.repository.mod.ModPersonalVaultRepository;
+import org.example.project_module4_dvc.dto.FamilyMemberDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -161,7 +163,7 @@ public class CitizenDossierController {
 
     // 4. CÁC TRANG BỔ SUNG KHÁC
     @Autowired
-    private org.example.project_module4_dvc.repository.mock.MockHouseholdMemberRepository householdMemberRepository;
+    private MockCitizenRelationshipRepository relationshipRepository;
 
     @GetMapping("/profile")
     public String showProfile(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
@@ -169,15 +171,16 @@ public class CitizenDossierController {
         if (citizenId != null) {
             model.addAttribute("citizen", citizenRepository.findById(citizenId).orElse(null));
 
-            // Fetch Household Info
-            var myMemberships = householdMemberRepository.findByCitizen_IdAndStatus(citizenId, 1);
-            if (!myMemberships.isEmpty()) {
-                // Assuming one person belongs to one active household context at a time for
-                // this mockup
-                var listFamily = householdMemberRepository
-                        .findByHousehold_IdAndStatus(myMemberships.get(0).getHousehold().getId(), 1);
-                model.addAttribute("familyMembers", listFamily);
-            }
+            // Fetch Family Members through Relationships
+            var relationships = relationshipRepository.findByCitizenId(citizenId);
+            var familyMembers = relationships.stream()
+                    .map(rel -> FamilyMemberDTO.builder()
+                            .citizen(rel.getRelative())
+                            .relationshipType(rel.getRelationshipType())
+                            .build())
+                    .toList();
+
+            model.addAttribute("familyMembers", familyMembers);
         }
         model.addAttribute("activePage", "profile");
         return "citizen/profile";
