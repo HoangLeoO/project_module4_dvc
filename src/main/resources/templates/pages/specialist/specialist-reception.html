@@ -374,6 +374,86 @@
 
     <!-- File Preview Modal Script -->
     <th:block th:replace="~{components/modals/view-file-modal :: viewFileModalScript}"></th:block>
+
+    <!-- Marital Status Verification Script -->
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            // Kiểm tra tình trạng hôn nhân
+            $(document).on('click', '#btnVerifyMaritalStatus', function () {
+                const btn = $(this);
+                const idNumber = btn.data('id-number');
+                const declaredStatus = btn.data('declared-status');
+
+                if (!idNumber) {
+                    alert('Không có số CCCD để kiểm tra!');
+                    return;
+                }
+
+                // Disable button và hiển thị loading
+                btn.prop('disabled', true);
+                btn.html('<span class="spinner-border spinner-border-sm me-1"></span>');
+
+                // Gọi API kiểm tra
+                $.ajax({
+                    url: '/specialist/dashboard/verify-marital-status',
+                    type: 'GET',
+                    data: {
+                        idNumber: idNumber,
+                        declaredStatus: declaredStatus
+                    },
+                    success: function (response) {
+                        const resultDiv = $('#maritalVerificationResult');
+                        const alertDiv = $('#maritalVerificationAlert');
+                        const iconEl = $('#maritalVerificationIcon');
+                        const titleEl = $('#maritalVerificationTitle');
+                        const messageEl = $('#maritalVerificationMessage');
+
+                        resultDiv.show();
+
+                        if (response.isMatch) {
+                            // Trùng khớp - hiển thị thành công
+                            alertDiv.removeClass('alert-warning alert-danger').addClass('alert-success');
+                            iconEl.removeClass('bi-exclamation-triangle-fill bi-x-circle-fill text-warning text-danger')
+                                .addClass('bi-check-circle-fill text-success');
+                            titleEl.text('Xác minh thành công');
+                            messageEl.html(response.message + '<br><small class="text-muted">Công dân: ' + (response.citizenName || 'N/A') + '</small>');
+                        } else {
+                            // Không trùng khớp - cảnh báo
+                            alertDiv.removeClass('alert-success alert-danger').addClass('alert-warning');
+                            iconEl.removeClass('bi-check-circle-fill bi-x-circle-fill text-success text-danger')
+                                .addClass('bi-exclamation-triangle-fill text-warning');
+                            titleEl.text('Cảnh báo: Không trùng khớp!');
+                            messageEl.html(response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        const resultDiv = $('#maritalVerificationResult');
+                        const alertDiv = $('#maritalVerificationAlert');
+                        const iconEl = $('#maritalVerificationIcon');
+                        const titleEl = $('#maritalVerificationTitle');
+                        const messageEl = $('#maritalVerificationMessage');
+
+                        resultDiv.show();
+                        alertDiv.removeClass('alert-success alert-warning').addClass('alert-danger');
+                        iconEl.removeClass('bi-check-circle-fill bi-exclamation-triangle-fill text-success text-warning')
+                            .addClass('bi-x-circle-fill text-danger');
+                        titleEl.text('Lỗi kiểm tra');
+
+                        let errorMsg = 'Không thể kết nối đến hệ thống kiểm tra.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        messageEl.text(errorMsg);
+                    },
+                    complete: function () {
+                        // Restore button
+                        btn.prop('disabled', false);
+                        btn.html('Kiểm tra');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

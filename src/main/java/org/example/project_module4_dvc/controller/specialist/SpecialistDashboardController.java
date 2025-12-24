@@ -31,8 +31,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.example.project_module4_dvc.entity.mock.MockCitizen;
+import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/specialist/dashboard")
@@ -45,15 +50,17 @@ public class SpecialistDashboardController {
     private final ISpecialistService specialistService;
 
     private final IOpsDossierFileService opsDossierFileService;
+    private final MockCitizenRepository mockCitizenRepository;
 
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
             ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-            SpecialistService specialistService_1) {
+            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
         this.opsDossierFileService = opsDossierFileService;
         this.specialistService_1 = specialistService_1;
+        this.mockCitizenRepository = mockCitizenRepository;
     }
 
     @GetMapping("")
@@ -186,6 +193,79 @@ public class SpecialistDashboardController {
         } catch (Exception e) {
             System.err.println("Error converting Map to " + dtoClass.getSimpleName() + ": " + e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Kiểm tra tình trạng hôn nhân với CSDL dân cư
+     * Dùng cho chuyên viên khi xử lý hồ sơ xác nhận tình trạng hôn nhân
+     */
+    @GetMapping("/verify-marital-status")
+    @ResponseBody
+    public ResponseEntity<?> verifyMaritalStatus(
+            @RequestParam("idNumber") String idNumber,
+            @RequestParam("declaredStatus") String declaredStatus) {
+        try {
+            // 1. Tìm công dân theo CCCD trong CSDL dân cư
+            MockCitizen citizen = mockCitizenRepository.findByCccd(idNumber).orElse(null);
+
+            Map<String, Object> response = new HashMap<>();
+
+            if (citizen == null) {
+                response.put("isMatch", false);
+                response.put("declaredStatus", declaredStatus);
+                response.put("actualStatus", "NOT_FOUND");
+                response.put("message", "Không tìm thấy công dân trong CSDL với số CCCD: " + idNumber);
+                return ResponseEntity.ok(response);
+            }
+
+            // 2. So sánh tình trạng hôn nhân (không phân biệt hoa thường)
+            String actualStatus = citizen.getMaritalStatus() != null ? citizen.getMaritalStatus() : "UNKNOWN";
+            boolean isMatch = actualStatus.equalsIgnoreCase(declaredStatus);
+
+            // 3. Trả về kết quả
+            response.put("isMatch", isMatch);
+            response.put("declaredStatus", declaredStatus);
+            response.put("actualStatus", actualStatus);
+            response.put("citizenName", citizen.getFullName());
+
+            if (isMatch) {
+                response.put("message", "Thông tin tình trạng hôn nhân trùng khớp với CSDL dân cư.");
+            } else {
+                response.put("message", "Thông tin khai báo không khớp! Công dân khai "
+                        + getStatusLabel(declaredStatus) + " nhưng CSDL ghi nhận " + getStatusLabel(actualStatus)
+                        + ".");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("isMatch", false);
+            errorResponse.put("message", "Lỗi khi kiểm tra: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    /**
+     * Chuyển đổi mã trạng thái sang nhãn tiếng Việt
+     */
+    private String getStatusLabel(String status) {
+        if (status == null)
+            return "Không xác định";
+        switch (status.toUpperCase()) {
+            case "SINGLE":
+                return "Chưa kết hôn";
+            case "MARRIED":
+                return "Đã kết hôn";
+            case "DIVORCED":
+                return "Đã ly hôn";
+            case "WIDOWED":
+                return "Góa";
+            case "NOT_FOUND":
+                return "Không tìm thấy";
+            default:
+                return status;
         }
     }
 }
