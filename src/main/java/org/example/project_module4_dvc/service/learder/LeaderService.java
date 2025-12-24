@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.example.project_module4_dvc.dto.leader.DelegationConfigDTO;
 import org.example.project_module4_dvc.dto.leader.DelegationRequestDTO;
 import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
+import org.example.project_module4_dvc.dto.leader.report.ReportDomainStatDTO;
+import org.example.project_module4_dvc.dto.leader.report.ReportSummaryDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossierResult;
 import org.example.project_module4_dvc.entity.sys.SysDelegationScope;
 import org.example.project_module4_dvc.entity.sys.SysUser;
@@ -18,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -153,5 +157,76 @@ public class LeaderService implements ILeaderService {
     @Override
     public void opsDossierResults(OpsDossierResult opsDossierResult) {
         opsDossierResultRepository.save(opsDossierResult);
+    }
+
+    // --- REPORTING IMPLEMENTATION ---
+
+    @Override
+    public ReportSummaryDTO getReportSummary(Long deptId, String periodType, Integer year, Integer periodValue) {
+        LocalDateTime startDate;
+        LocalDateTime endDate;
+
+        LocalDate now = LocalDate.now();
+        int y = (year != null) ? year : now.getYear();
+
+        if ("MONTH".equalsIgnoreCase(periodType)) {
+            int m = (periodValue != null && periodValue >= 1 && periodValue <= 12) ? periodValue : now.getMonthValue();
+            startDate = LocalDate.of(y, m, 1).atStartOfDay();
+            endDate = startDate.plusMonths(1).minusSeconds(1);
+        } else if ("QUARTER".equalsIgnoreCase(periodType)) {
+            // Quarter 1: Month 1-3, Q2: 4-6, etc.
+            int currentQuarter = (now.getMonthValue() - 1) / 3 + 1;
+            int quarter = (periodValue != null && periodValue >= 1 && periodValue <= 4) ? periodValue : currentQuarter;
+            int startMonth = (quarter - 1) * 3 + 1;
+            startDate = LocalDate.of(y, startMonth, 1).atStartOfDay();
+            endDate = startDate.plusMonths(3).minusSeconds(1);
+        } else { // YEAR
+            startDate = LocalDate.of(y, 1, 1).atStartOfDay();
+            endDate = startDate.plusYears(1).minusSeconds(1);
+        }
+
+        long received = opsDossierRepository.countReceivedInPeriod(deptId, startDate, endDate);
+        long resolved = opsDossierRepository.countResolvedInPeriod(deptId, startDate, endDate);
+        long onTime = opsDossierRepository.countOnTimeInPeriod(deptId, startDate, endDate);
+        long rejected = opsDossierRepository.countRejectedInPeriod(deptId, startDate, endDate);
+
+        return ReportSummaryDTO.builder()
+                .totalReceived(received)
+                .totalResolved(resolved)
+                .onTimeCount(onTime)
+                .totalRejected(rejected)
+                .periodName(formatPeriodName(periodType, periodValue, y))
+                .build();
+    }
+
+    @Override
+    public List<ReportDomainStatDTO> getDomainStats(Long deptId, String periodType, Integer year, Integer periodValue) {
+        LocalDateTime startDate;
+        LocalDateTime endDate;
+        LocalDate now = LocalDate.now();
+        int y = (year != null) ? year : now.getYear();
+
+        if ("MONTH".equalsIgnoreCase(periodType)) {
+            int m = (periodValue != null && periodValue >= 1 && periodValue <= 12) ? periodValue : now.getMonthValue();
+            startDate = LocalDate.of(y, m, 1).atStartOfDay();
+            endDate = startDate.plusMonths(1).minusSeconds(1);
+        } else if ("QUARTER".equalsIgnoreCase(periodType)) {
+            int currentQuarter = (now.getMonthValue() - 1) / 3 + 1;
+            int quarter = (periodValue != null && periodValue >= 1 && periodValue <= 4) ? periodValue : currentQuarter;
+            int startMonth = (quarter - 1) * 3 + 1;
+            startDate = LocalDate.of(y, startMonth, 1).atStartOfDay();
+            endDate = startDate.plusMonths(3).minusSeconds(1);
+        } else {
+            startDate = LocalDate.of(y, 1, 1).atStartOfDay();
+            endDate = startDate.plusYears(1).minusSeconds(1);
+        }
+
+        return opsDossierRepository.getStatsByDomain(deptId, startDate, endDate);
+    }
+
+    private String formatPeriodName(String type, Integer value, int year) {
+        if ("MONTH".equalsIgnoreCase(type)) return "Tháng " + value + "/" + year;
+        if ("QUARTER".equalsIgnoreCase(type)) return "Quý " + value + "/" + year;
+        return "Năm " + year;
     }
 }

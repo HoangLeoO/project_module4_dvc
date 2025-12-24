@@ -4,77 +4,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cổng Dịch vụ công TP. Đà Nẵng (Mô phỏng)</title>
+    <title>Cổng Dịch vụ công TP. Đà Nẵng</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+
     <!-- Core CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../../assets/css/style.css" th:href="@{/assets/css/style.css}">
+
+    <style>
+        :root {
+            --primary-blue: #0f4c81;
+            /* Classic Blue */
+            --primary-dark: #0a355c;
+            --accent-gold: #ffd700;
+            --accent-red: #d32f2f;
+            --text-main: #2c3e50;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .animate-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* GLASS NAVBAR */
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 0.5px;
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(15, 76, 129, 0.9), rgba(10, 53, 92, 0.8)),
+                url('https://upload.wikimedia.org/wikipedia/commons/e/e4/Da_Nang_City_Hall.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            /* Parallax feel */
+            min-height: 85vh;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Circles */
+        .circle-deco {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.0));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            /* Increased padding */
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.3s;
+        }
+
+        .search-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-tabs-custom .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+            background: transparent;
+            padding: 10px 20px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            color: var(--primary-blue);
+        }
+
+        .search-input-group {
+            background: white;
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            border: none;
+            padding-left: 20px;
+            font-size: 1.1rem;
+        }
+
+        .search-input:focus {
+            box-shadow: none;
+        }
+
+        .btn-search {
+            border-radius: 50px;
+            padding: 10px 30px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-dark));
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-search:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(15, 76, 129, 0.4);
+        }
+
+        /* STATS CARDS */
+        .stats-section {
+            margin-top: -60px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            line-height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            background: rgba(15, 76, 129, 0.05);
+            color: var(--primary-blue);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover .icon-box {
+            background: var(--primary-blue);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* MODAL */
+        .modal-glass .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-pill-custom .nav-link {
+            border-radius: 50px;
+            padding: 10px 20px;
+            color: #6c757d;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-pill-custom .nav-link.active {
+            background-color: var(--primary-blue);
+            color: white;
+            box-shadow: 0 5px 15px rgba(15, 76, 129, 0.3);
+        }
+
+        .btn-vneid {
+            background: linear-gradient(45deg, #d32f2f, #b71c1c);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .btn-vneid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(211, 47, 47, 0.4);
+            color: white;
+        }
+
+        /* FOOTER */
+        .footer-modern {
+            background: #0f1c2e;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent-gold);
+            border-radius: 3px;
+        }
+
+        a.hover-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        a.hover-link:hover {
+            color: white;
+            padding-left: 5px;
+        }
+    </style>
 </head>
 
-<body class="bg-light d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100">
 
-    <!-- 1. HEADER (Transparent style for landing) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 py-3" style="z-index: 100;">
+    <!-- NAV -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-glass fixed-top py-3">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center fw-bold fs-4" th:href="@{/}">
-                <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+                <i class="bi bi-bank2 me-3 text-warning"></i>
+                <span>DỊCH VỤ CÔNG<br><small class="fs-6 fw-normal opacity-75 d-block">Thành phố Đà Nẵng</small></span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="landingNav">
-                <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active fw-bold border-bottom border-2 border-warning"
-                            th:href="@{/}">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="portal-services.html"
-                            th:href="@{/services}">Dịch vụ công</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="#">Hướng dẫn</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="portal-feedback.html"
-                            th:href="@{/feedback}">Phản ánh kiến
-                            nghị</a></li>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-lg-4">
+                    <li class="nav-item"><a class="nav-link active fw-bold text-warning" th:href="@{/}">Trang chủ</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/services}">Dịch vụ công</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="#">Tra cứu hồ sơ</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/feedback}">Góp ý</a></li>
                 </ul>
 
-                <!-- Unauthenticated: Show Login/Register -->
-                <div class="ms-lg-4 d-flex gap-2" sec:authorize="!isAuthenticated()">
-                    <button class="btn btn-outline-light fw-bold shadow-sm px-3" data-bs-toggle="modal"
+                <!-- Auth Buttons -->
+                <div class="ms-lg-4 d-flex gap-3 mt-3 mt-lg-0" sec:authorize="!isAuthenticated()">
+                    <button class="btn btn-outline-light rounded-pill px-4 fw-bold border-2" data-bs-toggle="modal"
                         data-bs-target="#registerModal">
                         Đăng ký
                     </button>
-                    <button class="btn btn-warning fw-bold shadow-sm px-3" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">
-                        <i class="bi bi-person-circle me-2"></i>Đăng nhập
+                    <button class="btn btn-light rounded-pill px-4 fw-bold text-primary shadow-sm"
+                        data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="bi bi-person-fill me-2"></i>Đăng nhập
                     </button>
                 </div>
 
-                <!-- Authenticated: Show User Info & Logout -->
-                <div class="ms-lg-4 d-flex gap-2 align-items-center" sec:authorize="isAuthenticated()">
+                <!-- Logged In User -->
+                <div class="ms-lg-4" sec:authorize="isAuthenticated()">
                     <div class="dropdown">
                         <button
-                            class="btn btn-outline-light fw-bold shadow-sm px-3 dropdown-toggle d-flex align-items-center"
-                            type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="bg-warning text-dark rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                style="width: 32px; height: 32px;">
-                                <i class="bi bi-person-fill"></i>
+                            class="btn btn-outline-light rounded-pill pe-4 ps-2 py-1 dropdown-toggle d-flex align-items-center border-2 border-white border-opacity-25 bg-white bg-opacity-10"
+                            type="button" data-bs-toggle="dropdown">
+                            <div class="bg-warning text-dark rounded-circle me-2 d-flex align-items-center justify-content-center border border-2 border-white"
+                                style="width: 36px; height: 36px;">
+                                <i class="bi bi-person-fill fs-5"></i>
                             </div>
-                            <span class="me-1">Xin chào, </span>
-                            <span sec:authentication="principal.fullName">Công Dân</span>
+                            <span class="fw-bold" sec:authentication="principal.fullName">Công Dân</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2">
+                            <li><a class="dropdown-item rounded-3 py-2" href="#"><i
+                                        class="bi bi-person-vcard me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2" href="#"><i
+                                        class="bi bi-file-earmark-text me-2 text-primary"></i>Hồ sơ của tôi</a></li>
                             <li>
-                                <h6 class="dropdown-header text-uppercase small text-muted">Tài khoản công dân</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person-vcard me-2"></i>Hồ sơ cá
-                                    nhân</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-text me-2"></i>Tra cứu hồ
-                                    sơ</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider opacity-10">
                             </li>
                             <li>
-                                <form th:action="@{/logout/citizen}" method="post" class="d-inline">
-                                    <button type="submit" class="dropdown-item text-danger fw-bold">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-                                    </button>
+                                <form th:action="@{/logout/citizen}" method="post">
+                                    <button class="dropdown-item rounded-3 py-2 text-danger fw-bold"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Đăng xuất</button>
                                 </form>
                             </li>
                         </ul>
@@ -84,105 +366,84 @@
         </div>
     </nav>
 
-    <!-- 2. HERO SECTION (Centered Layout) -->
-    <section class="hero-section bg-gradient-primary d-flex align-items-center position-relative text-white"
-        style="min-height: 100vh;">
-        <div class="container position-relative py-5 pt-lg-5 mt-5">
-            <div class="row align-items-center justify-content-center">
-                <!-- Center Content: Title & Search -->
-                <div class="col-lg-10 text-center">
-                    <span
-                        class="badge bg-white bg-opacity-25 text-white mb-3 px-3 py-2 rounded-pill fw-light border border-white border-opacity-25">
-                        <i class="bi bi-star-fill me-2 text-warning"></i>Cổng Dịch vụ công Quốc gia
-                    </span>
-                    <h1 class="display-3 fw-bolder mb-3" style="letter-spacing: -1px;">HỆ THỐNG MỘT CỬA<br>ĐIỆN TỬ ĐÀ
-                        NẴNG</h1>
-                    <p class="lead mb-5 opacity-90 fw-light">Nền tảng hành chính công hiện đại - Minh bạch - Phục vụ
-                        người dân 24/7</p>
+    <!-- HERO -->
+    <section class="hero-section d-flex align-items-center justify-content-center">
+        <!-- Floating Circles -->
+        <div class="circle-deco" style="width: 300px; height: 300px; top: -50px; left: -50px;"></div>
+        <div class="circle-deco"
+            style="width: 500px; height: 500px; bottom: -150px; right: -100px; animation-delay: 2s;"></div>
 
-                    <!-- Modern Two-Tab Search -->
-                    <div class="card card-modern border-0 shadow-lg-soft p-2 overflow-hidden mx-auto"
-                        style="max-width: 600px;">
-                        <div class="d-flex border-bottom mb-2">
-                            <button
-                                class="btn btn-white w-50 fw-bold border-bottom border-3 border-primary rounded-0 text-primary">
-                                <i class="bi bi-search me-2"></i>Tra cứu Thủ tục
-                            </button>
-                            <button
-                                class="btn btn-light w-50 fw-bold border-bottom border-3 border-transparent rounded-0 text-muted">
-                                <i class="bi bi-file-earmark-text me-2"></i>Tra cứu Hồ sơ
-                            </button>
-                        </div>
-                        <div class="p-2">
-                            <div class="input-group">
-                                <span class="input-group-text bg-transparent border-0"><i
-                                        class="bi bi-search text-primary fs-5"></i></span>
-                                <input type="text" class="form-control border-0 shadow-none fs-5"
-                                    placeholder="Nhập từ khóa (VD: Khai sinh)...">
-                                <button class="btn btn-primary rounded-3 px-4 fw-bold">Tìm kiếm</button>
-                            </div>
-                        </div>
-                    </div>
+        <div class="container text-center pt-5">
+            <div class="animate-up">
+                <div
+                    class="d-inline-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 mb-4 backdrop-blur">
+                    <i class="bi bi-star-fill text-warning me-2"></i>
+                    <span class="text-white small fw-bold tracking-wide">CỔNG DỊCH VỤ CÔNG QUỐC GIA</span>
+                </div>
+                <h1 class="display-3 fw-bolder mb-3" style="font-family: 'Playfair Display', serif;">Hành Chính Công
+                    Hiện Đại</h1>
+                <p class="lead opacity-80 mb-5 fw-light fs-4">Minh bạch - Nhanh chóng - Hiệu quả</p>
+            </div>
 
-                    <div class="mt-4 small opacity-75 d-flex gap-3 justify-content-center">
-                        <span><i class="bi bi-graph-up-arrow me-1"></i>Phổ biến:</span>
-                        <a href="#" class="text-white text-decoration-underline">Khai sinh</a>
-                        <a href="#" class="text-white text-decoration-underline">Đất đai</a>
-                        <a href="#" class="text-white text-decoration-underline">Chứng thực</a>
-                    </div>
+            <!-- SEARCH -->
+            <div class="search-container animate-up delay-2 mx-auto" style="max-width: 850px;">
+                <ul class="nav nav-tabs-custom mb-3 justify-content-center justify-content-md-start">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="bi bi-search me-2"></i>Tra cứu Thủ tục</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-file-earmark-text me-2"></i>Tra cứu Hồ sơ</a>
+                    </li>
+                </ul>
+                <div class="search-input-group d-flex p-1">
+                    <span class="input-group-text bg-transparent border-0 ps-3 text-muted"><i
+                            class="bi bi-search fs-5"></i></span>
+                    <input type="text" class="form-control search-input bg-transparent"
+                        placeholder="Nhập từ khóa tìm kiếm (VD: Đăng ký khai sinh...)...">
+                    <button class="btn btn-search text-white fw-bold shadow">
+                        Tìm kiếm
+                    </button>
+                </div>
+                <div class="mt-3 text-start ps-3 small text-muted">
+                    <span class="fw-bold me-2"><i class="bi bi-lightning-charge-fill text-warning"></i>Phổ biến:</span>
+                    <a href="#" class="text-secondary text-decoration-none me-3 hover-link">Cấp lại BHYT</a>
+                    <a href="#" class="text-secondary text-decoration-none me-3 hover-link">Đăng ký kết hôn</a>
+                    <a href="#" class="text-secondary text-decoration-none hover-link">Lý lịch tư pháp</a>
                 </div>
             </div>
         </div>
-
-        <!-- Wave decoration bottom -->
-        <div style="position: absolute; bottom: 0; left: 0; width: 100%; overflow: hidden; line-height: 0;">
-            <svg viewBox="0 0 1200 120" preserveAspectRatio="none"
-                style="position: relative; display: block; width: calc(100% + 1.3px); height: 60px;">
-                <path
-                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-                    fill="#f8faff"></path>
-            </svg>
-        </div>
     </section>
 
-    <!-- 4. STATS LIVE COUNTER -->
-    <section class="py-5" style="margin-top: -2rem; position: relative; z-index: 10;">
+    <!-- STATS -->
+    <section class="stats-section pb-5">
         <div class="container">
             <div class="row g-4">
-                <div class="col-md-3 col-6">
-                    <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
-                        <div class="mb-3 text-primary bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle">
-                            <i class="bi bi-file-earmark-check fs-2"></i>
-                        </div>
-                        <h3 class="fw-bolder mb-1 text-dark">1.2K</h3>
-                        <div class="text-muted small fw-medium">Hồ sơ đã nộp</div>
+                <div class="col-lg-3 col-6 animate-up delay-3">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="bi bi-file-check"></i></div>
+                        <h2 class="fw-bold text-dark mb-1">15.2K</h2>
+                        <span class="text-muted small text-uppercase fw-bold ls-1">Hồ sơ trực tuyến</span>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
-                        <div class="mb-3 text-success bg-success bg-opacity-10 d-inline-block p-3 rounded-circle">
-                            <i class="bi bi-clock-history fs-2"></i>
-                        </div>
-                        <h3 class="fw-bolder mb-1 text-dark">98%</h3>
-                        <div class="text-muted small fw-medium">Đúng hạn</div>
+                <div class="col-lg-3 col-6 animate-up delay-3">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="bi bi-clock-history"></i></div>
+                        <h2 class="fw-bold text-dark mb-1">99%</h2>
+                        <span class="text-muted small text-uppercase fw-bold ls-1">Giải quyết đúng hạn</span>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
-                        <div class="mb-3 text-warning bg-warning bg-opacity-10 d-inline-block p-3 rounded-circle">
-                            <i class="bi bi-people fs-2"></i>
-                        </div>
-                        <h3 class="fw-bolder mb-1 text-dark">2.5K</h3>
-                        <div class="text-muted small fw-medium">Công dân số</div>
+                <div class="col-lg-3 col-6 animate-up delay-3">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="bi bi-people"></i></div>
+                        <h2 class="fw-bold text-dark mb-1">2.4M</h2>
+                        <span class="text-muted small text-uppercase fw-bold ls-1">Người dùng</span>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="p-4 card-modern shadow-md-soft text-center hover-lift h-100">
-                        <div class="mb-3 text-info bg-info bg-opacity-10 d-inline-block p-3 rounded-circle">
-                            <i class="bi bi-grid-fill fs-2"></i>
-                        </div>
-                        <h3 class="fw-bolder mb-1 text-dark">150</h3>
-                        <div class="text-muted small fw-medium">Dịch vụ công</div>
+                <div class="col-lg-3 col-6 animate-up delay-3">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="bi bi-bank"></i></div>
+                        <h2 class="fw-bold text-dark mb-1">1.8K</h2>
+                        <span class="text-muted small text-uppercase fw-bold ls-1">Dịch vụ công</span>
                     </div>
                 </div>
             </div>
@@ -190,140 +451,149 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-footer-dark text-white py-5 mt-auto">
+    <footer class="footer-modern py-5 mt-auto">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-md-5">
-                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Đơn vị vận hành</h5>
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-building fs-1 me-3 opacity-50"></i>
-                        <div>
-                            <h6 class="fw-bold mb-1">TRUNG TÂM HÀNH CHÍNH CÔNG</h6>
-                            <p class="mb-0 small opacity-75">Thành phố Đà Nẵng</p>
-                        </div>
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <a href="#" class="d-flex align-items-center mb-3 text-decoration-none text-white">
+                        <i class="bi bi-bank2 fs-2 me-3 text-white-50"></i>
+                        <span class="fw-bold fs-5">TRUNG TÂM HÀNH CHÍNH CÔNG<br>TP. ĐÀ NẴNG</span>
+                    </a>
+                    <p class="opacity-75 lh-lg">
+                        Hệ thống cung cấp thông tin và dịch vụ công trực tuyến.
+                        Nơi tiếp nhận, xử lý phản ánh, kiến nghị của tổ chức, cá nhân.
+                    </p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 35px; height: 35px;"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 35px; height: 35px;"><i class="bi bi-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 35px; height: 35px;"><i class="bi bi-globe"></i></a>
                     </div>
-                    <p class="small opacity-50">Hệ thống cung cấp dịch vụ công trực tuyến mức độ 3, 4 phục vụ người dân
-                        và doanh nghiệp.</p>
                 </div>
-                <div class="col-md-3 offset-md-1">
-                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên kết</h5>
-                    <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
-                                    class="bi bi-chevron-right me-2"></i>Cổng thông tin Tp.</a></li>
-                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
-                                    class="bi bi-chevron-right me-2"></i>Sở TT & TT</a></li>
-                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
-                                    class="bi bi-chevron-right me-2"></i>Văn bản quy phạm</a></li>
+                <div class="col-lg-2 offset-lg-1">
+                    <h6 class="footer-title">LIÊN KẾT</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="#" class="hover-link">Cổng thông tin</a></li>
+                        <li><a href="#" class="hover-link">Văn bản pháp luật</a></li>
+                        <li><a href="#" class="hover-link">Thủ tục hành chính</a></li>
+                        <li><a href="#" class="hover-link">Dữ liệu mở</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3">
-                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên hệ</h5>
-                    <p class="small opacity-75 mb-1"><i class="bi bi-geo-alt me-2"></i>24 Trần Phú, Hải Châu</p>
-                    <p class="small opacity-75 mb-1"><i class="bi bi-telephone me-2"></i>(0236) 1022</p>
-                    <p class="small opacity-75"><i class="bi bi-envelope me-2"></i>contact@danang.gov.vn</p>
+                <div class="col-lg-2">
+                    <h6 class="footer-title">HỖ TRỢ</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="#" class="hover-link">Câu hỏi thường gặp</a></li>
+                        <li><a href="#" class="hover-link">Hướng dẫn sử dụng</a></li>
+                        <li><a href="#" class="hover-link">Kiểm tra trạng thái</a></li>
+                        <li><a href="#" class="hover-link">Góp ý hệ thống</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="footer-title">LIÊN HỆ</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-3">
+                        <li class="d-flex"><i class="bi bi-geo-alt text-warning me-3"></i> 24 Trần Phú, Hải Châu, Đà
+                            Nẵng</li>
+                        <li class="d-flex"><i class="bi bi-telephone text-warning me-3"></i> (0236) 1022</li>
+                        <li class="d-flex"><i class="bi bi-envelope text-warning me-3"></i> contact@danang.gov.vn</li>
+                    </ul>
                 </div>
             </div>
-            <hr class="opacity-10 my-4">
-            <div class="text-center small opacity-50">
-                &copy; 2025 E-Gov Simulation System (Static Prototype Mode)
+            <div class="border-top border-secondary border-opacity-25 mt-5 pt-4 text-center">
+                <p class="mb-0 opacity-50 small">&copy; 2025 E-Gov Simulation System. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
+
     <!-- LOGIN MODAL -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal fade modal-glass" id="loginModal" tabindex="-1" aria-hidden="true"
+        style="backdrop-filter: blur(8px);">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content overflow-hidden border-0 shadow-lg">
-                <div class="card auth-card border-0 mb-0 shadow-none">
-                    <!-- HEADER -->
-                    <div class="auth-header-logo">
-                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                            data-bs-dismiss="modal" aria-label="Close"></button>
-                        <div class="mb-2">
-                            <i class="bi bi-shield-check" style="font-size: 3rem;"></i>
+            <div class="modal-content border-0">
+                <div class="modal-body p-5">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-4" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+
+                    <div class="text-center mb-4">
+                        <div class="d-inline-block p-3 rounded-circle bg-danger bg-opacity-10 mb-3 text-danger">
+                            <i class="bi bi-shield-lock-fill fs-1"></i>
                         </div>
-                        <h4 class="fw-bold mb-0 text-uppercase">Tài khoản Định danh</h4>
-                        <small class="opacity-75">Cục Cảnh sát QLHC về TTXH</small>
+                        <h3 class="fw-bold">Đăng nhập</h3>
+                        <p class="text-muted">Chọn phương thức đăng nhập</p>
                     </div>
 
-                    <div class="card-body p-4 pt-4">
-                        <!-- TABS -->
-                        <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1 border" id="modalAuthTab"
-                            role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active rounded-pill small fw-bold" id="modal-qr-tab"
-                                    data-bs-toggle="pill" data-bs-target="#modal-qr-pane" type="button" role="tab"
-                                    aria-selected="true">
-                                    <i class="bi bi-qr-code-scan me-2"></i>Quét QR
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link rounded-pill small fw-bold" id="modal-account-tab"
-                                    data-bs-toggle="pill" data-bs-target="#modal-account-pane" type="button" role="tab"
-                                    aria-selected="false">
-                                    <i class="bi bi-person-fill me-2"></i>Tài khoản
-                                </button>
-                            </li>
-                        </ul>
+                    <ul class="nav nav-pills tab-pill-custom nav-fill mb-4 bg-light rounded-pill p-1" id="pills-tab"
+                        role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pills-qr-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-qr" type="button" role="tab" aria-selected="true"><i
+                                    class="bi bi-qr-code-scan me-2"></i>QR Code</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-acc-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-acc" type="button" role="tab" aria-selected="false"><i
+                                    class="bi bi-person me-2"></i>Tài khoản</button>
+                        </li>
+                    </ul>
 
-                        <div class="tab-content" id="modalAuthTabContent">
-                            <!-- TAB 1: QR CODE -->
-                            <div class="tab-pane fade show active" id="modal-qr-pane" role="tabpanel">
-                                <div class="text-center py-2">
-                                    <div class="qr-placeholder" onclick="window.location.href='portal-dashboard.html'"
-                                        title="Click để đăng nhập nhanh">
-                                        <i class="bi bi-qr-code-scan text-danger" style="font-size: 4rem;"></i>
-                                    </div>
-                                    <p class="text-muted small mt-3 mb-0">
-                                        Sử dụng ứng dụng <strong>VNeID</strong> để quét mã
-                                    </p>
-                                </div>
+                    <div class="tab-content" id="pills-tabContent">
+                        <!-- QR TAB -->
+                        <div class="tab-pane fade show active text-center" id="pills-qr" role="tabpanel">
+                            <div class="p-3 border rounded-4 bg-white d-inline-block shadow-sm mb-3 cursor-pointer hover-lift"
+                                onclick="window.location.href='portal-dashboard.html'">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=DemoAuth"
+                                    class="img-fluid" alt="QR">
+                            </div>
+                            <p class="small text-muted mb-0">Sử dụng ứng dụng <strong>VNeID</strong> để quét mã</p>
+                        </div>
+
+                        <!-- ACCOUNT TAB -->
+                        <div class="tab-pane fade" id="pills-acc" role="tabpanel">
+                            <!-- Alert Error -->
+                            <div th:if="${param.error}"
+                                class="alert alert-danger small py-2 d-flex align-items-center mb-3 border-0 bg-danger bg-opacity-10 text-danger rounded-3"
+                                role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>Sai thông tin đăng nhập!</div>
+                            </div>
+                            <!-- Alert Logout -->
+                            <div th:if="${param.logout}"
+                                class="alert alert-success small py-2 d-flex align-items-center mb-3 border-0 bg-success bg-opacity-10 text-success rounded-3"
+                                role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <div>Đăng xuất thành công!</div>
                             </div>
 
-                            <!-- TAB 2: FORM -->
-                            <div class="tab-pane fade" id="modal-account-pane" role="tabpanel">
-
-                                <!-- Alert Error -->
-                                <div th:if="${param.error}" class="alert alert-danger small p-2 mb-3">
-                                    <i class="bi bi-exclamation-circle-fill me-1"></i>
-                                    Sai thông tin đăng nhập hoặc tài khoản bị khóa!
+                            <form th:action="@{/process-login}" method="post">
+                                <div class="form-floating mb-3">
+                                    <input type="text" name="username"
+                                        class="form-control rounded-pill px-4 bg-light border-0" placeholder="Username"
+                                        value="048090000123" style="height: 55px;">
+                                    <label class="ps-4">Số định danh / CCCD</label>
                                 </div>
-
-                                <!-- Alert Logout -->
-                                <div th:if="${param.logout}" class="alert alert-success small p-2 mb-3">
-                                    <i class="bi bi-check-circle-fill me-1"></i>
-                                    Đã đăng xuất thành công!
+                                <div class="form-floating mb-3">
+                                    <input type="password" name="password"
+                                        class="form-control rounded-pill px-4 bg-light border-0" placeholder="Password"
+                                        value="password" style="height: 55px;">
+                                    <label class="ps-4">Mật khẩu</label>
                                 </div>
-
-                                <form th:action="@{/process-login}" method="post">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" name="username" class="form-control"
-                                            placeholder="Số định danh cá nhân" value="048090000123">
-                                        <label>Số Định danh / CCCD</label>
+                                <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                        <label class="form-check-label small text-muted" for="flexCheckDefault">Ghi
+                                            nhớ</label>
                                     </div>
-                                    <div class="form-floating mb-4">
-                                        <input type="password" name="password" class="form-control"
-                                            placeholder="Mật khẩu" value="password">
-                                        <label>Mật khẩu</label>
-                                    </div>
-                                    <button type="submit" class="btn btn-vneid btn-lg w-100 fw-bold shadow-sm">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i>ĐĂNG NHẬP
-                                    </button>
-                                </form>
-                                <div class="text-center mt-3 small">
                                     <a href="portal-forgot-pass.html"
-                                        class="text-secondary text-decoration-none hover-primary">
-                                        Quên mật khẩu? <span class="text-primary fw-bold ms-1">Lấy lại</span>
-                                    </a>
+                                        class="small text-decoration-none fw-bold text-primary">Quên mật khẩu?</a>
                                 </div>
+                                <button type="submit" class="btn btn-vneid w-100 shadow-lg">ĐĂNG NHẬP NGAY</button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <span class="small text-muted">Chưa có tài khoản? <a href="#"
+                                        class="text-primary fw-bold text-decoration-none">Đăng ký</a></span>
                             </div>
-                        </div>
-
-                        <div class="text-center mt-4 mb-2 small">
-                            <a href="#" class="text-secondary text-decoration-none hover-primary" data-bs-toggle="modal"
-                                data-bs-target="#registerModal">
-                                Chưa có tài khoản? <span class="text-primary fw-bold">Đăng ký ngay</span>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -331,59 +601,33 @@
         </div>
     </div>
 
-    <!-- REGISTER MODAL -->
-    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content overflow-hidden border-0 shadow-lg">
-                <div class="card auth-card border-0 mb-0 shadow-none">
-                    <!-- HEADER -->
-                    <div class="auth-header-logo">
-                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                            data-bs-dismiss="modal" aria-label="Close"></button>
-                        <div class="mb-2">
-                            <i class="bi bi-person-plus" style="font-size: 3rem;"></i>
-                        </div>
-                        <h4 class="fw-bold mb-0 text-uppercase">Đăng ký Tài khoản</h4>
-                        <small class="opacity-75">Cổng Dịch vụ công Quốc gia</small>
-                    </div>
-
-                    <div class="card-body p-4 pt-4">
-                        <form action="portal-dashboard.html">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" placeholder="Họ và tên" required>
-                                <label>Họ và tên</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" placeholder="Số định danh / CCCD" required>
-                                <label>Số định danh / CCCD</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" placeholder="Số điện thoại" required>
-                                <label>Số điện thoại</label>
-                            </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" class="form-control" placeholder="Mật khẩu" required>
-                                <label>Mật khẩu</label>
-                            </div>
-                            <button type="submit" class="btn btn-vneid btn-lg w-100 fw-bold shadow-sm">
-                                <i class="bi bi-person-plus-fill me-2"></i>ĐĂNG KÝ
-                            </button>
-                        </form>
-
-                        <div class="text-center mt-4 mb-2 small">
-                            <a href="#" class="text-secondary text-decoration-none hover-primary" data-bs-toggle="modal"
-                                data-bs-target="#loginModal">
-                                Đã có tài khoản? <span class="text-primary fw-bold">Đăng nhập ngay</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JS Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if error parameter exists in URL or Thymeleaf context
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasError = urlParams.has('error');
+            const hasLogout = urlParams.has('logout');
+
+            if (hasError || hasLogout) {
+                // Initialize Modal
+                const loginModalEl = document.getElementById('loginModal');
+                if (loginModalEl) {
+                    const loginModal = new bootstrap.Modal(loginModalEl);
+                    loginModal.show();
+
+                    // Switch to Account Tab if it's an error (default is usually QR)
+                    if (hasError) {
+                        const accountTabTrigger = document.getElementById('pills-acc-tab');
+                        if (accountTabTrigger) {
+                            const tabInstance = new bootstrap.Tab(accountTabTrigger);
+                            tabInstance.show();
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

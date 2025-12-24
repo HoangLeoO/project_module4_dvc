@@ -37,6 +37,16 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
+    // --- 0. WEBSOCKET CHAIN (Prioritized) ---
+    @Bean
+    @Order(0)
+    public SecurityFilterChain websocketFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/ws/**");
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+        http.csrf(AbstractHttpConfigurer::disable);
+        return http.build();
+    }
+
     // --- 1. ADMIN CHAIN (Ưu tiên cao nhất) ---
     @Bean
     @Order(1)

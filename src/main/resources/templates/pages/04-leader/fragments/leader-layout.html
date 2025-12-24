@@ -4,17 +4,18 @@
 <body>
 
     <!-- SIDEBAR FRAGMENT -->
-    <div th:fragment="sidebar" class="bg-white border-end shadow-sm"
-        style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1030; display: flex; flex-direction: column;">
+    <div th:fragment="sidebar" class="shadow-sm"
+        style="width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1030; display: flex; flex-direction: column; background: linear-gradient(135deg, #003366 0%, #001f3f 100%); color: white;">
 
         <!-- Brand -->
-        <div class="p-3 border-bottom d-flex align-items-center justify-content-center bg-white" style="height: 64px;">
+        <div class="p-3 border-bottom border-white border-opacity-10 d-flex align-items-center justify-content-center"
+            style="height: 64px; background: rgba(0,0,0,0.1);">
             <a href="#" class="text-decoration-none d-flex align-items-center gap-2">
-                <i class="bi bi-bank2 fs-3 text-primary"></i>
+                <i class="bi bi-bank2 fs-3 text-warning"></i>
                 <div class="d-flex flex-column">
-                    <span class="fw-bold text-dark text-uppercase"
+                    <span class="fw-bold text-white text-uppercase"
                         style="font-size: 0.9rem; letter-spacing: 0.5px;">Lãnh Đạo</span>
-                    <span class="text-muted small" style="font-size: 0.65rem;">UBND TP. Đà Nẵng</span>
+                    <span class="text-white-50 small" style="font-size: 0.65rem;">UBND TP. Đà Nẵng</span>
                 </div>
             </a>
         </div>
@@ -27,30 +28,35 @@
             </small>
 
             <a href="/leader/dashboard"
-                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center"
-                th:classappend="${currentPage == 'dashboard' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}">
+                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center mb-1"
+                th:classappend="${currentPage == 'dashboard' ? 'bg-white bg-opacity-10 text-warning fw-bold' : 'bg-transparent text-white opacity-75 hover-opacity-100'}"
+                style="transition: all 0.2s;">
                 <i class="bi bi-speedometer2 me-3 fs-5"></i>
                 <span class="fw-medium">Tổng quan</span>
             </a>
 
             <a href="/leader/my-dossiers"
-                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center"
-                th:classappend="${currentPage == 'approval' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}">
+                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center mb-1"
+                th:classappend="${currentPage == 'approval' ? 'bg-white bg-opacity-10 text-warning fw-bold' : 'bg-transparent text-white opacity-75 hover-opacity-100'}"
+                style="transition: all 0.2s;">
                 <i class="bi bi-pen me-3 fs-5"></i>
                 <span class="fw-medium">Duyệt hồ sơ</span>
-                <span class="badge bg-danger ms-auto rounded-pill" style="font-size: 0.7rem;">15</span>
+                <span class="badge bg-danger ms-auto rounded-pill" style="font-size: 0.7rem;" th:text="${pendingCount}"
+                    th:if="${pendingCount > 0}">15</span>
             </a>
 
             <a href="/leader/reports"
-                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center"
-                th:classappend="${currentPage == 'reports' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}">
+                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center mb-1"
+                th:classappend="${currentPage == 'reports' ? 'bg-white bg-opacity-10 text-warning fw-bold' : 'bg-transparent text-white opacity-75 hover-opacity-100'}"
+                style="transition: all 0.2s;">
                 <i class="bi bi-bar-chart-line me-3 fs-5"></i>
                 <span class="fw-medium">Báo cáo số liệu</span>
             </a>
 
             <a href="/leader/delegation"
-                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center"
-                th:classappend="${currentPage == 'delegation' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}">
+                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center mb-1"
+                th:classappend="${currentPage == 'delegation' ? 'bg-white bg-opacity-10 text-warning fw-bold' : 'bg-transparent text-white opacity-75 hover-opacity-100'}"
+                style="transition: all 0.2s;">
                 <i class="bi bi-person-fill-gear me-3 fs-5"></i>
                 <span class="fw-medium">Ủy quyền ký</span>
             </a>
@@ -63,16 +69,16 @@
             </small>
 
             <a href="#"
-                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center text-secondary">
+                class="list-group-item list-group-item-action rounded border-0 px-3 py-2 d-flex align-items-center bg-transparent text-white opacity-75 hover-opacity-100">
                 <i class="bi bi-gear me-3 fs-5"></i>
                 <span class="fw-medium">Cài đặt tài khoản</span>
             </a>
         </div>
 
         <!-- Footer / Logout -->
-        <div class="p-3 border-top bg-light">
+        <div class="p-3 border-top border-white border-opacity-10 bg-transparent">
             <a href="/logout/official"
-                class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+                class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2 opacity-75 hover-opacity-100">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Đăng xuất</span>
             </a>
@@ -117,7 +123,8 @@
                         class="rounded-circle shadow-sm" width="38" height="38">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg animate-slide-in">
-                    <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2 text-muted"></i>Hồ sơ cá
+                    <li><a class="dropdown-item py-2" href="/leader/profile"><i
+                                class="bi bi-person me-2 text-muted"></i>Hồ sơ cá
                             nhân</a></li>
                     <li><a class="dropdown-item py-2" href="#"><i class="bi bi-gear me-2 text-muted"></i>Cấu hình</a>
                     </li>
@@ -129,6 +136,57 @@
                 </ul>
             </div>
         </div>
+        <!-- TOAST CONTAINER -->
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100; margin-top: 65px;">
+            <div id="liveToast" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div id="toastBody" class="toast-body fw-medium">
+                        Hello, world! This is a toast message.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function showToast(message, type = 'success') {
+                const toastEl = document.getElementById('liveToast');
+                const toastBody = document.getElementById('toastBody');
+                const btnClose = toastEl.querySelector('.btn-close');
+
+                // Reset classes
+                toastEl.className = 'toast align-items-center border-0 shadow-lg animate__animated animate__fadeInUp';
+                btnClose.className = 'btn-close me-2 m-auto'; // reset
+
+                if (type === 'success') {
+                    toastEl.classList.add('bg-success', 'text-white');
+                    btnClose.classList.add('btn-close-white');
+                } else if (type === 'error' || type === 'danger') {
+                    toastEl.classList.add('bg-danger', 'text-white');
+                    btnClose.classList.add('btn-close-white');
+                } else if (type === 'warning') {
+                    toastEl.classList.add('bg-warning', 'text-dark');
+                    // warning default close button is black
+                } else {
+                    toastEl.classList.add('bg-primary', 'text-white');
+                    btnClose.classList.add('btn-close-white');
+                }
+
+                toastBody.textContent = message;
+
+                // Init Bootstrap Toast if not already
+                // We rely on bootstrap global object. Ensure bootstrap js is loaded in the page.
+                if (typeof bootstrap !== 'undefined') {
+                    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                    toast.show();
+                } else {
+                    console.error("Bootstrap 5 JS not loaded");
+                    alert(message); // Fallback
+                }
+            }
+        </script>
     </nav>
 
 </body>

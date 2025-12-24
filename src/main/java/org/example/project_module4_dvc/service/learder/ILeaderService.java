@@ -46,4 +46,10 @@ public interface ILeaderService {
     void revokeDelegation(Long delegationId);
 
     void opsDossierResults(OpsDossierResult opsDossierResult);
+
+    // Reports
+    org.example.project_module4_dvc.dto.leader.report.ReportSummaryDTO getReportSummary(Long deptId, String periodType, Integer year, Integer periodValue);
+    
+    java.util.List<org.example.project_module4_dvc.dto.leader.report.ReportDomainStatDTO> getDomainStats(Long deptId, String periodType, Integer year, Integer periodValue);
+
 }
