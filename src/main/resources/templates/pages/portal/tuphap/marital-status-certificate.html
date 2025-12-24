@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Xác nhận tình trạng hôn nhân')}">
+</head>
+
+<style>
+    .wizard-step {
+        position: relative;
+        z-index: 1;
+    }
+
+    .wizard-step .btn-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #dee2e6;
+        background: white;
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    .wizard-step.active .btn-circle {
+        border-color: var(--bs-primary);
+        background: var(--bs-primary);
+        color: white;
+    }
+
+    .wizard-connector {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #dee2e6;
+        z-index: 0;
+    }
+</style>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <main class="container mt-5 pt-5 mb-5">
+
+        <!-- Page Title -->
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary mb-2">Đăng ký Giấy xác nhận Tình trạng Hôn nhân</h2>
+            <p class="text-muted">Thủ tục cấp Giấy xác nhận tình trạng hôn nhân (Mã: HT02_XACNHANHN)</p>
+        </div>
+
+        <!-- Wizard Nav -->
+        <div class="position-relative mb-5 mx-auto" style="max-width: 700px;">
+            <div class="wizard-connector"></div>
+            <div class="d-flex justify-content-between position-relative">
+
+                <div class="wizard-step active" id="navStep1">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">1</div>
+                        <small class="fw-bold">Thông tin cá nhân</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep2">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">2</div>
+                        <small class="text-muted">Thành phần hồ sơ</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep3">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">3</div>
+                        <small class="text-muted">Thanh toán & Nộp</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Wizard Content -->
+        <div class="card shadow-sm border-0 rounded-3 wizard-content mx-auto" style="max-width: 900px;">
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- Hidden Fields -->
+                <input type="hidden" id="serviceId" th:value="${s != null ? s.id : 4}">
+                <input type="hidden" id="serviceCode" th:value="${s != null ? s.serviceCode : 'HT02_XACNHANHN'}">
+                <input type="hidden" id="citizenId" th:value="${citizen.id}">
+
+                <!-- STEP 1: Personal Info -->
+                <div id="step1">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 1: Thông tin người yêu cầu</h5>
+
+                    <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+                        <i class="bi bi-person-check-fill fs-4 me-3"></i>
+                        <div>Hệ thống đã tự động điền thông tin của bạn từ Cơ sở dữ liệu quốc gia về dân cư.</div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Họ và tên <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="requesterFullName"
+                                class="form-control form-control-lg bg-light fw-bold" th:value="${citizen.fullName}"
+                                readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Ngày sinh <span
+                                    class="text-danger">*</span></label>
+                            <input type="date" id="dateOfBirth" class="form-control form-control-lg bg-light"
+                                th:value="${citizen.dob}" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Số CCCD <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="idNumber" class="form-control form-control-lg bg-light"
+                                th:value="${citizen.cccd}" readonly>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-uppercase mb-3 text-secondary border-top pt-4">Thông tin hôn nhân</h6>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Tình trạng hôn nhân hiện tại <span
+                                    class="text-danger">*</span></label>
+                            <select id="currentMaritalStatus" class="form-select form-select-lg" required>
+                                <option value="" disabled selected>-- Chọn tình trạng --</option>
+                                <option value="SINGLE"
+                                    th:selected="${#strings.equalsIgnoreCase(citizen.maritalStatus, 'SINGLE')}">Chưa kết
+                                    hôn</option>
+                                <option value="MARRIED"
+                                    th:selected="${#strings.equalsIgnoreCase(citizen.maritalStatus, 'MARRIED')}">Đã kết
+                                    hôn</option>
+                                <option value="DIVORCED">Đã ly hôn</option>
+                                <option value="WIDOWED">Góa</option>
+                            </select>
+                            <p class="invalid-feedback" id="currentMaritalStatusError" style="display: none;"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Giai đoạn xác nhận <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="confirmationPeriod" class="form-control form-control-lg"
+                                placeholder="VD: Từ 01/01/2020 đến nay" required>
+                            <p class="invalid-feedback" id="confirmationPeriodError" style="display: none;"></p>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Mục đích sử dụng <span
+                                    class="text-danger">*</span></label>
+                            <textarea id="purposeOfUse" class="form-control" rows="3"
+                                placeholder="VD: Để xin visa du lịch nước ngoài, để đăng ký kết hôn..."
+                                required></textarea>
+                            <p class="invalid-feedback" id="purposeOfUseError" style="display: none;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: File Upload -->
+                <div id="step2" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Thành phần hồ sơ</h5>
+
+                    <div class="alert alert-info small d-flex align-items-center mb-4">
+                        <i class="bi bi-info-circle-fill fs-5 me-3"></i>
+                        <div>Dung lượng mỗi file không quá 10MB. Chấp nhận định dạng: .pdf, .jpg, .png</div>
+                    </div>
+
+                    <div id="uploadList" class="row g-3">
+                        <!-- CCCD -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Bản sao CCCD/CMND <span
+                                                    class="text-danger">*</span></h6>
+                                            <p class="small text-muted mb-0">Đính kèm bản sao hoặc ảnh chụp 2 mặt
+                                                CCCD/CMND</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="idCardFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'idCard')">
+                                        </div>
+                                    </div>
+                                    <div id="idCardFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tờ khai -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Tờ khai xác nhận tình trạng hôn nhân</h6>
+                                            <p class="small text-muted mb-0">Theo mẫu quy định (nếu có)</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="declarationFiles"
+                                                class="form-control form-control-sm" multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'declaration')">
+                                        </div>
+                                    </div>
+                                    <div id="declarationFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Giấy tờ khác -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Giấy tờ bổ sung (nếu có)</h6>
+                                            <p class="small text-muted mb-0">Giấy xác nhận độc thân, quyết định ly hôn,
+                                                giấy chứng tử...</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="otherFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'other')">
+                                        </div>
+                                    </div>
+                                    <div id="otherFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Payment & Submit -->
+                <div id="step3" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Thanh toán & Nộp hồ sơ</h5>
+
+                    <!-- Review Summary -->
+                    <div class="card border border-light shadow-sm mb-4">
+                        <div class="card-header bg-light py-2">
+                            <h6 class="mb-0 fw-bold"><i class="bi bi-person-vcard me-2"></i>Thông tin đã khai</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="small text-muted d-block">Họ và tên</label>
+                                    <span id="reviewName" class="fw-bold">---</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted d-block">Ngày sinh</label>
+                                    <span id="reviewDob" class="fw-bold">---</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted d-block">Số CCCD</label>
+                                    <span id="reviewIdNumber" class="fw-bold">---</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted d-block">Tình trạng hôn nhân</label>
+                                    <span id="reviewMaritalStatus"
+                                        class="fw-bold badge bg-primary-subtle text-primary">---</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted d-block">Giai đoạn xác nhận</label>
+                                    <span id="reviewPeriod" class="fw-bold">---</span>
+                                </div>
+                                <div class="col-12">
+                                    <label class="small text-muted d-block">Mục đích sử dụng</label>
+                                    <span id="reviewPurpose" class="fw-bold text-wrap">---</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Receiving Department -->
+                    <div class="card border shadow-sm mb-4">
+                        <div class="card-body">
+                            <label class="form-label fw-bold">Đơn vị tiếp nhận hồ sơ <span
+                                    class="text-danger">*</span></label>
+                            <select id="receivingDeptId" class="form-select border-primary" required>
+                                <option value="" selected disabled>-- Chọn Phường/Xã tiếp nhận --</option>
+                                <option th:each="dept : ${sysDepartments}" th:if="${dept.level == 2}"
+                                    th:value="${dept.id}" th:text="${dept.deptName}">Phường A</option>
+                            </select>
+                            <p class="invalid-feedback" id="receivingDeptIdError" style="display: none;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Fee Info -->
+                    <div class="bg-white p-4 border rounded mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Lệ phí thủ tục:</span>
+                            <span class="fw-bold text-danger fs-5" id="totalFeeDisplay"
+                                th:text="${s != null ? #numbers.formatDecimal(s.feeAmount, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '30,000 VNĐ'}">30,000
+                                VNĐ</span>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle me-1"></i>Thanh toán tại bộ phận một cửa khi nhận kết quả.
+                        </small>
+                    </div>
+
+                    <!-- Confirmation -->
+                    <div class="form-check p-3 bg-light rounded border mb-1">
+                        <input class="form-check-input ms-0 me-3" type="checkbox" id="confirmDataCorrect" required>
+                        <label class="form-check-label fw-bold" for="confirmDataCorrect">
+                            Tôi cam đoan toàn bộ thông tin đã cung cấp là chính xác và chịu trách nhiệm trước pháp luật.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                    <button class="btn btn-secondary px-4 disabled" id="btnBack" onclick="changeStep(-1)">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại
+                    </button>
+                    <button class="btn btn-primary px-4 fw-bold" id="btnNext" onclick="changeStep(1)">
+                        Tiếp tục <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+    <!-- Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-primary" id="messageModalTitle">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-info-circle-fill text-primary" style="font-size: 3rem;"
+                            id="messageModalIcon"></i>
+                    </div>
+                    <p class="mb-0 fs-5" id="messageModalBody">Nội dung thông báo</p>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center">
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script th:inline="javascript">
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        // File storage
+        let selectedIdCardFiles = [];
+        let selectedDeclarationFiles = [];
+        let selectedOtherFiles = [];
+
+        // Helper: Show Modal
+        function showModal(message, type = 'info') {
+            const modalEl = document.getElementById('messageModal');
+            const titleEl = document.getElementById('messageModalTitle');
+            const bodyEl = document.getElementById('messageModalBody');
+            const iconEl = document.getElementById('messageModalIcon');
+            const modal = new bootstrap.Modal(modalEl);
+
+            bodyEl.innerText = message;
+
+            if (type === 'error') {
+                titleEl.innerText = 'Lỗi';
+                titleEl.className = 'modal-title fw-bold text-danger';
+                iconEl.className = 'bi bi-x-circle-fill text-danger';
+            } else if (type === 'warning') {
+                titleEl.innerText = 'Lưu ý';
+                titleEl.className = 'modal-title fw-bold text-warning';
+                iconEl.className = 'bi bi-exclamation-triangle-fill text-warning';
+            } else if (type === 'success') {
+                titleEl.innerText = 'Thành công';
+                titleEl.className = 'modal-title fw-bold text-success';
+                iconEl.className = 'bi bi-check-circle-fill text-success';
+            } else {
+                titleEl.innerText = 'Thông báo';
+                titleEl.className = 'modal-title fw-bold text-primary';
+                iconEl.className = 'bi bi-info-circle-fill text-primary';
+            }
+
+            modal.show();
+        }
+
+        // Wizard Navigation
+        function changeStep(delta) {
+            if (delta === 1 && !validateStep(currentStep)) return;
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            updateWizardUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                let isValid = true;
+                const setError = (id, cond, msg = '') => {
+                    const el = document.getElementById(id);
+                    const errorEl = document.getElementById(id + 'Error');
+                    if (el) {
+                        if (!cond) {
+                            el.classList.add('is-invalid');
+                            isValid = false;
+                            if (errorEl) { errorEl.innerText = msg; errorEl.style.display = 'block'; }
+                        } else {
+                            el.classList.remove('is-invalid');
+                            if (errorEl) { errorEl.style.display = 'none'; }
+                        }
+                    }
+                };
+
+                setError('currentMaritalStatus', document.getElementById('currentMaritalStatus').value !== '', 'Vui lòng chọn tình trạng hôn nhân.');
+                setError('confirmationPeriod', document.getElementById('confirmationPeriod').value.trim() !== '', 'Vui lòng nhập giai đoạn xác nhận.');
+                setError('purposeOfUse', document.getElementById('purposeOfUse').value.trim() !== '', 'Vui lòng nhập mục đích sử dụng.');
+
+                return isValid;
+            }
+            if (step === 2) {
+                if (selectedIdCardFiles.length === 0) {
+                    showModal('Vui lòng đính kèm bản sao CCCD/CMND.', 'warning');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 3) {
+                const deptEl = document.getElementById('receivingDeptId');
+                if (!deptEl.value) {
+                    deptEl.classList.add('is-invalid');
+                    document.getElementById('receivingDeptIdError').innerText = 'Vui lòng chọn đơn vị tiếp nhận.';
+                    document.getElementById('receivingDeptIdError').style.display = 'block';
+                    return false;
+                }
+                const check = document.getElementById('confirmDataCorrect');
+                if (!check.checked) {
+                    showModal('Vui lòng xác nhận cam đoan thông tin là chính xác.', 'warning');
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        function updateWizardUI() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const el = document.getElementById(`step${i}`);
+                const navEl = document.getElementById(`navStep${i}`);
+                if (i === currentStep) {
+                    if (el) el.classList.remove('d-none');
+                    if (navEl) {
+                        navEl.classList.add('active');
+                        navEl.querySelector('small').className = 'fw-bold';
+                    }
+                } else {
+                    if (el) el.classList.add('d-none');
+                    if (navEl) {
+                        navEl.classList.remove('active');
+                        navEl.querySelector('small').className = 'text-muted';
+                    }
+                }
+            }
+
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+
+            if (currentStep === 1) btnBack.classList.add('disabled');
+            else btnBack.classList.remove('disabled');
+
+            if (currentStep === totalSteps) {
+                populateReviewStep();
+                btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
+                btnNext.className = 'btn btn-success px-4 fw-bold';
+                btnNext.onclick = function () { submitForm(); };
+            } else {
+                btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
+                btnNext.className = 'btn btn-primary px-4 fw-bold';
+                btnNext.onclick = function () { changeStep(1); };
+            }
+        }
+
+        function populateReviewStep() {
+            document.getElementById('reviewName').innerText = document.getElementById('requesterFullName').value;
+            document.getElementById('reviewDob').innerText = formatDate(document.getElementById('dateOfBirth').value);
+            document.getElementById('reviewIdNumber').innerText = document.getElementById('idNumber').value;
+
+            const statusMap = { 'SINGLE': 'Chưa kết hôn', 'MARRIED': 'Đã kết hôn', 'DIVORCED': 'Đã ly hôn', 'WIDOWED': 'Góa' };
+            const statusVal = document.getElementById('currentMaritalStatus').value;
+            document.getElementById('reviewMaritalStatus').innerText = statusMap[statusVal] || statusVal;
+
+            document.getElementById('reviewPeriod').innerText = document.getElementById('confirmationPeriod').value;
+            document.getElementById('reviewPurpose').innerText = document.getElementById('purposeOfUse').value;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '---';
+            if (dateStr.includes('-')) {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        // File Upload Functions (Reused Pattern)
+        function handleFileSelect(event, type) {
+            const files = Array.from(event.target.files);
+            if (type === 'idCard') {
+                selectedIdCardFiles = [...selectedIdCardFiles, ...files];
+                renderFileList('idCard');
+            } else if (type === 'declaration') {
+                selectedDeclarationFiles = [...selectedDeclarationFiles, ...files];
+                renderFileList('declaration');
+            } else {
+                selectedOtherFiles = [...selectedOtherFiles, ...files];
+                renderFileList('other');
+            }
+            event.target.value = '';
+        }
+
+        function renderFileList(type) {
+            let files, listEl;
+            if (type === 'idCard') {
+                files = selectedIdCardFiles;
+                listEl = document.getElementById('idCardFilesList');
+            } else if (type === 'declaration') {
+                files = selectedDeclarationFiles;
+                listEl = document.getElementById('declarationFilesList');
+            } else {
+                files = selectedOtherFiles;
+                listEl = document.getElementById('otherFilesList');
+            }
+            listEl.innerHTML = '';
+
+            files.forEach((file, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'badge bg-light border text-dark p-2 d-flex align-items-center gap-2';
+                badge.innerHTML = `
+                    <i class="bi bi-file-earmark-arrow-up text-primary"></i>
+                    <span class="text-truncate" style="max-width: 150px;">${file.name}</span>
+                    <button type="button" class="btn-close" style="font-size: 0.5rem;" onclick="removeFile('${type}', ${index})"></button>
+                `;
+                listEl.appendChild(badge);
+            });
+        }
+
+        function removeFile(type, index) {
+            if (type === 'idCard') {
+                selectedIdCardFiles.splice(index, 1);
+                renderFileList('idCard');
+            } else if (type === 'declaration') {
+                selectedDeclarationFiles.splice(index, 1);
+                renderFileList('declaration');
+            } else {
+                selectedOtherFiles.splice(index, 1);
+                renderFileList('other');
+            }
+        }
+
+        // Submit Form
+        async function submitForm() {
+            const btn = document.getElementById('btnNext');
+            const originalContent = btn.innerHTML;
+
+            if (!validateStep(3)) return;
+
+            try {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+                btn.disabled = true;
+
+                const formData = new FormData();
+
+                // Basic fields
+                formData.append('serviceId', document.getElementById('serviceId').value);
+                formData.append('serviceCode', document.getElementById('serviceCode').value);
+                formData.append('receivingDeptId', document.getElementById('receivingDeptId').value);
+                formData.append('requesterFullName', document.getElementById('requesterFullName').value);
+                formData.append('dateOfBirth', document.getElementById('dateOfBirth').value);
+                formData.append('idNumber', document.getElementById('idNumber').value);
+                formData.append('currentMaritalStatus', document.getElementById('currentMaritalStatus').value);
+                formData.append('confirmationPeriod', document.getElementById('confirmationPeriod').value);
+                formData.append('purposeOfUse', document.getElementById('purposeOfUse').value);
+
+                // Add all files
+                selectedIdCardFiles.forEach(file => formData.append('files', file));
+                selectedDeclarationFiles.forEach(file => formData.append('files', file));
+                selectedOtherFiles.forEach(file => formData.append('files', file));
+
+                const response = await fetch('/citizen/tuphap/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('Nộp hồ sơ thành công! Mã hồ sơ: ' + (result.dossierCode || ''), 'success');
+                    setTimeout(() => {
+                        window.location.href = '/citizen/hoso';
+                    }, 2000);
+                } else {
+                    throw new Error(result.message || 'Có lỗi xảy ra khi nộp hồ sơ');
+                }
+
+            } catch (error) {
+                console.error('Error in submitForm:', error);
+                showModal('Lỗi: ' + error.message, 'error');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const deptSelect = document.getElementById('receivingDeptId');
+            if (deptSelect) {
+                deptSelect.addEventListener('change', function () {
+                    this.classList.remove('is-invalid');
+                    document.getElementById('receivingDeptIdError').style.display = 'none';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
