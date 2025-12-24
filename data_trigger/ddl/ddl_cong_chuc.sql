@@ -35,6 +35,24 @@ CREATE TABLE mock_citizens
     CONSTRAINT uq_mock_citizen_cccd UNIQUE (cccd),
     INDEX idx_mock_citizen_name (full_name)
 ) ENGINE = InnoDB COMMENT ='Thông tin cơ bản của công dân';
+-- =============================================
+-- Bảng: mock_citizen_relationships
+-- =============================================
+CREATE TABLE IF NOT EXISTS mock_citizen_relationships
+(
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính',
+    citizen_id        BIGINT      NOT NULL COMMENT 'ID của công dân chính (Person A)',
+    relative_id       BIGINT      NOT NULL COMMENT 'ID của người thân (Person B)',
+    relationship_type VARCHAR(50) NOT NULL COMMENT 'Mối quan hệ của B đối với A (VD: CHA, ME, CON, VO, CHONG)',
+
+    created_at        TIMESTAMP   DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo mối quan hệ',
+    updated_at        TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật gần nhất',
+
+    CONSTRAINT fk_mcr_citizen FOREIGN KEY (citizen_id) REFERENCES mock_citizens (id) ON DELETE CASCADE,
+    CONSTRAINT fk_mcr_relative FOREIGN KEY (relative_id) REFERENCES mock_citizens (id) ON DELETE CASCADE,
+
+    UNIQUE KEY uq_citizen_relative (citizen_id, relative_id)
+    ) ENGINE = InnoDB COMMENT ='Bảng định nghĩa mối quan hệ gia đình (Cha, Mẹ, Con, Vợ, Chồng...)';
 
 -- 2. Sổ Hộ Khẩu (Mock Households)
 /* Bảng chứa thông tin về các Sổ Hộ Khẩu/Địa chỉ cư trú. */

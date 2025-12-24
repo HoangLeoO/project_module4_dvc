@@ -11,28 +11,29 @@ import java.time.LocalDateTime;
  * Dùng cho danh sách (list view)
  */
 @Data
-@Builder
 @NoArgsConstructor
 
 public class OpsDossierSummaryDTO {
-    
+
     private Long dossierId;
     private String dossierCode;
     private String dossierStatus;
     private LocalDateTime submissionDate;
-    
+
     // Thông tin người nộp
     private String applicantFullName;
-    
+
     // Thông tin dịch vụ
     private String serviceName;
-    
+
     // Thông tin cán bộ thụ lý
     private String handlerFullName;
-    
-//    /**
-//     * Constructor cho JPQL Query
-//     */
+
+    private boolean hasResult;
+
+    // /**
+    // * Constructor cho JPQL Query
+    // */
     public OpsDossierSummaryDTO(
             Long dossierId,
             String dossierCode,
@@ -40,8 +41,8 @@ public class OpsDossierSummaryDTO {
             LocalDateTime submissionDate,
             String applicantFullName,
             String serviceName,
-            String handlerFullName
-    ) {
+            String handlerFullName,
+            Long resultId) {
         this.dossierId = dossierId;
         this.dossierCode = dossierCode;
         this.dossierStatus = dossierStatus;
@@ -49,5 +50,6 @@ public class OpsDossierSummaryDTO {
         this.applicantFullName = applicantFullName;
         this.serviceName = serviceName;
         this.handlerFullName = handlerFullName;
+        this.hasResult = resultId != null;
     }
 }

@@ -101,6 +101,29 @@ VALUES ('012345679001', 'Nguyễn Văn An', '1975-05-12', 'MALE', 'Đà Nẵng',
 
        ('012345679020', 'Nguyễn Thị Thanh', '1999-12-25', 'FEMALE', 'Đà Nẵng', 'Kinh', 'Không',
         'Xã Bà Nà, TP Đà Nẵng', NULL, 'FP_020', '/avatars/20.png', 'SINGLE', FALSE);
+-- Thêm dữ liệu mẫu cho mối quan hệ gia đình
+INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+VALUES
+-- 1. Gia đình ông An (1) - bà Bình (2) và con Lan (8)
+(1, 2, 'VO'),    -- An có vợ là Bình
+(2, 1, 'CHONG'), -- Bình có chồng là An
+(1, 8, 'CON'),   -- An có con là Lan
+(8, 1, 'CHA'),   -- Lan có cha là An
+(2, 8, 'CON'),   -- Bình có con là Lan
+(8, 2, 'ME'),    -- Lan có mẹ là Bình
+
+-- 2. Gia đình bà Hạnh (6) - ông Khôi (7)
+(7, 6, 'VO'),    -- Khôi có vợ là Hạnh
+(6, 7, 'CHONG'), -- Hạnh có chồng là Khôi
+
+-- 3. Gia đình bà Ngọc (10) và con Long (13)
+(10, 13, 'CON'), -- Ngọc có con là Long
+(13, 10, 'ME'),  -- Long có mẹ là Ngọc
+
+-- 4. Gia đình ông Long (13) - bà Mai (14)
+(13, 14, 'VO'),   -- Long có vợ là Mai
+(14, 13, 'CHONG');-- Mai có chồng là Long
+
 INSERT INTO mock_households
 (household_code, head_citizen_id, address)
 VALUES

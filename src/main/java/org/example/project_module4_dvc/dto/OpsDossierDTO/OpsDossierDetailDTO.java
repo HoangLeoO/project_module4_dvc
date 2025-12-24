@@ -30,6 +30,7 @@ public class OpsDossierDetailDTO {
     private Map<String, Object> formData;
     private String rejectionReason;
     private String resultFileUrl;
+    private String decisionNumber;
 
     // === Thông tin người nộp hồ sơ (từ bảng sys_users) ===
     private Long applicantId;
@@ -79,7 +80,9 @@ public class OpsDossierDetailDTO {
             Long serviceId,
             String serviceName,
             String serviceCode,
-            Integer processingDays) {
+            Integer processingDays,
+            String decisionNumber,
+            String resultFileUrl) {
         this.dossierId = dossierId;
         this.dossierCode = dossierCode;
         this.dossierStatus = dossierStatus;
@@ -101,6 +104,8 @@ public class OpsDossierDetailDTO {
         this.serviceName = serviceName;
         this.serviceCode = serviceCode;
         this.processingDays = processingDays;
+        this.decisionNumber = decisionNumber;
+        this.resultFileUrl = resultFileUrl;
     }
 
     /**
@@ -129,10 +134,13 @@ public class OpsDossierDetailDTO {
             String serviceName,
             String serviceCode,
             Integer processingDays,
+            String decisionNumber,
+            String resultFileUrl,
             List<OpsDossierFile> dossierFiles) {
         this(dossierId, dossierCode, dossierStatus, submissionDate, dueDate, finishDate, formData, rejectionReason,
                 applicantId, applicantUsername, applicantFullName, applicantUserType, handlerId, handlerUsername,
-                handlerFullName, handlerDeptId, handlerDeptName, serviceId, serviceName, serviceCode, processingDays);
+                handlerFullName, handlerDeptId, handlerDeptName, serviceId, serviceName, serviceCode, processingDays,
+                decisionNumber, resultFileUrl);
         this.dossierFiles = dossierFiles;
     }
 }
