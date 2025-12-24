@@ -327,11 +327,15 @@
                         <div class="bg-white p-3 border rounded mb-4">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Lệ phí thẩm định:</span>
-                                <span class="fw-bold" th:text="${#numbers.formatCurrency(fee)}">300,000 VNĐ</span>
+                                <span class="fw-bold"
+                                    th:text="${#numbers.formatDecimal(fee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">300.000
+                                    VNĐ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Lệ phí cấp GCN:</span>
-                                <span class="fw-bold">100.000 VNĐ</span>
+                                <span class="fw-bold"
+                                    th:text="${#numbers.formatDecimal(feeGCN, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">100.000
+                                    VNĐ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tiền sử dụng đất (chênh lệch):</span>
@@ -340,7 +344,9 @@
                             <hr>
                             <div class="d-flex justify-content-between fs-5 fw-bold text-primary">
                                 <span>Tạm thu:</span>
-                                <span>400,000 VNĐ</span>
+                                <span
+                                    th:text="${#numbers.formatDecimal(totalFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">400.000
+                                    VNĐ</span>
                             </div>
                         </div>
 

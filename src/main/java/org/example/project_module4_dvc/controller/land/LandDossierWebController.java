@@ -69,8 +69,17 @@ public class LandDossierWebController {
         if (service != null) {
             model.addAttribute("fee", service.getFeeAmount());
         } else {
-            model.addAttribute("fee", 0);
+            model.addAttribute("fee", java.math.BigDecimal.ZERO);
         }
+
+        // Phí cấp Giấy chứng nhận (Tạm tính)
+        java.math.BigDecimal feeGCN = new java.math.BigDecimal(100000);
+        model.addAttribute("feeGCN", feeGCN);
+
+        // Tạm thu = Phí thẩm định + Phí GCN
+        java.math.BigDecimal fee = (service != null && service.getFeeAmount() != null) ? service.getFeeAmount()
+                : java.math.BigDecimal.ZERO;
+        model.addAttribute("totalFee", fee.add(feeGCN));
 
         return "pages/land/submit-land-purpose-change";
     }
@@ -139,6 +148,7 @@ public class LandDossierWebController {
             // Tạo DTO
             DossierSubmitDTO dto = new DossierSubmitDTO();
             // Tìm service theo serviceCode
+
             CatService service = catServiceRepository.findByServiceCode(serviceCode)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với mã: " + serviceCode));
             dto.setServiceId(service.getId());

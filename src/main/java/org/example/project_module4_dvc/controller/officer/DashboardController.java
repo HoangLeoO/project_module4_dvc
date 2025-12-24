@@ -39,7 +39,7 @@ public class DashboardController {
     private final IOpsDossierFileService opsDossierFileService;
 
     public DashboardController(IOfficerService officerService, FileStorageService fileStorageService,
-            IOpsDossierFileService opsDossierFileService) {
+                               IOpsDossierFileService opsDossierFileService) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.opsDossierFileService = opsDossierFileService;
@@ -47,8 +47,8 @@ public class DashboardController {
 
     @GetMapping("")
     public String getDossierList(Model model,
-            @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                 @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         System.out.println(userDetails.getDepartmentName());
@@ -62,7 +62,7 @@ public class DashboardController {
 
     @GetMapping("/reception")
     public String getReceptionForm(Model model, @RequestParam("id") Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         List<OpsDossierFile> opsDossierFile = officerService.findFileByDossierId(id);
@@ -132,8 +132,8 @@ public class DashboardController {
 
     @GetMapping("reception/update")
     public String updateDossierStatus(@RequestParam("dossierId") Long id,
-            @RequestParam("specialistId") Long specialistId,
-            @RequestParam("dueDate") LocalDateTime dueDate) {
+                                      @RequestParam("specialistId") Long specialistId,
+                                      @RequestParam("dueDate") LocalDateTime dueDate) {
         officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate, "");
         return "redirect:/officer/dashboard";
     }

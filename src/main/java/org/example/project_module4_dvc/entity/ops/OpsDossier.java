@@ -78,4 +78,6 @@ public class OpsDossier {
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
 
+    @OneToOne(mappedBy = "dossier", fetch = FetchType.LAZY)
+    private OpsDossierResult result;
 }

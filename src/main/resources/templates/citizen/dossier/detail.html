@@ -272,9 +272,13 @@
                             <i class="bi bi-patch-check-fill text-success fs-3"></i>
                         </div>
                         <h6 class="fw-bold text-success mb-2">Hồ sơ đã có kết quả</h6>
+                        <div class="mb-3 small">
+                            <span class="text-muted">Số quyết định:</span>
+                            <span class="fw-bold text-dark" th:text="${d.decisionNumber}">123/QD-UBND</span>
+                        </div>
                         <p class="small text-muted mb-3">Bạn có thể xem và tải về bản tệp kết quả điện tử bên dưới.</p>
-                        <a th:href="@{'/officer/dashboard/view-file-by-path?path=' + ${d.resultFileUrl}}"
-                            target="_blank" class="btn btn-success rounded-pill w-100 fw-bold">
+                        <a th:href="@{'/citizen/view-result-file/' + ${d.dossierId}}" target="_blank"
+                            class="btn btn-success rounded-pill w-100 fw-bold">
                             <i class="bi bi-file-earmark-pdf me-2"></i>Xem kết quả PDF
                         </a>
                     </div>
