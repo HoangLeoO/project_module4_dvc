@@ -363,4 +363,11 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 LIMIT 1
             """, nativeQuery = true)
     Optional<String> findLatestDossierCode(@Param("prefix") String prefix);
+
+    // tìm hồ sơ theo trạng thái và mã dịch vụ bắt đầu với
+    List<OpsDossier> findByDossierStatusAndServiceServiceCodeStartingWith(
+            String status, String serviceCodePrefix);
+    // tìm hồ sơ theo cán bộ thụ lý hiện tại, trạng thái và mã dịch vụ bắt đầu với
+    List<OpsDossier> findByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
+            Long handlerId, String status, String serviceCodePrefix);
 }

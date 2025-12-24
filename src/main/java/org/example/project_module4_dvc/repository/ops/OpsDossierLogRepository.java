@@ -29,4 +29,9 @@ public interface OpsDossierLogRepository extends JpaRepository<OpsDossierLog, Lo
 
     // Dùng để lấy tất cả log của hồ sơ, sắp xếp theo thời gian tạo giảm dần
     List<OpsDossierLog> findByDossierIdOrderByCreatedAtDesc(Long dossierId);
+
+    // Thêm method mới
+    // Dùng để lấy tất cả log của hồ sơ, sắp xếp theo thời gian tạo tăng dần
+    List<OpsDossierLog> findByDossierIdOrderByCreatedAtAsc(Long dossierId);
+
 }
