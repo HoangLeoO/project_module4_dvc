@@ -1,0 +1,68 @@
+<div th:fragment="form-detail" class="document-preview font-times">
+    <div class="text-center mb-4">
+        <h6 class="fw-bold fs-5 mb-0 text-uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold fs-5 text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+
+        <h3 class="fw-bold text-uppercase mb-4">GIẤY CHỨNG NHẬN<br />ĐĂNG KÝ HỘ KINH DOANH</h3>
+    </div>
+
+    <div class="document-body px-4" style="line-height: 1.6;">
+
+        <div class="row mb-3">
+            <div class="col-12">
+                Tên hộ kinh doanh: <span class="fw-bold text-uppercase fs-5" th:text="${formData.businessName}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                Địa điểm kinh doanh: <span class="fw-bold" th:text="${formData.businessAddress}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                Ngành, nghề kinh doanh: <span class="fw-bold" th:text="${formData.businessLine}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                Vốn kinh doanh: <span class="fw-bold" th:text="${formData.registeredCapital}"></span>
+            </div>
+            <div class="col-6">
+                Số lượng lao động: <span class="fw-bold" th:text="${formData.numberOfEmployees}"></span>
+            </div>
+        </div>
+
+        <hr class="my-4 border-dashed" />
+
+        <div class="mb-3">
+            <strong class="text-uppercase">Thông tin chủ hộ kinh doanh:</strong>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                Họ và tên: <span class="fw-bold text-uppercase" th:text="${formData.businessOwner}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Số CMND/CCCD: <span class="fw-bold" th:text="${formData.ownerIdNumber}"></span>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-6 text-center">
+            </div>
+            <div class="col-6 text-center">
+                <div class="fst-italic">Đà Nẵng, ngày .... tháng .... năm ....</div>
+                <div class="fw-bold text-uppercase mt-2">TRƯỞNG PHÒNG TÀI CHÍNH - KẾ HOẠCH</div>
+                <div class="fst-italic small">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                <div class="stamp-anchor position-relative mt-5" style="height: 100px;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

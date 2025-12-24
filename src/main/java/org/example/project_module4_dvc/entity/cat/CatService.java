@@ -1,9 +1,11 @@
 package org.example.project_module4_dvc.entity.cat;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.project_module4_dvc.converter.JsonToMapConverter;
 import org.example.project_module4_dvc.entity.sys.SysRole;
+import org.example.project_module4_dvc.entity.sys.SysDepartment;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -53,5 +55,9 @@ public class CatService {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private SysRole sysRole;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_id")
+    private SysDepartment department;
 
 }

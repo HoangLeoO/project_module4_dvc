@@ -1,0 +1,92 @@
+<div th:fragment="form-detail" class="document-preview font-times">
+    <div class="text-center mb-4">
+        <h6 class="fw-bold fs-5 mb-0 text-uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold fs-5 text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+
+        <h3 class="fw-bold text-uppercase mb-4">GIẤY KHAI SINH</h3>
+        <!-- <div class="fst-italic">(Mẫu bản chính)</div> -->
+    </div>
+
+    <div class="document-body px-4" style="line-height: 1.8;">
+        <div class="row mb-2">
+            <div class="col-12">
+                Họ, chữ đệm, tên: <span class="fw-bold text-uppercase fs-5" th:text="${formData.childFullName}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6">
+                Ngày, tháng, năm sinh: <span class="fw-bold" th:text="${formData.dateOfBirth}"></span>
+            </div>
+            <div class="col-6">
+                Giới tính: <span class="fw-bold" th:text="${formData.gender}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Nơi sinh: <span class="fw-bold" th:text="${formData.placeOfBirth}"></span>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6">
+                Dân tộc: <span class="fw-bold" th:text="${formData['ethnicity'] ?: 'Kinh'}"></span>
+            </div>
+            <div class="col-6">
+                Quốc tịch: <span class="fw-bold" th:text="${formData['nationality'] ?: 'Việt Nam'}"></span>
+            </div>
+        </div>
+
+        <hr class="my-4 border-dashed" />
+
+        <div class="row mb-2">
+            <div class="col-12">
+                <strong>Họ, chữ đệm, tên mẹ: </strong> <span class="fw-bold text-uppercase"
+                    th:text="${formData.motherFullName}"></span>
+            </div>
+            <div class="col-6">
+                Năm sinh: <span class="fw-bold" th:text="${formData['motherYearOfBirth'] ?: '...'}"></span>
+            </div>
+            <div class="col-6">
+                Dân tộc: <span class="fw-bold" th:text="${formData['motherEthnicity'] ?: 'Kinh'}"></span>
+            </div>
+            <div class="col-12">
+                Quốc tịch: <span class="fw-bold" th:text="${formData['motherNationality'] ?: 'Việt Nam'}"></span>
+            </div>
+            <div class="col-12">
+                Nơi cư trú: <span class="fw-bold" th:text="${formData.registeredAddress}"></span>
+            </div>
+        </div>
+
+        <div class="row mb-2 mt-3">
+            <div class="col-12">
+                <strong>Họ, chữ đệm, tên cha: </strong> <span class="fw-bold text-uppercase"
+                    th:text="${formData.fatherFullName}"></span>
+            </div>
+            <div class="col-6">
+                Năm sinh: <span class="fw-bold" th:text="${formData['fatherYearOfBirth'] ?: '...'}"></span>
+            </div>
+            <div class="col-6">
+                Dân tộc: <span class="fw-bold" th:text="${formData['fatherEthnicity'] ?: 'Kinh'}"></span>
+            </div>
+            <div class="col-12">
+                Quốc tịch: <span class="fw-bold" th:text="${formData['fatherNationality'] ?: 'Việt Nam'}"></span>
+            </div>
+            <div class="col-12">
+                Nơi cư trú: <span class="fw-bold" th:text="${formData.registeredAddress}"></span>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6 text-center">
+            </div>
+            <div class="col-6 text-center">
+                <div class="fst-italic">Đà Nẵng, ngày .... tháng .... năm ....</div>
+                <div class="fw-bold text-uppercase mt-2">Người ký giấy khai sinh</div>
+                <div class="fst-italic small">(Ký, ghi rõ họ tên, chức vụ, đóng dấu)</div>
+                <!-- Stamp Anchor -->
+                <div class="stamp-anchor position-relative mt-5" style="height: 100px;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

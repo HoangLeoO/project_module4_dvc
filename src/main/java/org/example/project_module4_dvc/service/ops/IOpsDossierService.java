@@ -40,8 +40,8 @@ public interface IOpsDossierService {
     // lấy tất cả thông báo + phân trang
     Page<CitizenNotificationProjection> getAllMyNotifications(Long userId, Pageable pageable);
 
-
     Page<Map<String, Object>> getOverdueAlerts(Pageable pageable);
+
     Page<Map<String, Object>> getNearlyDueAlerts(Pageable pageable);
 
     int getOnTimeRate();
@@ -49,4 +49,8 @@ public interface IOpsDossierService {
     int calculateOnTimeRateStrict();
 
     Page<OpsDossier> getAdminDossierPage(Pageable pageable);
+
+    // Submit Birth Registration Logic
+    void submitBirthRegistration(org.example.project_module4_dvc.dto.BirthRegistrationRequest request, Long userId);
+
 }

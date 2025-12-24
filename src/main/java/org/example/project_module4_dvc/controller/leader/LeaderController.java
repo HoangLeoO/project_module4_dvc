@@ -5,6 +5,7 @@ import org.example.project_module4_dvc.dto.leader.DossierApprovalSummaryDTO;
 import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.example.project_module4_dvc.service.cat.ICatServiceService;
 import org.example.project_module4_dvc.service.learder.ILeaderService;
+import org.example.project_module4_dvc.service.pdf.PdfService;
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,11 +14,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.project_module4_dvc.entity.ops.OpsDossier;
+import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.example.project_module4_dvc.entity.cat.CatService;
+import org.example.project_module4_dvc.entity.ops.OpsDossierResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/leader/")
@@ -30,6 +37,15 @@ public class LeaderController {
 
     @Autowired
     private ISysUserService userService;
+
+    @Autowired
+    private OpsDossierRepository opsDossierRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private PdfService pdfService;
 
     public LeaderController(ILeaderService leaderService){
         this.leaderService = leaderService;
@@ -225,12 +241,93 @@ public class LeaderController {
         return "pages/04-leader/leader-approval";
     }
 
+
+
     @PostMapping("approval/{dossiersId}")
     public String approval(@PathVariable(name = "dossiersId",required = false) Long dossiersId, RedirectAttributes redirectAttributes,Principal principal){
         SysUser sysUser = userService.findByUsername(principal.getName());
         System.out.println(sysUser.getId());
         leaderService.approvedByLeader(sysUser.getId(),dossiersId);
+
+        // Generate PDF
+        try {
+            OpsDossier dossier = opsDossierRepository.findById(dossiersId).orElse(null);
+            if (dossier != null) {
+                String pdfPath = pdfService.generateSignedDossierPdf(dossier, sysUser.getFullName());
+                System.out.println("PDF Signed: " + pdfPath);
+
+                // Save Result
+                OpsDossierResult result = OpsDossierResult.builder()
+                        .dossier(dossier)
+                        .decisionNumber("QD-" + dossier.getDossierCode())
+                        .signerName(sysUser.getFullName())
+                        .eFileUrl("/uploads/pdf/" + new File(pdfPath).getName())
+                        .build();
+                leaderService.opsDossierResults(result);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Don't block flow, just log
+        }
+
         redirectAttributes.addFlashAttribute("mess","Phê duyệt thành công!");
         return "redirect:/leader/my-dossiers";
+    }
+
+    @GetMapping("dossiers/{id}/detail")
+    public String getDossierDetail(@PathVariable Long id, Model model) {
+        OpsDossier dossier = opsDossierRepository.findById(id).orElse(null);
+        if (dossier == null) {
+            return "components/common/no-data"; // Or a simple 404 text
+        }
+
+        String serviceCode = dossier.getService().getServiceCode();
+        String fragmentPath = "";
+
+        // Map serviceCode to fragment path
+        switch (serviceCode) {
+            case "HK01_TRE": // Birth
+                fragmentPath = "components/form/preview/birth-registration :: form-detail";
+                break;
+            case "HK02_KAITU": // Death
+                fragmentPath = "components/form/preview/death-registration :: form-detail";
+                break;
+            case "HT01_KETHON": // Marriage
+                fragmentPath = "components/form/preview/marriage-registration :: form-detail";
+                break;
+            case "HT02_XACNHANHN": // Marital Status
+                fragmentPath = "components/form/preview/marital-status-certificate :: form-detail";
+                break;
+            case "DD01_BIENDONG": // Land Change
+                fragmentPath = "components/form/preview/land-change-registration :: form-detail";
+                break;
+            case "DD02_CHUYENMDSD": // Land Purpose Change
+                fragmentPath = "components/form/preview/land-purpose-change :: form-detail";
+                break;
+            case "DD03_TACHHOP": // Land Split/Merge
+                fragmentPath = "components/form/preview/land-split-merge :: form-detail";
+                break;
+            case "KD01_HKD": // Household Business
+                fragmentPath = "components/form/preview/household-business-registration :: form-detail";
+                break;
+            default:
+                // Default fallback if unknown service
+                 return "components/common/no-data";
+        }
+
+        try {
+            if (dossier.getFormData() != null) {
+                Object rawForm = dossier.getFormData();
+                if (rawForm instanceof String) {
+                     model.addAttribute("formData", objectMapper.readValue((String) rawForm, Map.class));
+                } else {
+                     model.addAttribute("formData", rawForm);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fragmentPath;
     }
 }

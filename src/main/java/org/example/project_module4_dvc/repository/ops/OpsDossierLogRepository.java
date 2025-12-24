@@ -17,7 +17,8 @@ public interface OpsDossierLogRepository extends JpaRepository<OpsDossierLog, Lo
                     l.created_at as createdAt,
                     l.comments as comments,
                     u.full_name as actorName,
-                    d.dept_name as deptName
+                    d.dept_name as deptName,
+                    l.action as action
                 FROM ops_dossier_logs l
                 JOIN sys_users u ON l.actor_id = u.id
                 LEFT JOIN sys_departments d ON u.dept_id = d.id

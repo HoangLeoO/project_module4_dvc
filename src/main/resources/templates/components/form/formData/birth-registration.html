@@ -4,15 +4,12 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label class="form-label small">Họ và tên</label>
-                <input type="text" class="form-control fw-bold"
-                       th:value="${formData.childFullName ?: ''}" readonly>
+                <input type="text" class="form-control fw-bold" th:value="${formData.childFullName ?: ''}" readonly>
             </div>
 
             <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
-                <input type="date" class="form-control"
-                       th:value="${formData.dateOfBirth != null ? #temporals.format(formData.dateOfBirth, 'yyyy-MM-dd') : ''}"
-                       readonly>
+                <input type="date" class="form-control" th:value="${formData.dateOfBirth ?: ''}" readonly>
             </div>
 
             <div class="col-md-3">
@@ -55,15 +52,6 @@
             <div class="col-md-12 mb-3">
                 <label class="form-label small">Địa chỉ đăng ký thường trú</label>
                 <input type="text" class="form-control" th:value="${formData.registeredAddress ?: ''}" readonly>
-            </div>
-            <div class="col-md-12">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                           th:checked="${formData.requestBhyt == true}" disabled>
-                    <label class="form-check-label fw-semibold text-dark">
-                        Yêu cầu cấp thẻ BHYT
-                    </label>
-                </div>
             </div>
         </div>
 

@@ -107,6 +107,9 @@
 
         <!-- 2. WIZARD NAV -->
         <div class="position-relative mb-5 mx-auto" style="max-width: 800px;">
+            <!-- Toast Container -->
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
             <div class="wizard-connector"></div>
             <div class="d-flex justify-content-between position-relative">
 
@@ -237,9 +240,13 @@
                             <h6 class="fw-bold text-uppercase mb-3 text-secondary">A. Thông tin thửa đất</h6>
 
                             <!-- Hidden fields for the selected land asset (Defaulting to the checked one) -->
-                            <input type="hidden" name="landCertificateNumber" value="B123456">
-                            <input type="hidden" name="landPlotNumber" value="12">
-                            <input type="hidden" name="landMapSheet" value="05">
+                            <input type="hidden" name="landCertificateNumber">
+                            <input type="hidden" name="landPlotNumber">
+                            <input type="hidden" name="landMapSheet">
+                            <input type="hidden" name="landAddress">
+                            <input type="hidden" name="landArea">
+                            <input type="hidden" name="landUseType">
+                            <input type="hidden" name="landPurpose">
 
                             <!-- Asset Selector -->
                             <div class="row row-cols-1 row-cols-md-2 g-4 mb-4" id="landAssetList">
@@ -444,10 +451,70 @@
         </div>
     </footer>
 
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary">Xác nhận nộp hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-question-circle-fill text-warning display-4 mb-3"></i>
+                    <p class="mb-0 fs-5">Bạn có chắc chắn muốn nộp hồ sơ này không?</p>
+                    <p class="text-muted small mt-2">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Xem lại</button>
+                    <button type="button" class="btn btn-primary px-4 fw-bold" onclick="onModalConfirm()">
+                        <i class="bi bi-check-circle me-2"></i>Đồng ý nộp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JS Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentStep = 1;
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+            let bgClass = 'bg-primary';
+            let icon = 'bi-info-circle';
+
+            if (type === 'success') {
+                bgClass = 'bg-success';
+                icon = 'bi-check-circle-fill';
+            } else if (type === 'error' || type === 'danger') {
+                bgClass = 'bg-danger';
+                icon = 'bi-exclamation-triangle-fill';
+            } else if (type === 'warning') {
+                bgClass = 'bg-warning text-dark';
+                icon = 'bi-exclamation-circle-fill';
+            }
+
+            const html = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            <i class="bi ${icon} fs-5 me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', html);
+            const toastEl = document.getElementById(toastId);
+            const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            bsToast.show();
+            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+        }
 
         // On Page Load: Fetch Land Assets for the current logged-in user (pre-filled)
         document.addEventListener('DOMContentLoaded', function () {
@@ -490,13 +557,13 @@
                     // We'll keep the alert for "No land selected" as it's a global state for the step, 
                     // OR we can make the "A. Thông tin thửa đất" header text red?
                     if (!checked) {
-                        alert('Vui lòng chọn một thửa đất để thực hiện biến động!');
+                        showToast('Vui lòng chọn một thửa đất để thực hiện biến động!', 'warning');
                         return false;
                     }
                 } else {
                     const warning = stepEl.querySelector('.alert-warning');
                     if (warning) {
-                        alert('Không có tài sản đất đai để thực hiện giao dịch. Vui lòng kiểm tra lại!');
+                        showToast('Không có tài sản đất đai để thực hiện giao dịch. Vui lòng kiểm tra lại!', 'warning');
                         return false;
                     }
                 }
@@ -579,7 +646,7 @@
                 btnNext.classList.remove('btn-primary');
                 btnNext.classList.add('btn-success');
                 btnNext.onclick = function () {
-                    submitDossier();
+                    showConfirmModal();
                 };
             } else {
                 btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
@@ -589,10 +656,20 @@
             }
         }
 
-        async function submitDossier() {
-            // Validate all steps thoroughly before submitting? 
-            // For now assume they passed step-by-step validation.
+        // CONFIRMATION MODAL LOGIC
+        function showConfirmModal() {
+            const modal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+            modal.show();
+        }
 
+        function onModalConfirm() {
+            const modalEl = document.getElementById('confirmSubmitModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            submitDossier();
+        }
+
+        async function submitDossier() {
             const btnNext = document.getElementById('btnNext');
             const originalText = btnNext.innerHTML;
             btnNext.disabled = true;
@@ -602,9 +679,16 @@
                 const form = document.getElementById('submissionForm');
                 const formData = new FormData(form);
 
-                // Manually append land selection data if needed, but since they are inputs in the form they should be there.
-                // NOTE: 'landAsset' is radio, only checked one is included.
-                // Hidden fields for landCertificateNumber, etc. are also inside the form.
+                // IMPORTANT: Overwrite 'files' from our staging area
+                // First delete any files automatically picked up by FormData from the input tag
+                formData.delete('files');
+
+                // Append files from fileStore
+                if (fileStore.files.length > 0) {
+                    for (let i = 0; i < fileStore.files.length; i++) {
+                        formData.append('files', fileStore.files[i]);
+                    }
+                }
 
                 const response = await fetch('/citizen/submit', {
                     method: 'POST',
@@ -614,15 +698,15 @@
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    window.location.href = '/citizen/tracking?newDossier=true';
+                    window.location.href = '/citizen/hoso';
                 } else {
-                    alert("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'));
+                    showToast("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'), 'error');
                     btnNext.disabled = false;
                     btnNext.innerHTML = originalText;
                 }
             } catch (error) {
                 console.error('Submission error:', error);
-                alert("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.");
+                showToast("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.", 'error');
                 btnNext.disabled = false;
                 btnNext.innerHTML = originalText;
             }
@@ -672,8 +756,8 @@
                 const response = await fetch(`/api/autofill/relation?targetCccd=${cccd}`);
 
                 if (response.status === 401 || response.status === 403) {
-                    alert("Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!");
-                    window.location.href = '/login/citizen';
+                    showToast("Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!", 'warning');
+                    setTimeout(() => window.location.href = '/login/citizen', 2000);
                     return;
                 }
 
@@ -714,6 +798,9 @@
             }
         }
 
+        // Global land data
+        let landData = [];
+
         async function fetchLandAssets(cccd) {
             try {
                 const resLand = await fetch(`/api/autofill/land/${cccd}`);
@@ -721,6 +808,7 @@
                 landListContainer.innerHTML = ''; // Clear current mock data
 
                 if (resLand.status === 204) {
+                    // ... (Error handling omitted for brevity, logic remains same)
                     landListContainer.innerHTML = `
                     <div class="col-12">
                         <div class="alert alert-warning d-flex align-items-center mb-0" role="alert">
@@ -736,8 +824,10 @@
 
                 if (resLand.ok) {
                     const lands = await resLand.json();
+                    landData = lands; // Store globally
 
                     if (lands.length === 0) {
+                        // ... (Empty handling)
                         landListContainer.innerHTML = `
                             <div class="col-12">
                                 <div class="alert alert-warning text-center">
@@ -754,7 +844,7 @@
 
                         const html = `
                         <div class="col">
-                            <label class="card h-100 cursor-pointer ${borderClass}" onclick="selectLand(this, '${land.landCertificateNumber}', '${land.parcelNumber}', '${land.mapSheetNumber}')">
+                            <label class="card h-100 cursor-pointer ${borderClass}" onclick="selectLand(this, ${index})">
                                 <div class="card-body">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="landAsset" ${isChecked} required>
@@ -783,7 +873,7 @@
 
                     // Auto-select the first one
                     if (lands.length > 0) {
-                        updateHiddenLandFields(lands[0].landCertificateNumber, lands[0].parcelNumber, lands[0].mapSheetNumber);
+                        updateHiddenLandFields(0);
                     }
                 }
             } catch (error) {
@@ -791,7 +881,7 @@
             }
         }
 
-        function selectLand(card, cert, plot, map) {
+        function selectLand(card, index) {
             // Visual update
             document.querySelectorAll('#landAssetList .card').forEach(c => {
                 c.classList.remove('border-primary', 'shadow-sm', 'bg-light-primary');
@@ -806,13 +896,20 @@
             card.querySelector('.form-check-label').classList.add('text-primary');
 
             // Update hidden fields
-            updateHiddenLandFields(cert, plot, map);
+            updateHiddenLandFields(index);
         }
 
-        function updateHiddenLandFields(cert, plot, map) {
-            document.querySelector('input[name="landCertificateNumber"]').value = cert;
-            document.querySelector('input[name="landPlotNumber"]').value = plot;
-            document.querySelector('input[name="landMapSheet"]').value = map;
+        function updateHiddenLandFields(index) {
+            const land = landData[index];
+            if (!land) return;
+
+            document.querySelector('input[name="landCertificateNumber"]').value = land.landCertificateNumber || '';
+            document.querySelector('input[name="landPlotNumber"]').value = land.parcelNumber || '';
+            document.querySelector('input[name="landMapSheet"]').value = land.mapSheetNumber || '';
+            document.querySelector('input[name="landAddress"]').value = land.addressDetail || '';
+            document.querySelector('input[name="landArea"]').value = land.areaM2 || '';
+            document.querySelector('input[name="landUseType"]').value = land.usageForm || '';
+            document.querySelector('input[name="landPurpose"]').value = land.landPurpose || '';
         }
 
         // NEW OWNER AUTO-FILL LOGIC
@@ -924,49 +1021,7 @@
             renderFileList();
         }
 
-        // --- SUBMIT LOGIC UPDATE ---
-        async function submitDossier() {
-            const btnNext = document.getElementById('btnNext');
-            const originalText = btnNext.innerHTML;
-            btnNext.disabled = true;
-            btnNext.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Đang xử lý...';
 
-            try {
-                const form = document.getElementById('submissionForm');
-                const formData = new FormData(form);
-
-                // IMPORTANT: Overwrite 'files' from our staging area
-                // First delete any files automatically picked up by FormData from the input tag
-                formData.delete('files');
-
-                // Append files from fileStore
-                if (fileStore.files.length > 0) {
-                    for (let i = 0; i < fileStore.files.length; i++) {
-                        formData.append('files', fileStore.files[i]);
-                    }
-                }
-
-                const response = await fetch('/citizen/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.status === 'success') {
-                    window.location.href = '/citizen/tracking?newDossier=true';
-                } else {
-                    alert("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'));
-                    btnNext.disabled = false;
-                    btnNext.innerHTML = originalText;
-                }
-            } catch (error) {
-                console.error('Submission error:', error);
-                alert("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.");
-                btnNext.disabled = false;
-                btnNext.innerHTML = originalText;
-            }
-        }
     </script>
 </body>
 

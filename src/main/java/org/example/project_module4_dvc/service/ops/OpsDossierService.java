@@ -34,11 +34,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.project_module4_dvc.dto.formData.BirthRegistrationFormDTO;
+import org.example.project_module4_dvc.service.websocket.IWebsocketService;
 
 @Service
 public class OpsDossierService implements IOpsDossierService {
     @Autowired
     private OpsDossierRepository opsDossierRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.sys.SysUserRepository sysUserRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.cat.CatServiceRepository catServiceRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository dossierLogRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.sys.SysDepartmentRepository sysDepartmentRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private IWebsocketService websocketService;
 
     @Override
     public Page<OpsDossierSummaryDTO> getMyDossierList(Long userId, Pageable pageable) {
@@ -52,10 +68,45 @@ public class OpsDossierService implements IOpsDossierService {
         return opsDossierRepository.searchDossiersByApplicant(userId, searchKeyword, searchStatus, pageable);
     }
 
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsDossierResultRepository opsDossierResultRepository;
+
+    @Autowired
+    private org.example.project_module4_dvc.repository.mock.MockCitizenRepository mockCitizenRepository;
+
     @Override
     public OpsDossierDetailDTO getDossierDetail(Long id) {
-        return opsDossierRepository.findDossierDetailById(id)
+        OpsDossierDetailDTO detail = opsDossierRepository.findDossierDetailById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ với ID: " + id));
+
+        // Lấy thông tin tệp PDF kết quả nếu có
+        opsDossierResultRepository.findByDossier_Id(id).ifPresent(result -> {
+            detail.setResultFileUrl(result.getEFileUrl());
+        });
+
+        // Fallback cho năm sinh cha mẹ nếu hồ sơ khai sinh thiếu thông tin này
+        if (detail.getServiceCode() != null
+                && (detail.getServiceCode().equals("HK01_TRE") || detail.getServiceCode().equals("HS-KS-TRE"))) {
+            Map<String, Object> formData = detail.getFormData();
+            if (formData != null) {
+                // Father
+                if (formData.get("fatherYearOfBirth") == null && formData.get("fatherIdNumber") != null) {
+                    mockCitizenRepository.findByCccd(formData.get("fatherIdNumber").toString()).ifPresent(c -> {
+                        if (c.getDob() != null)
+                            formData.put("fatherYearOfBirth", c.getDob().getYear());
+                    });
+                }
+                // Mother
+                if (formData.get("motherYearOfBirth") == null && formData.get("motherIdNumber") != null) {
+                    mockCitizenRepository.findByCccd(formData.get("motherIdNumber").toString()).ifPresent(c -> {
+                        if (c.getDob() != null)
+                            formData.put("motherYearOfBirth", c.getDob().getYear());
+                    });
+                }
+            }
+        }
+
+        return detail;
     }
 
     @Override
@@ -85,20 +136,19 @@ public class OpsDossierService implements IOpsDossierService {
     // merged from service.OpsDossierService
     // ==========================================
 
-
-
     @Override
     public List<Map<String, Object>> getDossierAlerts() {
-        List<org.example.project_module4_dvc.entity.ops.OpsDossier> pendingDossiers = opsDossierRepository.findByDossierStatusNotIn(
-                java.util.Arrays.asList("APPROVED", "REJECTED")
-        );
+        List<org.example.project_module4_dvc.entity.ops.OpsDossier> pendingDossiers = opsDossierRepository
+                .findByDossierStatusNotIn(
+                        java.util.Arrays.asList("APPROVED", "REJECTED"));
 
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         List<Map<String, Object>> dossierAlerts = new java.util.ArrayList<>();
 
         for (org.example.project_module4_dvc.entity.ops.OpsDossier d : pendingDossiers) {
             if (d.getDueDate() != null) {
-                long daysDiff = java.time.temporal.ChronoUnit.DAYS.between(now.toLocalDate(), d.getDueDate().toLocalDate());
+                long daysDiff = java.time.temporal.ChronoUnit.DAYS.between(now.toLocalDate(),
+                        d.getDueDate().toLocalDate());
 
                 Map<String, Object> alert = new HashMap<>();
                 alert.put("id", d.getId());
@@ -143,7 +193,7 @@ public class OpsDossierService implements IOpsDossierService {
 
         List<Object[]> raw = opsDossierRepository.countByDomainAndStatus();
 
-//         domain -> status -> count
+        // domain -> status -> count
         Map<String, Map<String, Long>> map = new HashMap<>();
 
         for (Object[] r : raw) {
@@ -162,8 +212,7 @@ public class OpsDossierService implements IOpsDossierService {
             for (String domain : domains) {
                 data.add(
                         map.getOrDefault(domain, Map.of())
-                                .getOrDefault(status, 0L)
-                );
+                                .getOrDefault(status, 0L));
             }
             datasets.add(new ChartDatasetDTO(status, data));
         }
@@ -215,6 +264,151 @@ public class OpsDossierService implements IOpsDossierService {
     @Override
     public Page<OpsDossier> getAdminDossierPage(Pageable pageable) {
         return opsDossierRepository.findAll(pageable);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public void submitBirthRegistration(org.example.project_module4_dvc.dto.BirthRegistrationRequest request,
+            Long userId) {
+        // 1. Fetch User
+        var applicant = sysUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 2. Fetch Service
+        // Start with a hardcoded Service ID or Code if not passed, or use
+        // request.serviceId
+        // For safety, let's assume service ID 1 is Birth Registration or look it up by
+        // code
+        var service = catServiceRepository.findById(request.getServiceId() != null ? request.getServiceId() : 1L)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        // 3. Validation Logic
+        String gender = request.getApplicantGender();
+        String status = request.getApplicantMaritalStatus();
+
+        boolean isMarried = "married".equalsIgnoreCase(status);
+
+        if ("male".equalsIgnoreCase(gender) && !isMarried) {
+            // Case 1: Father + Not Married
+            if (request.getMotherName() == null || request.getMotherName().trim().isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Trường hợp Cha chưa kết hôn đăng ký khai sinh bắt buộc phải khai thông tin Mẹ!");
+            }
+            // Logic relaxed: Officer will verify paternity recognition during processing
+        } else if ("female".equalsIgnoreCase(gender) && !isMarried) {
+            // Case 2: Mother + Not Married
+            // Logic relaxed: Officer will verify paternity recognition during processing
+        }
+
+        // 4. Generate Dossier Code
+        // Format: HS-{PREFIX}-{SEQUENCE}
+        // Example: HS-HK01-0001
+        String servicePrefix = service.getServiceCode().split("_")[0]; // HK01_TRE -> HK01
+        String prefix = "HS-" + servicePrefix + "-";
+
+        String nextCode;
+        java.util.Optional<String> latestCodeOpt = opsDossierRepository.findLatestDossierCode(prefix);
+        if (latestCodeOpt.isPresent()) {
+            String latestCode = latestCodeOpt.get();
+            try {
+                // Extract sequence number (last 4 digits)
+                String seqStr = latestCode.substring(latestCode.lastIndexOf("-") + 1);
+                int seq = Integer.parseInt(seqStr);
+                nextCode = prefix + String.format("%04d", seq + 1);
+            } catch (Exception e) {
+                // Fallback if parsing fails
+                nextCode = prefix + "0001";
+            }
+        } else {
+            nextCode = prefix + "0001";
+        }
+
+        // 5. Calculate Due Date
+        java.time.LocalDateTime submissionDate = java.time.LocalDateTime.now();
+        java.time.LocalDateTime dueDate = null;
+        if (service.getSlaHours() != null && service.getSlaHours() > 0) {
+            // Simple calculation: add SLA hours.
+            // Note: Real world might involve business hours/holidays calculation.
+            dueDate = submissionDate.plusHours(service.getSlaHours());
+        }
+
+        // 6. Save Dossier
+        String childGenderRaw = request.getChildGender();
+        String childGender = (childGenderRaw != null) ? childGenderRaw.trim() : "";
+        if ("Nam".equalsIgnoreCase(childGender))
+            childGender = "MALE";
+        else if ("Nữ".equalsIgnoreCase(childGender))
+            childGender = "FEMALE";
+        else
+            childGender = childGender.toUpperCase();
+
+        BirthRegistrationFormDTO formDto = new BirthRegistrationFormDTO();
+        formDto.setChildFullName(request.getChildName());
+        formDto.setDateOfBirth(request.getChildDob());
+        formDto.setGender(childGender);
+        formDto.setPlaceOfBirth(request.getChildBirthPlace());
+        formDto.setFatherFullName(request.getFatherName());
+        formDto.setFatherIdNumber(request.getFatherId());
+        formDto.setFatherYearOfBirth(request.getFatherYearOfBirth());
+        formDto.setMotherFullName(request.getMotherName());
+        formDto.setMotherIdNumber(request.getMotherId());
+        formDto.setMotherYearOfBirth(request.getMotherYearOfBirth());
+        formDto.setRegisteredAddress(request.getRegisteredAddress());
+        formDto.setRequestBhyt(request.isRequestBhyt());
+
+        // Convert DTO to Map for the Persistent Layer (JsonToMapConverter)
+        Map<String, Object> formData = objectMapper.convertValue(formDto, new TypeReference<Map<String, Object>>() {
+        });
+
+        // Add additional non-DTO fields if needed by other logic
+        formData.put("DEBUG_VERSION", "2.0");
+        formData.put("applicantGender", gender != null ? gender.toUpperCase() : null);
+        formData.put("applicantMaritalStatus", status != null ? status.toUpperCase() : null);
+        formData.put("isPaternityRecognition", request.isPaternityRecognition());
+        formData.put("childEthnicity", request.getChildEthnicity());
+
+        // Fallback for receivingDept if Service doesn't have one (DB missing data)
+        var receivingDept = service.getDepartment();
+        if (receivingDept == null) {
+            receivingDept = sysDepartmentRepository.findAll().stream()
+                    .filter(d -> d.getLevel() == 2)
+                    .findFirst()
+                    .orElse(null);
+
+            if (receivingDept == null) {
+                receivingDept = sysDepartmentRepository.findById(2L).orElse(null);
+            }
+        }
+
+        OpsDossier dossier = OpsDossier.builder()
+                .dossierCode(nextCode)
+                .dossierStatus("NEW")
+                .submissionDate(submissionDate)
+                .dueDate(dueDate)
+                .receivingDept(receivingDept)
+                .service(service)
+                .applicant(applicant)
+                .formData(formData)
+                .build();
+
+        opsDossierRepository.save(dossier);
+
+        // 7. Log Interaction
+        // (Optional: You might want to add an entry to ops_dossier_logs here)
+        org.example.project_module4_dvc.entity.ops.OpsDossierLog log = new org.example.project_module4_dvc.entity.ops.OpsDossierLog();
+        log.setDossier(dossier);
+        log.setActorId(applicant.getId());
+        log.setAction("NOP_HO_SO");
+        log.setComments("Công dân nộp hồ sơ trực tuyến");
+        log.setNextStatus("NEW");
+        log.setCreatedAt(submissionDate);
+
+        dossierLogRepository.save(log);
+
+        // 8. WebSocket Notify
+        if (receivingDept != null) {
+            websocketService.broadcastNewDossierToList(receivingDept.getDeptName(), dossier);
+        }
     }
 
 }

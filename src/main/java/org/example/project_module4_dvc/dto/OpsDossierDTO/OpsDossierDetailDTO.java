@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import org.example.project_module4_dvc.entity.ops.OpsDossierFile;
 
 /**
  * DTO để hiển thị thông tin chi tiết hồ sơ từ nhiều bảng:
@@ -15,7 +17,6 @@ import java.util.Map;
  * - sys_departments (phòng ban)
  */
 @Data
-@Builder
 @NoArgsConstructor
 public class OpsDossierDetailDTO {
 
@@ -26,8 +27,9 @@ public class OpsDossierDetailDTO {
     private LocalDateTime submissionDate;
     private LocalDateTime dueDate;
     private LocalDateTime finishDate;
-    private Map<String,Object> formData;
+    private Map<String, Object> formData;
     private String rejectionReason;
+    private String resultFileUrl;
 
     // === Thông tin người nộp hồ sơ (từ bảng sys_users) ===
     private Long applicantId;
@@ -49,34 +51,31 @@ public class OpsDossierDetailDTO {
     private String serviceName;
     private String serviceCode;
     private Integer processingDays;
+    private List<OpsDossierFile> dossierFiles;
 
     /**
-     * Constructor dùng cho JPQL Query
-     * Thứ tự tham số phải khớp với thứ tự SELECT trong query
+     * Constructor dùng cho JPQL Query (21 params)
+     * Thứ tự tham số phải khớp với thứ tự SELECT trong query trong
+     * OpsDossierRepository
      */
     public OpsDossierDetailDTO(
-            // Từ OpsDossier
             Long dossierId,
             String dossierCode,
             String dossierStatus,
             LocalDateTime submissionDate,
             LocalDateTime dueDate,
             LocalDateTime finishDate,
-            Map<String,Object> formData,
+            Map<String, Object> formData,
             String rejectionReason,
-            // Từ SysUser (applicant)
             Long applicantId,
             String applicantUsername,
             String applicantFullName,
             String applicantUserType,
-            // Từ SysUser (handler)
             Long handlerId,
             String handlerUsername,
             String handlerFullName,
-            // Từ SysDepartment
             Long handlerDeptId,
             String handlerDeptName,
-            // Từ CatService
             Long serviceId,
             String serviceName,
             String serviceCode,
@@ -102,5 +101,38 @@ public class OpsDossierDetailDTO {
         this.serviceName = serviceName;
         this.serviceCode = serviceCode;
         this.processingDays = processingDays;
+    }
+
+    /**
+     * Constructor đầy đủ cho @Builder (22 params)
+     */
+    @Builder
+    public OpsDossierDetailDTO(
+            Long dossierId,
+            String dossierCode,
+            String dossierStatus,
+            LocalDateTime submissionDate,
+            LocalDateTime dueDate,
+            LocalDateTime finishDate,
+            Map<String, Object> formData,
+            String rejectionReason,
+            Long applicantId,
+            String applicantUsername,
+            String applicantFullName,
+            String applicantUserType,
+            Long handlerId,
+            String handlerUsername,
+            String handlerFullName,
+            Long handlerDeptId,
+            String handlerDeptName,
+            Long serviceId,
+            String serviceName,
+            String serviceCode,
+            Integer processingDays,
+            List<OpsDossierFile> dossierFiles) {
+        this(dossierId, dossierCode, dossierStatus, submissionDate, dueDate, finishDate, formData, rejectionReason,
+                applicantId, applicantUsername, applicantFullName, applicantUserType, handlerId, handlerUsername,
+                handlerFullName, handlerDeptId, handlerDeptName, serviceId, serviceName, serviceCode, processingDays);
+        this.dossierFiles = dossierFiles;
     }
 }

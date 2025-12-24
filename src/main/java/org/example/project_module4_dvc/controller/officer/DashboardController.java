@@ -38,7 +38,8 @@ public class DashboardController {
 
     private final IOpsDossierFileService opsDossierFileService;
 
-    public DashboardController(IOfficerService officerService, FileStorageService fileStorageService,IOpsDossierFileService opsDossierFileService) {
+    public DashboardController(IOfficerService officerService, FileStorageService fileStorageService,
+            IOpsDossierFileService opsDossierFileService) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.opsDossierFileService = opsDossierFileService;
@@ -130,9 +131,10 @@ public class DashboardController {
     // pdf
 
     @GetMapping("reception/update")
-    public String updateDossierStatus(@RequestParam("dossierId") Long id, @RequestParam("specialistId") Long specialistId,
+    public String updateDossierStatus(@RequestParam("dossierId") Long id,
+            @RequestParam("specialistId") Long specialistId,
             @RequestParam("dueDate") LocalDateTime dueDate) {
-        officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate,"");
+        officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate, "");
         return "redirect:/officer/dashboard";
     }
 
@@ -165,12 +167,12 @@ public class DashboardController {
 
     @GetMapping("/view-file/{id}")
     public ResponseEntity<Resource> viewFile(@PathVariable("id") Long id) {
-        String  filePath = opsDossierFileService.getById(id).getFileUrl();
+        String filePath = opsDossierFileService.getById(id).getFileUrl();
         try {
-          Resource resource = fileStorageService.loadFileAsResource(filePath);
-            
+            Resource resource = fileStorageService.loadFileAsResource(filePath);
+
             // Determine content type
-            String contentType = "application/octet-stream"; 
+            String contentType = "application/octet-stream";
             try {
                 contentType = Files.probeContentType(resource.getFile().toPath());
             } catch (Exception e) {

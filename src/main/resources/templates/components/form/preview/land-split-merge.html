@@ -1,0 +1,67 @@
+<div th:fragment="form-detail" class="document-preview font-times">
+    <div class="text-center mb-4">
+        <h6 class="fw-bold fs-5 mb-0 text-uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h6>
+        <div class="fw-bold fs-5 text-decoration-underline mb-4">Độc lập - Tự do - Hạnh phúc</div>
+
+        <h3 class="fw-bold text-uppercase mb-4">CÔNG VĂN<br />V/V TÁCH HỢP THỬA ĐẤT</h3>
+    </div>
+
+    <div class="document-body px-4" style="line-height: 1.6;">
+
+        <div class="mb-3">
+            <strong>1. Thông tin thửa đất gốc:</strong>
+            <ul class="list-unstyled ms-4">
+                <li>- Số chứng chỉ: <span class="fw-bold" th:text="${formData.landCertificateNumber}"></span></li>
+                <li>- Thửa đất số: <span class="fw-bold" th:text="${formData.landPlotNumber}"></span></li>
+                <li>- Tờ bản đồ số: <span class="fw-bold" th:text="${formData.mapSheetNumber}"></span></li>
+                <li>- Diện tích ban đầu: <span class="fw-bold" th:text="${formData.originalAreaM2}"></span> m2</li>
+            </ul>
+        </div>
+
+        <div class="mb-3">
+            <strong>2. Nội dung đề nghị:</strong>
+            <div class="ms-4">
+                <p>Lý do: <span class="fw-bold" th:text="${formData.splitReason}"></span></p>
+                <p>Số thửa mới dự kiến: <span class="fw-bold" th:text="${formData.numberOfNewPlots}"></span></p>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <strong>3. Chi tiết các thửa mới (Dự kiến):</strong>
+            <div class="ms-4">
+                <div th:if="${formData.requestedSplitAreas != null && formData.requestedSplitAreas.size() > 0}">
+                    <table class="table table-bordered border-dark" style="width: 100%;">
+                        <thead>
+                            <tr class="text-center">
+                                <th>STT</th>
+                                <th>Diện tích (m²)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="area, iterStat : ${formData.requestedSplitAreas}">
+                                <td class="text-center" th:text="${iterStat.index + 1}"></td>
+                                <td class="text-center fw-bold" th:text="${area ?: ''}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${formData.requestedSplitAreas == null || formData.requestedSplitAreas.size() == 0}">
+                    <p class="text-muted fst-italic">Không có thông tin chi tiết.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-center">
+                <div class="fst-italic">Đà Nẵng, ngày .... tháng .... năm ....</div>
+                <div class="fw-bold text-uppercase mt-2">TRƯỞNG PHÒNG TÀI NGUYÊN MÔI TRƯỜNG</div>
+                <div class="fst-italic small">(Ký tên, đóng dấu)</div>
+                <div class="stamp-anchor position-relative mt-5" style="height: 100px;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
