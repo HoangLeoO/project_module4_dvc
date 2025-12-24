@@ -38,6 +38,7 @@ import java.util.Map;
 import org.example.project_module4_dvc.entity.mock.MockCitizen;
 import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/specialist/dashboard")
@@ -150,9 +151,11 @@ public class SpecialistDashboardController {
     }
 
     @GetMapping("reception/update")
-    public String updateDossierStatus(@RequestParam("dossierId") Long id) {
+    public String updateDossierStatus(@RequestParam("dossierId") Long id, RedirectAttributes redirectAttributes) {
         NewDossierDTO newDossierDTO = officerService.findById(id);
         specialistService.updateDossierStatus(id, "VERIFIED", Long.valueOf(2), newDossierDTO.getDueDate(), "");
+        redirectAttributes.addFlashAttribute("toastType", "success");
+        redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
         return "redirect:/specialist/dashboard";
     }
 
