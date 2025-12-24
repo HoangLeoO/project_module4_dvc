@@ -69,6 +69,7 @@ public class CitizenServiceController {
 
         return switch (code) {
             case "HK01_TRE" -> "redirect:/citizen/forms/hk01-tre";
+            case "KD01_HKD" -> "redirect:/citizen/forms/kd01-hkd";
             case "HK02_KAITU" -> "redirect:/citizen/services/death/HK02_KAITU";
             case "HT02_XACNHANHN" -> "redirect:/citizen/tuphap/marital-status";
             default -> "redirect:/citizen/forms/not-supported?code=" + code;

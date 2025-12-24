@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Đăng ký Hộ kinh doanh')}">
+</head>
+
+<style>
+    .wizard-step {
+        position: relative;
+        z-index: 1;
+    }
+
+    .wizard-step .btn-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #dee2e6;
+        background: white;
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    .wizard-step.active .btn-circle {
+        border-color: var(--bs-primary);
+        background: var(--bs-primary);
+        color: white;
+    }
+
+    .wizard-connector {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #dee2e6;
+        z-index: 0;
+    }
+</style>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <main class="container mt-5 pt-5 mb-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary mb-2">Đăng ký thành lập Hộ kinh doanh</h2>
+            <p class="text-muted" id="serviceNameLabel">Thủ tục: Đăng ký thành lập Hộ kinh doanh</p>
+        </div>
+
+        <!-- WIZARD NAV -->
+        <div class="position-relative mb-5 mx-auto" style="max-width: 600px;">
+            <div class="wizard-connector"></div>
+            <div class="d-flex justify-content-between position-relative">
+                <div class="wizard-step active" id="navStep1">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">1</div>
+                        <small class="fw-bold">Thông tin Hộ kinh doanh</small>
+                    </div>
+                </div>
+                <div class="wizard-step" id="navStep2">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">2</div>
+                        <small class="text-muted">Hồ sơ đính kèm</small>
+                    </div>
+                </div>
+                <div class="wizard-step" id="navStep3">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">3</div>
+                        <small class="text-muted">Kiểm tra & Nộp</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIZARD CONTENT -->
+        <div class="card shadow-sm border-0 rounded-3 wizard-content mx-auto" style="max-width: 900px;">
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- STEP 1 -->
+                <div id="step1">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 1: Thông tin Hộ kinh doanh & Đơn vị
+                        tiếp nhận</h5>
+
+                    <!-- Applicant Info (Read-only) -->
+                    <div class="alert alert-info border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i
+                                class="bi bi-person-circle me-2"></i>Thông tin Chủ hộ / Người đại diện</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Họ và tên</small>
+                                <span class="fw-bold fs-6" th:text="${citizen.fullName}">Nguyễn Văn A</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Số CCCD</small>
+                                <span class="fw-bold" th:text="${citizen.cccd}">123456789012</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Ngày sinh</small>
+                                <span class="fw-bold"
+                                    th:text="${#temporals.format(citizen.dob, 'dd/MM/yyyy')}">01/01/1990</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Giới tính</small>
+                                <span class="fw-bold"
+                                    th:text="${#strings.equalsIgnoreCase(citizen.gender, 'MALE') ? 'Nam' : 'Nữ'}">Nam</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Dân tộc</small>
+                                <span class="fw-bold" th:text="${citizen.ethnicGroup}">Kinh</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Quốc tịch</small>
+                                <span class="fw-bold">Việt Nam</span>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted d-block">Địa chỉ thường trú</small>
+                                <span class="fw-bold" th:text="${citizen.permanentAddress}">---</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Details Form -->
+                    <h6 class="fw-bold text-uppercase text-secondary mb-3">Thông tin chi tiết</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="form-label">Tên hộ kinh doanh <span class="text-danger">*</span></label>
+                            <input type="text" id="businessName" class="form-control"
+                                placeholder="VD: HỘ KINH DOANH NGUYỄN VĂN A" required>
+                            <p class="invalid-feedback" id="businessNameError"></p>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Địa chỉ trụ sở Hộ kinh doanh <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="businessAddress" class="form-control"
+                                placeholder="Số nhà, đường, phường/xã, quận/huyện..." required>
+                            <p class="invalid-feedback" id="businessAddressError"></p>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Ngành, nghề kinh doanh <span class="text-danger">*</span></label>
+                            <textarea id="businessLine" class="form-control" rows="2"
+                                placeholder="VD: Bán lẻ đồ mộc, thiết bị vệ sinh..." required></textarea>
+                            <p class="invalid-feedback" id="businessLineError"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số vốn kinh doanh (VNĐ) <span class="text-danger">*</span></label>
+                            <input type="number" id="registeredCapital" class="form-control" placeholder="VD: 100000000"
+                                required>
+                            <p class="invalid-feedback" id="registeredCapitalError"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số lượng lao động <span class="text-danger">*</span></label>
+                            <input type="number" id="numberOfEmployees" class="form-control" placeholder="VD: 5"
+                                required>
+                            <p class="invalid-feedback" id="numberOfEmployeesError"></p>
+                        </div>
+                    </div>
+
+                    <!-- Department Selection -->
+                    <div class="mt-4 pt-4 border-top">
+                        <h6 class="fw-bold text-uppercase text-secondary mb-3">Đơn vị tiếp nhận hồ sơ</h6>
+                        <div class="card border shadow-sm">
+                            <div class="card-body">
+                                <label class="form-label fw-bold">Chọn Phường/Xã tiếp nhận <span
+                                        class="text-danger">*</span></label>
+                                <select id="receivingDeptId" class="form-select border-primary" required>
+                                    <option value="" selected disabled>-- Chọn Phường/Xã tiếp nhận --</option>
+                                    <option th:each="dept : ${sysDepartments}" th:if="${dept.level == 2}"
+                                        th:value="${dept.id}" th:text="${dept.deptName}">Phường A</option>
+                                </select>
+                                <p class="invalid-feedback" id="receivingDeptIdError"></p>
+                                <small class="text-muted mt-2 d-block">
+                                    <i class="bi bi-info-circle me-1"></i> Vui lòng chọn đúng đơn vị hành chính nơi đặt
+                                    trụ sở hộ kinh doanh để hồ sơ được xử lý nhanh nhất.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div id="step2" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Hồ sơ đính kèm</h5>
+
+                    <div class="row g-3">
+                        <!-- Application Form -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Giấy đề nghị đăng ký hộ kinh doanh <span
+                                                    class="text-danger">*</span></h6>
+                                            <p class="small text-muted mb-0">Đính kèm bản quét hoặc ảnh chụp Đơn đề nghị
+                                                đã ký.</p>
+                                        </div>
+                                        <input type="file" id="applicationFiles"
+                                            class="form-control form-control-sm w-auto" multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'application')">
+                                    </div>
+                                    <div id="applicationFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ID Copies -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Bản sao CCCD của các cá nhân tham gia <span
+                                                    class="text-danger">*</span></h6>
+                                            <p class="small text-muted mb-0">Bản sao CCCD/Hộ chiếu của chủ hộ kinh doanh
+                                                và các thành viên góp vốn.</p>
+                                        </div>
+                                        <input type="file" id="idCopyFiles" class="form-control form-control-sm w-auto"
+                                            multiple accept="image/*,.pdf" onchange="handleFileSelect(event, 'idCopy')">
+                                    </div>
+                                    <div id="idCopyFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Optional: Meeting Minutes -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Biên bản họp nhóm cá nhân (nếu có)</h6>
+                                            <p class="small text-muted mb-0">Đối với trường hợp hộ kinh doanh do một
+                                                nhóm cá nhân thành lập.</p>
+                                        </div>
+                                        <input type="file" id="meetingFiles" class="form-control form-control-sm w-auto"
+                                            multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'meeting')">
+                                    </div>
+                                    <div id="meetingFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3 -->
+                <div id="step3" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Kiểm tra thông tin & Nộp hồ sơ</h5>
+
+                    <div class="review-summary">
+                        <!-- Business Review -->
+                        <div class="card border border-light shadow-sm mb-4">
+                            <div class="card-header bg-light py-2">
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-shop me-2"></i>Thông tin Hộ kinh doanh</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="small text-muted d-block">Tên hộ kinh doanh</label>
+                                        <span id="reviewBusinessName" class="fw-bold text-uppercase">---</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small text-muted d-block">Địa chỉ trụ sở</label>
+                                        <span id="reviewBusinessAddress" class="fw-bold">---</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="small text-muted d-block">Ngành, nghề kinh doanh</label>
+                                        <span id="reviewBusinessLine" class="fw-bold">---</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small text-muted d-block">Vốn kinh doanh</label>
+                                        <span id="reviewRegisteredCapital" class="fw-bold text-danger">---</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small text-muted d-block">Số lượng lao động</label>
+                                        <span id="reviewNumberOfEmployees" class="fw-bold">---</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small text-muted d-block">Cơ quan tiếp nhận</label>
+                                        <span id="reviewDeptName" class="fw-bold">---</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents Review -->
+                        <div class="card border border-light shadow-sm mb-4">
+                            <div class="card-header bg-light py-2">
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-file-earmark-check me-2"></i>Tệp đính kèm</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="reviewFilesList" class="d-flex flex-wrap gap-2">
+                                    <span class="text-muted small">Chưa có tệp nào được tải lên</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check p-3 bg-light rounded border mb-4 mt-4">
+                        <input class="form-check-input ms-0 me-3" type="checkbox" id="confirmDataCorrect" required>
+                        <label class="form-check-label fw-bold" for="confirmDataCorrect">
+                            Tôi cam đoan toàn bộ thông tin đã cung cấp là chính xác và hoàn toàn chịu trách nhiệm trước
+                            pháp luật.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                    <button class="btn btn-secondary px-4 disabled" id="btnBack" onclick="changeStep(-1)">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại
+                    </button>
+                    <button class="btn btn-primary px-4 fw-bold" id="btnNext" onclick="changeStep(1)">
+                        Tiếp tục <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <input type="hidden" id="serviceId" th:value="${s != null ? s.id : ''}">
+        <input type="hidden" id="serviceCode" th:value="${s != null ? s.serviceCode : 'KD01_HKD'}">
+        <input type="hidden" id="businessOwner" th:value="${citizen.fullName}">
+        <input type="hidden" id="ownerIdNumber" th:value="${citizen.cccd}">
+
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold" id="messageModalTitle">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-info-circle-fill" style="font-size: 3rem;" id="messageModalIcon"></i>
+                    </div>
+                    <p class="mb-0 fs-5" id="messageModalBody"></p>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center">
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        let currentStep = 1;
+        let selectedFiles = {
+            application: [],
+            idCopy: [],
+            meeting: []
+        };
+
+        function showModal(message, type = 'info') {
+            const modalEl = document.getElementById('messageModal');
+            const titleEl = document.getElementById('messageModalTitle');
+            const bodyEl = document.getElementById('messageModalBody');
+            const iconEl = document.getElementById('messageModalIcon');
+            const modal = new bootstrap.Modal(modalEl);
+
+            bodyEl.innerText = message;
+            titleEl.className = 'modal-title fw-bold ' + (type === 'error' ? 'text-danger' : (type === 'warning' ? 'text-warning' : 'text-primary'));
+            iconEl.className = 'bi ' + (type === 'error' ? 'bi-x-circle-fill text-danger' : (type === 'warning' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-info-circle-fill text-primary'));
+
+            modal.show();
+        }
+
+        function changeStep(delta) {
+            if (delta === 1 && !validateStep(currentStep)) return;
+            currentStep += delta;
+            updateWizardUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                let isValid = true;
+                const fields = ['businessName', 'businessAddress', 'businessLine', 'registeredCapital', 'numberOfEmployees', 'receivingDeptId'];
+
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    const errorEl = document.getElementById(id + 'Error');
+                    if (!el.value || el.value.trim() === '') {
+                        el.classList.add('is-invalid');
+                        if (errorEl) {
+                            errorEl.innerText = 'Trường này là bắt buộc.';
+                            errorEl.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else {
+                        el.classList.remove('is-invalid');
+                        if (errorEl) errorEl.style.display = 'none';
+                    }
+                });
+
+                if (!isValid) showModal('Vui lòng điền đầy đủ các thông tin bắt buộc.', 'warning');
+                return isValid;
+            }
+            if (step === 2) {
+                if (selectedFiles.application.length === 0 || selectedFiles.idCopy.length === 0) {
+                    showModal('Vui lòng đính kèm các hồ sơ bắt buộc (Giấy đề nghị & Bản sao CCCD).', 'warning');
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        function updateWizardUI() {
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`step${i}`).classList.toggle('d-none', i !== currentStep);
+                const navEl = document.getElementById(`navStep${i}`);
+                navEl.classList.toggle('active', i === currentStep);
+                navEl.querySelector('small').className = i === currentStep ? 'fw-bold' : 'text-muted';
+            }
+
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+
+            btnBack.classList.toggle('disabled', currentStep === 1);
+
+            if (currentStep === 3) {
+                populateReviewStep();
+                btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
+                btnNext.className = 'btn btn-success px-4 fw-bold';
+                btnNext.onclick = submitForm;
+            } else {
+                btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
+                btnNext.className = 'btn btn-primary px-4 fw-bold';
+                btnNext.onclick = () => changeStep(1);
+            }
+        }
+
+        function handleFileSelect(event, type) {
+            const files = Array.from(event.target.files);
+            selectedFiles[type] = [...selectedFiles[type], ...files];
+            renderFileList(type);
+            event.target.value = '';
+        }
+
+        function renderFileList(type) {
+            const listEl = document.getElementById(type + 'FilesList');
+            listEl.innerHTML = '';
+            selectedFiles[type].forEach((file, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'badge bg-light border text-dark p-2 d-flex align-items-center gap-2';
+                badge.innerHTML = `
+                    <i class="bi bi-file-earmark-arrow-up text-primary"></i>
+                    <span class="text-truncate" style="max-width: 150px;">${file.name}</span>
+                    <button type="button" class="btn-close" style="font-size: 0.5rem;" onclick="removeFile('${type}', ${index})"></button>
+                `;
+                listEl.appendChild(badge);
+            });
+        }
+
+        function removeFile(type, index) {
+            selectedFiles[type].splice(index, 1);
+            renderFileList(type);
+        }
+
+        function populateReviewStep() {
+            document.getElementById('reviewBusinessName').innerText = document.getElementById('businessName').value;
+            document.getElementById('reviewBusinessAddress').innerText = document.getElementById('businessAddress').value;
+            document.getElementById('reviewBusinessLine').innerText = document.getElementById('businessLine').value;
+            document.getElementById('reviewRegisteredCapital').innerText = Number(document.getElementById('registeredCapital').value).toLocaleString() + ' VNĐ';
+            document.getElementById('reviewNumberOfEmployees').innerText = document.getElementById('numberOfEmployees').value;
+
+            const deptSelect = document.getElementById('receivingDeptId');
+            document.getElementById('reviewDeptName').innerText = deptSelect.options[deptSelect.selectedIndex].text;
+
+            let fileListHtml = '';
+            Object.keys(selectedFiles).forEach(key => {
+                if (selectedFiles[key].length > 0) {
+                    fileListHtml += `<div class="mb-2"><small class="fw-bold d-block">${key === 'application' ? 'Giấy đề nghị' : (key === 'idCopy' ? 'Bản sao CCCD' : 'Biên bản họp')}:</small>`;
+                    selectedFiles[key].forEach(f => {
+                        fileListHtml += `<span class="badge bg-primary-subtle text-primary border me-1">${f.name}</span>`;
+                    });
+                    fileListHtml += `</div>`;
+                }
+            });
+            document.getElementById('reviewFilesList').innerHTML = fileListHtml || '<span class="text-muted small">Không có tệp tải lên</span>';
+        }
+
+        async function submitForm() {
+            if (!document.getElementById('confirmDataCorrect').checked) {
+                showModal('Vui lòng xác nhận cam đoan thông tin là chính xác.', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnNext');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('serviceId', document.getElementById('serviceId').value);
+            formData.append('serviceCode', document.getElementById('serviceCode').value);
+            formData.append('receivingDeptId', document.getElementById('receivingDeptId').value);
+
+            // Business fields (matching HouseholdBusinessRegistrationFormDTO)
+            formData.append('businessName', document.getElementById('businessName').value);
+            formData.append('businessOwner', document.getElementById('businessOwner').value);
+            formData.append('ownerIdNumber', document.getElementById('ownerIdNumber').value);
+            formData.append('businessAddress', document.getElementById('businessAddress').value);
+            formData.append('businessLine', document.getElementById('businessLine').value);
+            formData.append('registeredCapital', document.getElementById('registeredCapital').value);
+            formData.append('numberOfEmployees', document.getElementById('numberOfEmployees').value);
+
+            // Files
+            Object.keys(selectedFiles).forEach(key => {
+                selectedFiles[key].forEach(file => {
+                    formData.append('files', file);
+                });
+            });
+
+            try {
+                const response = await fetch('/citizen/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (response.ok) {
+                    showModal('Nộp hồ sơ thành công!', 'success');
+                    setTimeout(() => window.location.href = '/citizen/hoso', 2000);
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Lỗi khi nộp hồ sơ');
+                }
+            } catch (err) {
+                showModal('Lỗi: ' + err.message, 'error');
+                btn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
