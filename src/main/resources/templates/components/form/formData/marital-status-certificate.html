@@ -18,13 +18,33 @@
 
         <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin hôn nhân</h6>
         <div class="row g-3 mb-4">
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <label class="form-label small">Tình trạng hôn nhân hiện tại</label>
-                <input type="text" class="form-control" th:value="${formData.currentMaritalStatus ?: ''}" readonly>
+                <input type="text" class="form-control" id="declaredMaritalStatus"
+                    th:value="${formData.currentMaritalStatus ?: ''}" readonly>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <label class="form-label small">Thời gian xác nhận</label>
                 <input type="text" class="form-control" th:value="${formData.confirmationPeriod ?: ''}" readonly>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="button" class="btn btn-outline-primary w-100" id="btnVerifyMaritalStatus"
+                    th:data-id-number="${formData.idNumber ?: ''}"
+                    th:data-declared-status="${formData.currentMaritalStatus ?: ''}">
+                    Kiểm tra
+                </button>
+            </div>
+        </div>
+        <!-- Kết quả kiểm tra tình trạng hôn nhân -->
+        <div id="maritalVerificationResult" class="mb-4" style="display: none;">
+            <div class="alert mb-0" id="maritalVerificationAlert">
+                <div class="d-flex align-items-center">
+                    <i class="bi fs-4 me-3" id="maritalVerificationIcon"></i>
+                    <div>
+                        <strong id="maritalVerificationTitle"></strong>
+                        <p class="mb-0 small" id="maritalVerificationMessage"></p>
+                    </div>
+                </div>
             </div>
         </div>
 

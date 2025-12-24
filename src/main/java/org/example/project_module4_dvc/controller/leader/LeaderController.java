@@ -51,6 +51,17 @@ public class LeaderController {
         this.leaderService = leaderService;
     }
 
+    @ModelAttribute("pendingCount")
+    public long getPendingCount(Principal principal) {
+        if (principal == null) return 0;
+        try {
+            SysUser sysUser = userService.findByUsername(principal.getName());
+            return leaderService.countByCurrentHandler_IdAndDossierStatus(sysUser.getId(), "VERIFIED");
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     @GetMapping("dashboard")
     public String showDashboard(Model model, Principal principal){
         try {
@@ -96,10 +107,47 @@ public class LeaderController {
     }
 
     @GetMapping("reports")
-    public String showReports(){
+    public String showReports(
+            @RequestParam(name = "periodType", defaultValue = "MONTH") String periodType,
+            @RequestParam(name = "year", required = false) Integer year,
+            @RequestParam(name = "periodValue", required = false) Integer periodValue,
+            Model model,
+            Principal principal
+    ) {
+        SysUser sysUser = userService.findByUsername(principal.getName());
+        Long deptId = (sysUser.getDepartment() != null) ? sysUser.getDepartment().getId() : 0L; // Fallback if no dept
+
+        // Defaults
+        if (year == null) year = java.time.LocalDate.now().getYear();
+        if (periodValue == null && "MONTH".equalsIgnoreCase(periodType)) {
+            periodValue = java.time.LocalDate.now().getMonthValue();
+        }
+
+        // 1. Get Summary Stats (Top Cards)
+        org.example.project_module4_dvc.dto.leader.report.ReportSummaryDTO summary = 
+                leaderService.getReportSummary(deptId, periodType, year, periodValue);
+        model.addAttribute("summary", summary);
+
+        // 2. Get Domain Stats (Table)
+        java.util.List<org.example.project_module4_dvc.dto.leader.report.ReportDomainStatDTO> domainStats = 
+                leaderService.getDomainStats(deptId, periodType, year, periodValue);
+        model.addAttribute("domainStats", domainStats);
+
+        // 3. Pass Filter Params back to view
+        model.addAttribute("periodType", periodType);
+        model.addAttribute("year", year);
+        model.addAttribute("periodValue", periodValue);
+
         return "pages/04-leader/leader-reports";
     }
 
+
+    @GetMapping("profile")
+    public String showProfile(Model model, Principal principal){
+        SysUser sysUser = userService.findByUsername(principal.getName());
+        model.addAttribute("user", sysUser);
+        return "pages/04-leader/leader-profile";
+    }
 
     @GetMapping("delegation")
     public String showDelegation(Model model, Principal principal){

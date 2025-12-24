@@ -111,7 +111,7 @@ public class PortalController {
 
         mode.addAttribute("opsDossier", opsDossier);
         mode.addAttribute("serviceCode", serviceCode);
-        mode.addAttribute("sysDepartment", sysDepartmentService.getAll());
+        mode.addAttribute("sysDepartment", sysDepartmentService.getAllByLevel(2));
         return "pages/portal/portal-submit-land-hl";
     }
 

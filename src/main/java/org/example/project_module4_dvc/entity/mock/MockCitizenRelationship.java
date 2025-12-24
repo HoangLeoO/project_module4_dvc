@@ -1,40 +1,38 @@
 package org.example.project_module4_dvc.entity.mock;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.project_module4_dvc.entity.base.AuditableEntity;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@Entity
-@Table(name = "mock_citizen_relationships", uniqueConstraints = @UniqueConstraint(name = "uq_citizen_relative", columnNames = {
-        "citizen_id", "relative_id" }))
+import java.time.Instant;
+
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "mock_citizen_relationships", schema = "egov_db")
 public class MockCitizenRelationship extends AuditableEntity {
-
-    @Column(name = "citizen_id", nullable = false)
-    @NotNull(message = "ID công dân không được để trống")
-    private Long citizenId;
-
-    @Column(name = "relative_id", nullable = false)
-    @NotNull(message = "ID người thân không được để trống")
-    private Long relativeId;
-
-    @Column(name = "relationship_type", nullable = false, length = 50)
-    @NotBlank(message = "Loại mối quan hệ không được để trống")
-    private String relationshipType;
-
-    // Foreign key relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citizen_id", foreignKey = @ForeignKey(name = "fk_mcr_citizen"), insertable = false, updatable = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "citizen_id", nullable = false)
     private MockCitizen citizen;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relative_id", foreignKey = @ForeignKey(name = "fk_mcr_relative"), insertable = false, updatable = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "relative_id", nullable = false)
     private MockCitizen relative;
+
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "relationship_type", nullable = false, length = 50)
+    private String relationshipType;
+
+
 }

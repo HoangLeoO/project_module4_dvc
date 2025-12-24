@@ -11,7 +11,31 @@
     <link rel="stylesheet" href="../../../static/assets/css/style.css">
     <link rel="stylesheet" href="../../../static/assets/css/internal.css">
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --primary-gov: #003366;
+            --accent-gov: #d4af37;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .text-warning {
+            color: var(--accent-gov) !important;
+        }
+
+        .hover-light:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         /* DOCUMENT PREVIEW STYLES */
         @import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400&display=swap');
 
@@ -170,11 +194,8 @@
                                     </td>
                                     <td th:text="${d.currentHandlerName}">Chuyên viên A</td>
                                     <td th:if="${viewType != 'history'}">
-                                        <span class="badge bg-danger animate-pulse" th:if="${d.daysLeft <= 2}">
-                                            GẤP (Còn <span th:text="${d.daysLeft}">2</span> ngày)
-                                        </span>
-                                        <span class="badge bg-light text-dark border" th:unless="${d.daysLeft <= 2}">
-                                            Trong hạn
+                                        <span class="badge bg-light text-dark border">
+                                            Còn <span th:text="${d.daysLeft}">2</span> ngày
                                         </span>
                                     </td>
                                     <td th:if="${viewType == 'history'}">
@@ -316,11 +337,11 @@
 
                             <h6 class="fw-bold text-muted small mb-2">Tác vụ khác</h6>
                             <button class="btn btn-outline-secondary w-100 mb-2 text-start"
-                                onclick="alert('Đã chuyển trả chuyên viên bổ sung!')">
+                                onclick="showToast('Đã chuyển trả chuyên viên bổ sung!', 'info')">
                                 <i class="bi bi-arrow-counterclockwise me-2"></i>Trả lại chuyên viên
                             </button>
                             <button class="btn btn-outline-danger w-100 text-start"
-                                onclick="alert('Đã từ chối hồ sơ!')">
+                                onclick="showToast('Đã từ chối hồ sơ!', 'error')">
                                 <i class="bi bi-slash-circle me-2"></i>Từ chối hồ sơ
                             </button>
 

@@ -19,7 +19,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "ops_log_workflow_steps")
-public class OpsLogWorkflowStep {
+public class OpsLogWorkflowStep  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
