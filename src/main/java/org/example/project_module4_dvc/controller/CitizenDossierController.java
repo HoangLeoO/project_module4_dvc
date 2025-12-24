@@ -9,7 +9,10 @@ import org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository;
 import org.example.project_module4_dvc.repository.ops.OpsLogWorkflowStepRepository;
 import org.example.project_module4_dvc.service.ops.IOpsDossierService;
 import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
+import org.example.project_module4_dvc.repository.mock.MockCitizenRelationshipRepository;
 import org.example.project_module4_dvc.repository.mod.ModPersonalVaultRepository;
+import org.example.project_module4_dvc.repository.ops.OpsDossierResultRepository;
+import org.example.project_module4_dvc.dto.FamilyMemberDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +25,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import java.nio.file.Files;
+import org.example.project_module4_dvc.service.FileStorageService;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +50,10 @@ public class CitizenDossierController {
     private MockCitizenRepository citizenRepository;
     @Autowired
     private ModPersonalVaultRepository vaultRepository;
+    @Autowired
+    private FileStorageService fileStorageService;
+    @Autowired
+    private OpsDossierResultRepository resultRepository;
 
     // 1. TRANG DASHBOARD / HỒ SƠ CỦA TÔI
     @GetMapping("/hoso")
@@ -122,10 +134,14 @@ public class CitizenDossierController {
                 }
             }
 
-            // Nếu hồ sơ đã hoàn tất, đánh dấu tất cả bước đã xong
+            // Nếu hồ sơ đã trả kết quả, đánh dấu tất cả bước đã xong (màu xanh hết)
             String status = detail.getDossierStatus();
-            if ("APPROVED".equals(status) || "COMPLETED".equals(status) || "RESULT_RETURNED".equals(status)) {
+            if ("RESULT_RETURNED".equals(status) || "COMPLETED".equals(status)) {
                 currentStepOrder = 999;
+            } else if ("APPROVED".equals(status)) {
+                // Nếu lãnh đạo đã phê duyệt, coi như đang ở bước cuối cùng (Trả kết quả)
+                // Bước 5 sẽ màu xanh khi sang trạng thái RESULT_RETURNED
+                currentStepOrder = 5;
             }
 
             model.addAttribute("currentStepOrder", currentStepOrder);
@@ -161,23 +177,26 @@ public class CitizenDossierController {
 
     // 4. CÁC TRANG BỔ SUNG KHÁC
     @Autowired
-    private org.example.project_module4_dvc.repository.mock.MockHouseholdMemberRepository householdMemberRepository;
+    private MockCitizenRelationshipRepository relationshipRepository;
 
     @GetMapping("/profile")
     public String showProfile(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         Long citizenId = userDetails.getCitizenId();
         if (citizenId != null) {
-            model.addAttribute("citizen", citizenRepository.findById(citizenId).orElse(null));
+            var citizen = citizenRepository.findById(citizenId).orElse(null);
+            model.addAttribute("citizen", citizen);
 
-            // Fetch Household Info
-            var myMemberships = householdMemberRepository.findByCitizen_IdAndStatus(citizenId, 1);
-            if (!myMemberships.isEmpty()) {
-                // Assuming one person belongs to one active household context at a time for
-                // this mockup
-                var listFamily = householdMemberRepository
-                        .findByHousehold_IdAndStatus(myMemberships.get(0).getHousehold().getId(), 1);
-                model.addAttribute("familyMembers", listFamily);
-            }
+            // Fetch Family Members through Relationships
+            // Trigger đã ghi 2 chiều nên chỉ cần query 1 chiều
+            var relationships = relationshipRepository.findByCitizenId(citizenId);
+            var familyMembers = relationships.stream()
+                    .map(rel -> FamilyMemberDTO.builder()
+                            .citizen(rel.getRelative())
+                            .relationshipType(rel.getRelationshipType())
+                            .build())
+                    .toList();
+
+            model.addAttribute("familyMembers", familyMembers);
         }
         model.addAttribute("activePage", "profile");
         return "citizen/profile";
@@ -224,6 +243,52 @@ public class CitizenDossierController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi hệ thống: " + e.getMessage());
             return "redirect:/citizen/submit-wizard";
+        }
+    }
+
+    @GetMapping("/view-result")
+    public ResponseEntity<Resource> viewResultByPath(@RequestParam("path") String filePath) {
+        try {
+            System.out.println("Citizen Result Viewing - Path: " + filePath);
+            Resource resource = fileStorageService.loadFileAsResource(filePath);
+            String contentType = "application/octet-stream";
+            try {
+                contentType = Files.probeContentType(resource.getFile().toPath());
+            } catch (Exception e) {
+                // ignore
+            }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(resource);
+        } catch (Exception e) {
+            System.err.println("Error viewing result by path: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/view-result-file/{dossierId}")
+    public ResponseEntity<Resource> viewResultByDossierId(@PathVariable Long dossierId) {
+        try {
+            System.out.println("Citizen Result Viewing - Dossier ID: " + dossierId);
+            var result = resultRepository.findByDossier_Id(dossierId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy kết quả cho hồ sơ ID: " + dossierId));
+
+            String filePath = result.getEFileUrl();
+            System.out.println("Found Result File Path: " + filePath);
+
+            Resource resource = fileStorageService.loadFileAsResource(filePath);
+            String contentType = "application/octet-stream";
+            try {
+                contentType = Files.probeContentType(resource.getFile().toPath());
+            } catch (Exception e) {
+                // ignore
+            }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(resource);
+        } catch (Exception e) {
+            System.err.println("Error viewing result by dossier ID: " + e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 

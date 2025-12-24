@@ -91,7 +91,7 @@
 
                             <!-- FAMILY MEMBERS SECTION -->
                             <div class="col-12 mt-4" th:if="${familyMembers != null && !familyMembers.isEmpty()}">
-                                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Thành viên hộ gia đình</h6>
+                                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Thành viên gia đình</h6>
                                 <div class="table-responsive">
                                     <table class="table table-sm table-hover border">
                                         <thead class="bg-light">
@@ -108,7 +108,7 @@
                                                     Văn B</td>
                                                 <td>
                                                     <span class="badge bg-secondary bg-opacity-10 text-secondary"
-                                                        th:text="${m.relationToHead}">Vợ</span>
+                                                        th:text="${m.relationshipDisplayName}">Cha</span>
                                                 </td>
                                                 <td th:text="${#temporals.format(m.citizen.dob, 'dd/MM/yyyy')}">
                                                     01/01/1980</td>

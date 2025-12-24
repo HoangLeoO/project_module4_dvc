@@ -25,7 +25,7 @@ public interface IOfficerService {
 
     List<NewDossierDTO> findNearlyDue(String departmentName);
 
-    void updateDossierStatus(Long dossierId, String status, Long specialistId, LocalDateTime  dueDate, String reason);
+    void updateDossierStatus(Long dossierId, String status, Long specialistId, LocalDateTime dueDate, String reason);
 
     void updateDossierRejectStatus(Long dossierId, String status, String reason);
 

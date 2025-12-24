@@ -53,8 +53,8 @@ public class SpecialistDashboardController {
     private final MockCitizenRepository mockCitizenRepository;
 
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
-            ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
+                                         ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
+                                         SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
@@ -65,8 +65,8 @@ public class SpecialistDashboardController {
 
     @GetMapping("")
     public String getDossierList(Model model,
-            @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                 @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("specialistId", userDetails.getUserId());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
@@ -83,7 +83,7 @@ public class SpecialistDashboardController {
 
     @GetMapping("/reception")
     public String getReceptionForm(Model model, @RequestParam("id") Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         List<OpsDossierFile> opsDossierFile = officerService.findFileByDossierId(id);

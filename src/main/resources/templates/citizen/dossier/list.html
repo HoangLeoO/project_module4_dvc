@@ -110,7 +110,7 @@
                                     class="btn btn-sm btn-outline-primary fw-bold">Chi tiết</a>
                             </td>
                         </tr>
-                        <tr th:if="${dossierPage.empty}">
+                        <tr th:if="${dossierPage.isEmpty()}">
                             <td colspan="5" class="text-center py-5 text-muted">
                                 <i class="bi bi-folder-x fs-1 opacity-25 d-block mb-3"></i>
                                 Không tìm thấy hồ sơ nào phù hợp.
