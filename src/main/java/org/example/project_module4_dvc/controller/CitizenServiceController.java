@@ -61,31 +61,18 @@ public class CitizenServiceController {
     }
 
     @GetMapping("/submit-wizard")
-    public String showSubmitWizard(@RequestParam(value = "code", required = false) String code,
-            Model model,
-            Authentication authentication) {
-        if (code != null) {
-            var service = catServiceService.getServiceByCode(code);
-            model.addAttribute("s", service);
+    public String submitWizardRouter(@RequestParam("code") String code) {
+
+        if (code == null || code.isBlank()) {
+            return "redirect:/citizen/services";
         }
 
-        // Lấy thông tin người đăng nhập
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long citizenId = userDetails.getCitizenId();
-
-        // Lấy thông tin công dân từ database
-        MockCitizen citizen = mockCitizenService.findById(citizenId);
-        model.addAttribute("citizen", citizen);
-
-        // Logic check Spouse if Married (Enhanced: fallback to Household logic)
-        MockCitizen spouse = mockCitizenService.findSpouseByCitizenId(citizenId);
-        if (spouse != null) {
-            model.addAttribute("spouse", spouse);
-        }
-
-        model.addAttribute("activePage", "services");
-        model.addAttribute("sysDepartments", sysDepartmentService.getAll());
-
-        return "citizen/portal-submit-wizard";
+        return switch (code) {
+            case "HK01_TRE" -> "redirect:/citizen/forms/hk01-tre";
+            case "HK02_KAITU" -> "redirect:/citizen/services/death/HK02_KAITU";
+            case "HT02_XACNHANHN" -> "redirect:/citizen/tuphap/marital-status";
+            default -> "redirect:/citizen/forms/not-supported?code=" + code;
+        };
     }
+
 }

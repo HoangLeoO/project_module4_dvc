@@ -98,18 +98,30 @@ BEGIN
                         (v_h_id, v_new_child_id, 'CON', CURDATE(), 1);
                 END IF;
 
-                -- 3. Ghi mối quan hệ gia đình vào bảng mock_citizen_relationships
-                -- Nếu có cha: ghi mối quan hệ CON (trẻ là con của cha)
+
+                -- 3. Ghi mối quan hệ gia đình vào bảng mock_citizen_relationships (2 chiều)
+                -- Nếu có cha: ghi 2 bản ghi
                 IF v_father_id IS NOT NULL THEN
+                    -- Con -> Cha
                     INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
                     VALUES (v_new_child_id, v_father_id, 'CHA');
+                    
+                    -- Cha -> Con
+                    INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+                    VALUES (v_father_id, v_new_child_id, 'CON');
                 END IF;
 
-                -- Nếu có mẹ: ghi mối quan hệ CON (trẻ là con của mẹ)
+                -- Nếu có mẹ: ghi 2 bản ghi
                 IF v_mother_id IS NOT NULL THEN
+                    -- Con -> Mẹ
                     INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
                     VALUES (v_new_child_id, v_mother_id, 'ME');
+                    
+                    -- Mẹ -> Con
+                    INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+                    VALUES (v_mother_id, v_new_child_id, 'CON');
                 END IF;
+
 
             END IF;
         END IF;

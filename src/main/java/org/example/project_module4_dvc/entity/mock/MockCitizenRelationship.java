@@ -34,5 +34,4 @@ public class MockCitizenRelationship extends AuditableEntity {
     @Column(name = "relationship_type", nullable = false, length = 50)
     private String relationshipType;
 
-
 }
