@@ -1,95 +1,98 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
-<!-- SIDEBAR FRAGMENT -->
-<div th:fragment="sidebar" class="sidebar">
-  <div class="sidebar-header">
-    <i class="bi bi-geo-alt-fill fs-4 me-3"></i>
-    <div>
-      <div class="fw-bold" style="letter-spacing: 0.5px;">HỆ THỐNG</div>
-      <div style="font-size: 0.8rem; opacity: 0.9;">QUẢN LÝ ĐẤT ĐAI</div>
+  <!-- SIDEBAR FRAGMENT -->
+  <div th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <i class="bi bi-geo-alt-fill fs-4 me-3"></i>
+      <div>
+        <div class="fw-bold" style="letter-spacing: 0.5px;">HỆ THỐNG</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">QUẢN LÝ ĐẤT ĐAI</div>
+      </div>
     </div>
-  </div>
-  <div class="py-4">
-    <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
-           style="font-size: 0.75rem; letter-spacing: 1px;">Nghiệp vụ</small>
-    <a th:href="@{/land/reception}"
-       th:classappend="${currentPage == 'reception'} ? 'active' : ''"
-       class="nav-link-custom">
-      <i class="bi bi-inbox-fill"></i>
-      Tiếp nhận hồ sơ
-    </a>
-    <a th:href="@{/land/appraisal}"
-       th:classappend="${currentPage == 'appraisal'} ? 'active' : ''"
-       class="nav-link-custom">
-      <i class="bi bi-clipboard-check"></i>
-      Thẩm định
-    </a>
-    <a th:href="@{/land/approval}"
-       th:classappend="${currentPage == 'approval'} ? 'active' : ''"
-       class="nav-link-custom">
-      <i class="bi bi-pen-fill"></i>
-      Phê duyệt
-    </a>
-    <a th:href="@{/land/update-record}"
-       th:classappend="${currentPage == 'update-record'} ? 'active' : ''"
-       class="nav-link-custom">
-      <i class="bi bi-database-fill-gear"></i>
-      Cập nhật sổ đất
-    </a>
-    <a th:href="@{/land/finish}"
-       th:classappend="${currentPage == 'finish'} ? 'active' : ''"
-       class="nav-link-custom">
-      <i class="bi bi-check-circle-fill"></i>
-      Hoàn tất
-    </a>
-    <div class="my-4 border-top mx-4 op-2"></div>
-    <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
-           style="font-size: 0.75rem; letter-spacing: 1px;">Hệ thống</small>
-    <a th:href="@{/logout/officer}" class="nav-link-custom text-danger hover-danger">
-      <i class="bi bi-box-arrow-left"></i>
-      Đăng xuất
-    </a>
-  </div>
-</div>
-<!-- HEADER FRAGMENT -->
-<nav th:fragment="header" class="top-header d-flex align-items-center justify-content-between">
-  <div class="d-flex align-items-center">
-        <span class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle me-3">
-            <i class="bi bi-geo-alt"></i>
-        </span>
-    <div>
-      <div class="fw-bold text-dark">Quản Lý Đất Đai</div>
-      <small class="text-muted">Xử lý hồ sơ biến động đất</small>
-    </div>
-  </div>
-  <div class="d-flex align-items-center gap-4">
-    <!-- Notifications -->
-    <button class="btn btn-light rounded-circle position-relative border-0 shadow-sm"
-            style="width: 40px; height: 40px;">
-      <i class="bi bi-bell-fill text-muted"></i>
-      <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-    </button>
-    <!-- Profile Dropdown -->
-    <div class="dropdown">
-      <a href="#"
-         class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle px-3 py-2 rounded-pill bg-white shadow-sm border"
-         data-bs-toggle="dropdown">
-        <img src="https://ui-avatars.com/api/?name=Land+Officer&background=0f4c81&color=fff"
-             class="rounded-circle me-2" width="32" height="32">
-        <div class="d-flex flex-column me-2" style="line-height: 1.1;">
-          <span class="fw-bold small" th:text="${session.user?.fullName ?: 'Cán bộ'}"></span>
-          <small class="text-muted" style="font-size: 0.7rem;">Cán bộ địa chính</small>
-        </div>
+    <div class="py-4">
+      <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
+        style="font-size: 0.75rem; letter-spacing: 1px;">Nghiệp vụ</small>
+      <a th:href="@{/officer/land/reception}" th:classappend="${currentPage == 'reception'} ? 'active' : ''"
+        class="nav-link-custom" sec:authorize="hasRole('CANBO_MOTCUA')">
+        <i class="bi bi-inbox-fill"></i>
+        Tiếp nhận hồ sơ
       </a>
-      <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
-        <li><h6 class="dropdown-header">Tài khoản</h6></li>
-        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item text-danger" th:href="@{/logout/officer}"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
-      </ul>
+      <a th:href="@{/specialist/land/appraisal}" th:classappend="${currentPage == 'appraisal'} ? 'active' : ''"
+        class="nav-link-custom" sec:authorize="hasRole('CANBO_DIA_CHINH')">
+        <i class="bi bi-clipboard-check"></i>
+        Thẩm định
+      </a>
+      <a th:href="@{/leader/land/approval}" th:classappend="${currentPage == 'approval'} ? 'active' : ''"
+        class="nav-link-custom" sec:authorize="hasAnyRole('CHU_TICH_UBND', 'PHO_CHU_TICH_UBND')">
+        <i class="bi bi-pen-fill"></i>
+        Phê duyệt
+      </a>
+      <a th:href="@{/specialist/land/update-record}" th:classappend="${currentPage == 'update-record'} ? 'active' : ''"
+        class="nav-link-custom" sec:authorize="hasRole('CANBO_DIA_CHINH')">
+        <i class="bi bi-database-fill-gear"></i>
+        Cập nhật sổ đất
+      </a>
+      <a th:href="@{/officer/land/finish}" th:classappend="${currentPage == 'finish'} ? 'active' : ''"
+        class="nav-link-custom" sec:authorize="hasRole('CANBO_MOTCUA')">
+        <i class="bi bi-check-circle-fill"></i>
+        Hoàn tất
+      </a>
+      <div class="my-4 border-top mx-4 op-2"></div>
+      <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
+        style="font-size: 0.75rem; letter-spacing: 1px;">Hệ thống</small>
+      <a th:href="@{/logout/officer}" class="nav-link-custom text-danger hover-danger">
+        <i class="bi bi-box-arrow-left"></i>
+        Đăng xuất
+      </a>
     </div>
   </div>
-</nav>
+  <!-- HEADER FRAGMENT -->
+  <nav th:fragment="header" class="top-header d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <span class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle me-3">
+        <i class="bi bi-geo-alt"></i>
+      </span>
+      <div>
+        <div class="fw-bold text-dark">Quản Lý Đất Đai</div>
+        <small class="text-muted">Xử lý hồ sơ biến động đất</small>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-4">
+      <!-- Notifications -->
+      <button class="btn btn-light rounded-circle position-relative border-0 shadow-sm"
+        style="width: 40px; height: 40px;">
+        <i class="bi bi-bell-fill text-muted"></i>
+        <span
+          class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+      </button>
+      <!-- Profile Dropdown -->
+      <div class="dropdown">
+        <a href="#"
+          class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle px-3 py-2 rounded-pill bg-white shadow-sm border"
+          data-bs-toggle="dropdown">
+          <img src="https://ui-avatars.com/api/?name=Land+Officer&background=0f4c81&color=fff"
+            class="rounded-circle me-2" width="32" height="32">
+          <div class="d-flex flex-column me-2" style="line-height: 1.1;">
+            <span class="fw-bold small" th:text="${session.user?.fullName ?: 'Cán bộ'}"></span>
+            <small class="text-muted" style="font-size: 0.7rem;">Cán bộ địa chính</small>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
+          <li>
+            <h6 class="dropdown-header">Tài khoản</h6>
+          </li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item text-danger" th:href="@{/logout/officer}"><i
+                class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </body>
+
 </html>

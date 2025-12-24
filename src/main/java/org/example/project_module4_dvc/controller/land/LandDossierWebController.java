@@ -2,23 +2,29 @@ package org.example.project_module4_dvc.controller.land;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.project_module4_dvc.dto.landConversion.*;
+import org.example.project_module4_dvc.dto.view.DossierDetailViewDTO;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import org.example.project_module4_dvc.entity.ops.OpsDossierLog;
 import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.example.project_module4_dvc.repository.sys.SysUserRepository;
+import org.example.project_module4_dvc.entity.cat.CatService;
+import org.example.project_module4_dvc.repository.cat.CatServiceRepository;
+import org.example.project_module4_dvc.repository.mock.MockLandRepository;
 import org.example.project_module4_dvc.service.learder.LandConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/land")
+// @RequestMapping("/land") - Removed to split endpoints by security domain
 public class LandDossierWebController {
     @Autowired
     private LandConversionService landConversionService;
@@ -29,18 +35,159 @@ public class LandDossierWebController {
     @Autowired
     private SysUserRepository userRepository;
     @Autowired
+    private CatServiceRepository catServiceRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.sys.SysDepartmentRepository deptRepository;
+    @Autowired
+    private MockLandRepository mockLandRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsDossierFileRepository fileRepository;
+    @Autowired
     private ObjectMapper objectMapper;
 
-    // ==================== BƯỚC 2: TIẾP NHẬN ====================
+    // ==================== BƯỚC 1: NỘP HỒ SƠ (CITIZEN) ====================
+    /**
+     * Trang nộp hồ sơ chuyển mục đích sử dụng đất
+     * GET /citizen/land/submit
+     */
+    @GetMapping("/citizen/land/submit")
+    public String showSubmitForm(Model model, Principal principal) {
+        SysUser user = userRepository.findByUsername(principal.getName());
+        if (user.getCitizen() != null) {
+            model.addAttribute("cccd", user.getCitizen().getCccd());
+            model.addAttribute("address", user.getCitizen().getPermanentAddress());
+        } else {
+            model.addAttribute("cccd", user.getUsername());
+            model.addAttribute("address", "Chưa cập nhật");
+        }
+
+        // Load danh sách đơn vị tiếp nhận
+        model.addAttribute("depts", deptRepository.findAllByLevel(2));
+
+        // Load thông tin lệ phí
+        CatService service = catServiceRepository.findByServiceCode("DD02_CHUYENMDSD").orElse(null);
+        if (service != null) {
+            model.addAttribute("fee", service.getFeeAmount());
+        } else {
+            model.addAttribute("fee", 0);
+        }
+
+        return "pages/land/submit-land-purpose-change";
+    }
+
+    /**
+     * Lấy danh sách thửa đất của công dân hiện tại
+     * GET /citizen/land/my-lands
+     */
+    @GetMapping("/citizen/land/my-lands")
+    @ResponseBody
+    public ResponseEntity<?> getMyLands(Principal principal) {
+        try {
+            SysUser user = userRepository.findByUsername(principal.getName());
+            if (user.getCitizen() == null) {
+                return ResponseEntity.ok(List.of());
+            }
+            return ResponseEntity.ok(mockLandRepository.findByOwnerId(user.getCitizen().getId()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Xử lý nộp hồ sơ
+     * POST /citizen/land/submit
+     */
+    @PostMapping("/citizen/land/submit")
+    @ResponseBody
+    public ResponseEntity<?> submitDossier(
+            @RequestParam("serviceCode") String serviceCode,
+            @RequestParam("currentOwner") String currentOwner,
+            @RequestParam("ownerIdNumber") String ownerIdNumber,
+            @RequestParam("ownerAddress") String ownerAddress,
+            @RequestParam("receivingDeptId") Long receivingDeptId,
+            @RequestParam("landCertificateNumber") String landCertificateNumber,
+            @RequestParam("landPlotNumber") String landPlotNumber,
+            @RequestParam("landMapSheet") String landMapSheet,
+            @RequestParam("landAddress") String landAddress,
+            @RequestParam("landArea") String landArea,
+            @RequestParam("landPurpose") String landPurpose,
+            @RequestParam("newPurpose") String newPurpose,
+            @RequestParam("changeReason") String changeReason,
+            @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
+            Principal principal) {
+
+        try {
+            SysUser currentUser = userRepository.findByUsername(principal.getName());
+
+            // Tạo formData JSON
+            Map<String, Object> formDataMap = new java.util.HashMap<>();
+            formDataMap.put("currentOwner", currentOwner);
+            formDataMap.put("ownerIdNumber", ownerIdNumber);
+            formDataMap.put("ownerAddress", ownerAddress);
+            formDataMap.put("landCertificateNumber", landCertificateNumber);
+            formDataMap.put("landPlotNumber", landPlotNumber);
+            formDataMap.put("landMapSheet", landMapSheet);
+            formDataMap.put("landAddress", landAddress);
+            formDataMap.put("landArea", landArea);
+            formDataMap.put("landPurpose", landPurpose);
+            formDataMap.put("newPurpose", newPurpose);
+            formDataMap.put("changeReason", changeReason);
+            formDataMap.put("serviceCode", serviceCode);
+
+            String formDataJson = objectMapper.writeValueAsString(formDataMap);
+
+            // Tạo DTO
+            DossierSubmitDTO dto = new DossierSubmitDTO();
+            // Tìm service theo serviceCode
+            CatService service = catServiceRepository.findByServiceCode(serviceCode)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với mã: " + serviceCode));
+            dto.setServiceId(service.getId());
+
+            dto.setApplicantId(currentUser.getId());
+            dto.setReceivingDeptId(receivingDeptId);
+            dto.setFormData(formDataJson);
+            
+            // Xử lý File Upload
+            if (files != null && !files.isEmpty()) {
+                List<FileUploadDTO> fileDTOs = new java.util.ArrayList<>();
+                for (org.springframework.web.multipart.MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        FileUploadDTO f = new FileUploadDTO();
+                        f.setFileName(file.getOriginalFilename());
+                        f.setFileType(file.getContentType());
+                        // URL sẽ được generate trong Service hoặc xử lý upload thật ở đây
+                        // Tạm thời truyền thông tin cơ bản
+                        fileDTOs.add(f);
+                    }
+                }
+                dto.setFiles(fileDTOs);
+            }
+
+            // Gọi service
+            OpsDossier result = landConversionService.submitDossier(dto);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Nộp hồ sơ thành công",
+                    "dossierId", result.getId(),
+                    "dossierCode", result.getDossierCode()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()));
+        }
+    }
+
+    // ==================== BƯỚC 2: TIẾP NHẬN (OFFICER) ====================
     /**
      * Trang danh sách hồ sơ đất cần tiếp nhận
-     * GET /land/reception
+     * GET /officer/land/reception
      */
-    @GetMapping("/reception")
+    @GetMapping("/officer/land/reception")
     public String showReceptionList(Model model, Principal principal) {
-        // Lấy hồ sơ đất đai với status = NEW
+        // Lấy hồ sơ đất đai với status = NEW (Sử dụng method optimized lazy load)
         List<OpsDossier> dossiers = dossierRepository
-                .findByDossierStatusAndServiceServiceCodeStartingWith("NEW", "DD");
+                .findWithRelationsByDossierStatusAndServiceServiceCodeStartingWith("NEW", "DD");
 
         model.addAttribute("dossiers", dossiers);
         return "pages/land/reception-list";
@@ -48,11 +195,11 @@ public class LandDossierWebController {
 
     /**
      * Trang chi tiết tiếp nhận hồ sơ
-     * GET /land/reception/{id}
+     * GET /officer/land/reception/{id}
      */
-    @GetMapping("/reception/{id}")
+    @GetMapping("/officer/land/reception/{id}")
     public String showReceptionDetail(@PathVariable Long id, Model model) {
-        OpsDossier dossier = dossierRepository.findById(id)
+        OpsDossier dossier = dossierRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
         // Lấy danh sách cán bộ địa chính để gán
@@ -61,17 +208,31 @@ public class LandDossierWebController {
                 .filter(u -> "OFFICIAL".equals(u.getUserType()))
                 .toList();
 
-        model.addAttribute("dossier", dossier);
-        model.addAttribute("landOfficers", landOfficers);
+        // Create View DTO
+        DossierDetailViewDTO viewDto = new DossierDetailViewDTO(dossier);
 
-        return "pages/land/reception-detail";
+        // Load files
+        List<org.example.project_module4_dvc.entity.ops.OpsDossierFile> files = fileRepository
+                .findOpsDossierFileByDossier_Id(id);
+        viewDto.setFiles(files);
+
+        model.addAttribute("dossier", viewDto);
+        model.addAttribute("landOfficers", landOfficers);
+        model.addAttribute("files", files);
+
+        // --- GENERIC VIEW SUPPORT ---
+        model.addAttribute("schema", dossier.getService().getFormSchema());
+        model.addAttribute("data", dossier.getFormData());
+        model.addAttribute("formFragment", "fragments/dynamic-form-readonly :: render");
+
+        return "pages/officer/officer-reception";
     }
 
     /**
      * Xử lý tiếp nhận hồ sơ
-     * POST /land/reception/submit
+     * POST /officer/land/reception/submit
      */
-    @PostMapping("/reception/submit")
+    @PostMapping("/officer/land/reception/submit")
     public String submitReception(
             @RequestParam Long dossierId,
             @RequestParam String action, // ACCEPT, REJECT, REQUIRE_SUPPLEMENT
@@ -97,7 +258,7 @@ public class LandDossierWebController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        return "redirect:/land/reception";
+        return "redirect:/officer/land/reception";
     }
 
     // ==================== BƯỚC 3: THẨM ĐỊNH ====================
@@ -105,7 +266,7 @@ public class LandDossierWebController {
      * Trang danh sách hồ sơ cần thẩm định
      * GET /land/appraisal
      */
-    @GetMapping("/appraisal")
+    @GetMapping("/specialist/land/appraisal")
     public String showAppraisalList(Model model, Principal principal) {
         SysUser currentUser = userRepository.findByUsername(principal.getName());
 
@@ -122,12 +283,25 @@ public class LandDossierWebController {
      * Trang chi tiết thẩm định
      * GET /land/appraisal/{id}
      */
-    @GetMapping("/appraisal/{id}")
+    @GetMapping("/specialist/land/appraisal/{id}")
     public String showAppraisalDetail(@PathVariable Long id, Model model) {
-        OpsDossier dossier = dossierRepository.findById(id)
+        OpsDossier dossier = dossierRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
-        model.addAttribute("dossier", dossier);
+        // Create View DTO
+        DossierDetailViewDTO viewDto = new DossierDetailViewDTO(dossier);
+        // Load files
+        List<org.example.project_module4_dvc.entity.ops.OpsDossierFile> files = fileRepository
+                .findOpsDossierFileByDossier_Id(id);
+        viewDto.setFiles(files);
+
+        model.addAttribute("dossier", viewDto);
+        model.addAttribute("files", files);
+
+        // Add Generic Support for Appraisal too (in case template is updated)
+        model.addAttribute("schema", dossier.getService().getFormSchema());
+        model.addAttribute("data", dossier.getFormData());
+        model.addAttribute("formFragment", "fragments/dynamic-form-readonly :: render");
 
         return "pages/land/appraisal-detail";
     }
@@ -136,7 +310,7 @@ public class LandDossierWebController {
      * Xử lý thẩm định
      * POST /land/appraisal/submit
      */
-    @PostMapping("/appraisal/submit")
+    @PostMapping("/specialist/land/appraisal/submit")
     public String submitAppraisal(
             @RequestParam Long dossierId,
             @RequestParam String result, // PASS, FAIL
@@ -160,7 +334,7 @@ public class LandDossierWebController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        return "redirect:/land/appraisal";
+        return "redirect:/specialist/land/appraisal";
     }
 
     // ==================== BƯỚC 4: TRÌNH LÃNH ĐẠO ====================
@@ -168,9 +342,9 @@ public class LandDossierWebController {
      * Trang trình lãnh đạo
      * GET /land/submit-leader/{id}
      */
-    @GetMapping("/submit-leader/{id}")
+    @GetMapping("/specialist/land/submit-leader/{id}")
     public String showSubmitLeaderForm(@PathVariable Long id, Model model) {
-        OpsDossier dossier = dossierRepository.findById(id)
+        OpsDossier dossier = dossierRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
         // Lấy danh sách chủ tịch
@@ -189,7 +363,7 @@ public class LandDossierWebController {
      * Xử lý trình lãnh đạo
      * POST /land/submit-leader/submit
      */
-    @PostMapping("/submit-leader/submit")
+    @PostMapping("/specialist/land/submit-leader/submit")
     public String submitToLeader(
             @RequestParam Long dossierId,
             @RequestParam Long chairmanId,
@@ -208,7 +382,7 @@ public class LandDossierWebController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        return "redirect:/land/appraisal";
+        return "redirect:/specialist/land/appraisal";
     }
 
     // ==================== BƯỚC 5: PHÊ DUYỆT ====================
@@ -216,13 +390,13 @@ public class LandDossierWebController {
      * Trang danh sách hồ sơ cần phê duyệt (cho Chủ tịch)
      * GET /land/approval
      */
-    @GetMapping("/approval")
+    @GetMapping("/leader/land/approval")
     public String showApprovalList(Model model, Principal principal) {
         SysUser currentUser = userRepository.findByUsername(principal.getName());
 
         // Lấy hồ sơ đất được gán cho chủ tịch với status = PROCESSING
         List<OpsDossier> dossiers = dossierRepository
-                .findByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
+                .findWithRelationsByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
                         currentUser.getId(), "PROCESSING", "DD");
 
         model.addAttribute("dossiers", dossiers);
@@ -233,9 +407,9 @@ public class LandDossierWebController {
      * Trang chi tiết phê duyệt
      * GET /land/approval/{id}
      */
-    @GetMapping("/approval/{id}")
+    @GetMapping("/leader/land/approval/{id}")
     public String showApprovalDetail(@PathVariable Long id, Model model) {
-        OpsDossier dossier = dossierRepository.findById(id)
+        OpsDossier dossier = dossierRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
         // Lấy lịch sử xử lý
@@ -251,7 +425,7 @@ public class LandDossierWebController {
      * Xử lý phê duyệt
      * POST /land/approval/submit
      */
-    @PostMapping("/approval/submit")
+    @PostMapping("/leader/land/approval/submit")
     public String submitApproval(
             @RequestParam Long dossierId,
             @RequestParam String decision, // APPROVE, REJECT
@@ -275,7 +449,7 @@ public class LandDossierWebController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        return "redirect:/land/approval";
+        return "redirect:/leader/land/approval";
     }
 
     // ==================== BƯỚC 6A: CẬP NHẬT SỔ ĐẤT ====================
@@ -283,12 +457,12 @@ public class LandDossierWebController {
      * Trang danh sách hồ sơ cần cập nhật sổ
      * GET /land/update-record
      */
-    @GetMapping("/update-record")
+    @GetMapping("/specialist/land/update-record")
     public String showUpdateRecordList(Model model, Principal principal) {
         // Lấy hồ sơ đã được phê duyệt, chưa cập nhật sổ
         // (Kiểm tra log xem đã có action APPROVE nhưng chưa có UPDATE_LAND_DB)
         List<OpsDossier> dossiers = dossierRepository
-                .findByDossierStatusAndServiceServiceCodeStartingWith("PROCESSING", "DD");
+                .findWithRelationsByDossierStatusAndServiceServiceCodeStartingWith("PROCESSING", "DD");
 
         model.addAttribute("dossiers", dossiers);
         return "pages/land/update-record-list";
@@ -298,9 +472,9 @@ public class LandDossierWebController {
      * Trang cập nhật sổ đất
      * GET /land/update-record/{id}
      */
-    @GetMapping("/update-record/{id}")
+    @GetMapping("/specialist/land/update-record/{id}")
     public String showUpdateRecordForm(@PathVariable Long id, Model model) {
-        OpsDossier dossier = dossierRepository.findById(id)
+        OpsDossier dossier = dossierRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
         model.addAttribute("dossier", dossier);
@@ -312,7 +486,7 @@ public class LandDossierWebController {
      * Xử lý cập nhật sổ
      * POST /land/update-record/submit
      */
-    @PostMapping("/update-record/submit")
+    @PostMapping("/specialist/land/update-record/submit")
     public String submitUpdateRecord(
             @RequestParam Long dossierId,
             @RequestParam String comments,
@@ -330,7 +504,7 @@ public class LandDossierWebController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        return "redirect:/land/update-record";
+        return "redirect:/specialist/land/update-record";
     }
 
     // ==================== BƯỚC 6B: HOÀN TẤT ====================
@@ -338,7 +512,7 @@ public class LandDossierWebController {
      * Trang danh sách hồ sơ cần hoàn tất
      * GET /land/finish
      */
-    @GetMapping("/finish")
+    @GetMapping("/officer/land/finish")
     public String showFinishList(Model model) {
         // Lấy hồ sơ đã cập nhật sổ, chưa hoàn tất
         List<OpsDossier> dossiers = dossierRepository
@@ -352,7 +526,7 @@ public class LandDossierWebController {
      * Xử lý hoàn tất hồ sơ
      * POST /land/finish/submit
      */
-    @PostMapping("/finish/submit")
+    @PostMapping("/officer/land/finish/submit")
     public String submitFinish(
             @RequestParam Long dossierId,
             @RequestParam String comments,
@@ -370,7 +544,7 @@ public class LandDossierWebController {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        return "redirect:/land/finish";
+        return "redirect:/officer/land/finish";
     }
 
     // ==================== HELPER: XEM LỊCH SỬ ====================
@@ -378,9 +552,11 @@ public class LandDossierWebController {
      * Trang xem lịch sử xử lý hồ sơ
      * GET /land/history/{id}
      */
-    @GetMapping("/history/{id}")
+
+    // Map cho tất cả các role có thể xem history
+    @GetMapping({ "/officer/land/history/{id}", "/specialist/land/history/{id}", "/leader/land/history/{id}" })
     public String showHistory(@PathVariable Long id, Model model) {
-        OpsDossier dossier = dossierRepository.findById(id)
+        OpsDossier dossier = dossierRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
         List<OpsDossierLog> logs = logRepository.findByDossierIdOrderByCreatedAtAsc(id);
@@ -390,4 +566,5 @@ public class LandDossierWebController {
 
         return "pages/land/history";
     }
+
 }

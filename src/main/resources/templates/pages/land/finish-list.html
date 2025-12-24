@@ -229,7 +229,8 @@
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <form th:action="@{/land/finish/submit}" method="post" style="display: inline;">
+                                    <form th:action="@{/officer/land/finish/submit}" method="post"
+                                        style="display: inline;">
                                         <input type="hidden" name="dossierId" th:value="${dossier.id}" />
                                         <input type="hidden" name="comments" value="Hoàn tất hồ sơ" />
                                         <button type="submit" class="btn btn-success btn-action btn-sm shadow-sm pe-3">

@@ -149,7 +149,7 @@
             <div class="card-body p-4 p-lg-5">
 
                 <form id="submissionForm" enctype="multipart/form-data">
-                    <input type="hidden" name="serviceCode" value="DD-CMDSD">
+                    <input type="hidden" name="serviceCode" value="DD02_CHUYENMDSD">
 
                     <!-- Step 1: Owner Info -->
                     <div id="step1">
@@ -164,22 +164,21 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted small text-uppercase fw-bold">Số CCCD/Định
                                     danh</label>
-                                <input type="text" class="form-control bg-light" name="ownerIdNumber"
-                                    th:value="${#authentication.principal.username}" readonly required>
+                                <input type="text" class="form-control bg-light" name="ownerIdNumber" th:value="${cccd}"
+                                    readonly required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label text-muted small text-uppercase fw-bold">Địa chỉ thường
                                     trú</label>
-                                <input type="text" class="form-control bg-light" name="ownerAddress" value="Đà Nẵng"
-                                    readonly required>
+                                <input type="text" class="form-control bg-light" name="ownerAddress"
+                                    th:value="${address}" readonly required>
                             </div>
                             <div class="col-12">
-                                <label class="form-label text-muted small text-uppercase fw-bold">Nơi nộp hồ sơ</label>
-                                <select class="form-select" name="receivingDeptId" required>
-                                    <option value="">-- Chọn Đơn vị tiếp nhận --</option>
-                                    <option value="1">Sở Tài nguyên và Môi trường</option>
-                                    <option value="2">UBND Quận Hải Châu</option>
-                                    <option value="3">UBND Quận Thanh Khê</option>
+                                <label class="form-label text-muted small text-uppercase">Gửi tới cơ quan</label>
+                                <select class="form-select bg-light" name="receivingDeptId" required>
+                                    <option value="">-- Chọn đơn vị tiếp nhận --</option>
+                                    <option th:each="dept : ${depts}" th:value="${dept.id}" th:text="${dept.deptName}">
+                                        UBND Quận/Huyện</option>
                                 </select>
                             </div>
                         </div>
@@ -327,12 +326,12 @@
 
                         <div class="bg-white p-3 border rounded mb-4">
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Phí thẩm định:</span>
-                                <span class="fw-bold">300,000 VNĐ</span>
+                                <span>Lệ phí thẩm định:</span>
+                                <span class="fw-bold" th:text="${#numbers.formatCurrency(fee)}">300,000 VNĐ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Lệ phí cấp GCN:</span>
-                                <span class="fw-bold">100,000 VNĐ</span>
+                                <span class="fw-bold">100.000 VNĐ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tiền sử dụng đất (chênh lệch):</span>
@@ -575,7 +574,7 @@
                     }
                 });
 
-                const response = await fetch('/citizen/submit', {
+                const response = await fetch('/citizen/land/submit', {
                     method: 'POST',
                     body: formData
                 });
@@ -583,7 +582,10 @@
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    window.location.href = '/citizen/hoso';
+                    showToast('Nộp hồ sơ thành công! Mã hồ sơ: ' + result.dossierCode, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/citizen/hoso';
+                    }, 2000);
                 } else {
                     showToast("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'), 'error');
                     btnNext.disabled = false;
@@ -607,6 +609,79 @@
                 }
             }
             return true;
+        }
+
+        // LAND ASSET LOGIC
+        async function loadMyLands() {
+            const container = document.getElementById('landAssetList');
+            try {
+                const response = await fetch('/citizen/land/my-lands');
+                if (!response.ok) throw new Error('Failed to fetch');
+                const lands = await response.json();
+
+                if (lands.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center py-5 text-muted">Bạn chưa có dữ liệu thửa đất nào trên hệ thống.</div>';
+                    return;
+                }
+
+                container.innerHTML = lands.map(land => `
+                    <div class="col">
+                        <div class="card h-100 land-card border-2 cursor-pointer" onclick="selectLand(this, ${JSON.stringify(land).replace(/"/g, '&quot;')})">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge bg-primary">Sổ đỏ: ${land.landCertificateNumber}</span>
+                                    <span class="text-muted small">Tờ bản đồ: ${land.mapSheetNumber}</span>
+                                </div>
+                                <h6 class="fw-bold mb-1">Thửa đất số: ${land.parcelNumber}</h6>
+                                <p class="small text-muted mb-2"><i class="bi bi-geo-alt me-1"></i>${land.addressDetail}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary">${land.areaM2} m²</span>
+                                    <span class="small badge bg-light text-dark border">${land.landPurpose}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu đất đai.</div>';
+            }
+        }
+
+        function selectLand(card, land) {
+            // UI Update
+            document.querySelectorAll('.land-card').forEach(c => {
+                c.classList.remove('border-primary', 'bg-light-primary');
+                c.classList.add('border-2');
+            });
+            card.classList.add('border-primary', 'bg-light-primary');
+            card.classList.remove('border-2');
+
+            // Form Hidden Fields
+            const form = document.getElementById('submissionForm');
+            form.querySelector('input[name="landCertificateNumber"]').value = land.landCertificateNumber;
+            form.querySelector('input[name="landPlotNumber"]').value = land.parcelNumber;
+            form.querySelector('input[name="landMapSheet"]').value = land.mapSheetNumber;
+            form.querySelector('input[name="landAddress"]').value = land.addressDetail;
+            form.querySelector('input[name="landArea"]').value = land.areaM2;
+            form.querySelector('input[name="landPurpose"]').value = land.landPurpose;
+
+            // Update Current Purpose Display
+            document.getElementById('currentPurpose').value = land.landPurpose;
+        }
+
+        // Initialize Step 2
+        document.getElementById('navStep2').addEventListener('click', () => {
+            // If we're navigated here, load lands
+        });
+
+        // Override changeStep to load lands when entering step 2
+        const originalChangeStep = changeStep;
+        changeStep = function (n) {
+            const oldStep = currentStep;
+            originalChangeStep(n);
+            if (currentStep === 2 && oldStep !== 2) {
+                loadMyLands();
+            }
         }
     </script>
 

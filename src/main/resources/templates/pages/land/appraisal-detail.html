@@ -167,15 +167,14 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="card border-0 shadow-sm bg-white">
-                                    <div class="card-header bg-white border-bottom py-3">
-                                        <h6 class="m-0 fw-bold text-success"><i class="bi bi-file-text me-2"></i>Nội
-                                            dung hồ sơ</h6>
+                                <!-- Dynamic Form Content -->
+                                <th:block th:if="${formFragment != null}">
+                                    <div th:replace="~{__${formFragment}__}"></div>
+                                </th:block>
+                                <th:block th:unless="${formFragment != null}">
+                                    <div class="alert alert-warning">Không có thông tin chi tiết (Template not found)
                                     </div>
-                                    <div class="card-body p-4">
-                                        <pre class="mb-0" th:text="${dossier.formData}"></pre>
-                                    </div>
-                                </div>
+                                </th:block>
                             </div>
                         </div>
                     </div>
@@ -189,7 +188,7 @@
                             <h5 class="fw-bold">Kết quả thẩm định</h5>
                             <p class="text-muted small">Đánh giá hồ sơ và đưa ra kết luận</p>
                         </div>
-                        <form th:action="@{/land/appraisal/submit}" method="post">
+                        <form th:action="@{/specialist/land/appraisal/submit}" method="post">
                             <input type="hidden" name="dossierId" th:value="${dossier.id}" />
                             <div class="mb-3 text-start">
                                 <label class="form-label fw-bold">Kết quả:</label>
@@ -208,11 +207,11 @@
                                 <button type="submit" class="btn btn-success btn-action text-white">
                                     <i class="bi bi-check2-circle me-2"></i>Gửi kết quả
                                 </button>
-                                <a th:href="@{/land/submit-leader/{id}(id=${dossier.id})}"
+                                <a th:href="@{/specialist/land/submit-leader/{id}(id=${dossier.id})}"
                                     class="btn btn-primary btn-action">
                                     <i class="bi bi-arrow-up-circle me-2"></i>Trình lãnh đạo
                                 </a>
-                                <a th:href="@{/land/appraisal}" class="btn btn-outline-secondary btn-action">
+                                <a th:href="@{/specialist/land/appraisal}" class="btn btn-outline-secondary btn-action">
                                     <i class="bi bi-arrow-left me-2"></i>Quay lại
                                 </a>
                             </div>

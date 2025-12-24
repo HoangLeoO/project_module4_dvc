@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Service
@@ -41,17 +40,25 @@ public class LandConversionService {
         private SysUserRepository userRepo;
         @Autowired
         private CatWorkflowStepRepository catWorkflowRepo;
+        @Autowired
+        private org.example.project_module4_dvc.repository.ops.OpsDossierFileRepository fileRepo;
 
         // ==================== BƯỚC 1: CÔNG DÂN NỘP HỒ SƠ ====================
         @Transactional
         public OpsDossier submitDossier(DossierSubmitDTO dto) {
-                // Tạo mã hồ sơ
-                String dossierCode = "HS_" + LocalDateTime.now()
-                                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-
                 // Lấy thông tin dịch vụ để tính SLA
                 CatService service = serviceRepo.findById(dto.getServiceId())
                                 .orElseThrow(() -> new RuntimeException("Service not found"));
+
+                // Tạo mã hồ sơ chuẩn: HS-SERVICE_CODE-YYYY-XXXXX
+                String year = String.valueOf(LocalDateTime.now().getYear());
+                String prefix = "HS-" + service.getServiceCode() + "-" + year + "-";
+
+                // Đếm số hồ sơ trong năm nay của dịch vụ này để tăng số thứ tự
+                String newestCode = opsDossierRepository.findLatestDossierCode(prefix).orElse(prefix + "00000");
+                String seqPart = newestCode.substring(prefix.length());
+                int nextSeq = Integer.parseInt(seqPart) + 1;
+                String dossierCode = prefix + String.format("%05d", nextSeq);
 
                 LocalDateTime dueDate = LocalDateTime.now()
                                 .plusHours(service.getSlaHours());
@@ -81,11 +88,33 @@ public class LandConversionService {
 
                 dossier = opsDossierRepository.save(dossier);
 
+                // Xử lý lưu files đính kèm
+                if (dto.getFiles() != null && !dto.getFiles().isEmpty()) {
+                        for (var fileDto : dto.getFiles()) {
+                                org.example.project_module4_dvc.entity.ops.OpsDossierFile fileEntity = new org.example.project_module4_dvc.entity.ops.OpsDossierFile();
+                                fileEntity.setDossier(dossier);
+                                fileEntity.setFileName(fileDto.getFileName());
+                                // Giả lập lưu file, thực tế cần upload lên storage server và lấy URL
+                                // Ở đây ta giả định fileDto.getFileData() chứa byte[] nhưng DTO chưa có,
+                                // ta sẽ cập nhật Controller để xử lý upload và truyền URL hoặc giả lập URL.
+                                // Tạm thời giả lập URL local
+                                fileEntity.setFileUrl("/uploads/" + dossier.getId() + "/" + fileDto.getFileName());
+                                fileEntity.setFileType(limitString(fileDto.getFileType(), 100));
+                                fileRepo.save(fileEntity);
+                        }
+                }
+
                 // Lưu log
                 createLog(dossier, dto.getApplicantId(), "SUBMIT",
                                 null, "NEW", "Người dân nộp hồ sơ");
 
                 return dossier;
+        }
+
+        private String limitString(String input, int maxLength) {
+                if (input == null)
+                        return "application/octet-stream";
+                return input.length() > maxLength ? input.substring(0, maxLength) : input;
         }
 
         // ==================== BƯỚC 2: MỘT CỬA TIẾP NHẬN ====================
