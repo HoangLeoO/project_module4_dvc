@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Service
 public class LeaderService implements ILeaderService {
 
@@ -39,25 +38,81 @@ public class LeaderService implements ILeaderService {
     private SysDelegationScopeRepository sysDelegationScopeRepository;
     @Autowired
     private OpsDossierResultRepository opsDossierResultRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsDossierRepository standardOpsDossierRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsDossierLogRepository dossierLogRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsLogWorkflowStepRepository opsLogWorkflowStepRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.cat.CatWorkflowStepRepository catWorkflowStepRepository;
 
     @Override
-    public Page<DossierApprovalSummaryDTO> getMyDossiers(Long leaderId, String applicantName, String domain, Pageable pageable) {
+    public Page<DossierApprovalSummaryDTO> getMyDossiers(Long leaderId, String applicantName, String domain,
+            Pageable pageable) {
         return opsDossierRepository.findMyPendingDossiers(leaderId, applicantName, domain, pageable);
     }
 
     @Override
-    public Page<DossierApprovalSummaryDTO> getDelegatedDossiers(Long leaderId, String applicantName, String domain, Pageable pageable) {
+    public Page<DossierApprovalSummaryDTO> getDelegatedDossiers(Long leaderId, String applicantName, String domain,
+            Pageable pageable) {
         return opsDossierRepository.findDelegatedPendingDossiers(leaderId, applicantName, domain, pageable);
     }
 
     @Override
-    public Page<DossierApprovalSummaryDTO> findApprovedHistory(Long leaderId, String applicantName, String domain, Pageable pageable) {
+    public Page<DossierApprovalSummaryDTO> findApprovedHistory(Long leaderId, String applicantName, String domain,
+            Pageable pageable) {
         return opsDossierRepository.findApprovedHistory(leaderId, applicantName, domain, pageable);
     }
 
     @Override
-    public void approvedByLeader(Long userId, Long dossiersId) {
-        opsDossierRepository.updateStatusApprovedDossier(userId, dossiersId);
+    @Transactional
+    public void approvedByLeader(Long userId, Long dossierId) {
+        // Find dossier
+        org.example.project_module4_dvc.entity.ops.OpsDossier dossier = standardOpsDossierRepository.findById(dossierId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ ID: " + dossierId));
+
+        String oldStatus = dossier.getDossierStatus();
+
+        // Update status logic (similar to repository query but in Java)
+        dossier.setDossierStatus("APPROVED");
+        dossier.setFinishDate(LocalDateTime.now());
+        dossier.setCurrentHandler(sysUserRepository.findById(userId).orElse(null));
+
+        org.example.project_module4_dvc.entity.ops.OpsDossier savedDossier = standardOpsDossierRepository.save(dossier);
+
+        // Record Step 3 (Phê duyệt)
+        recordStepCompletion(savedDossier, userId, "PHE_DUYET", oldStatus, "APPROVED", "Lãnh đạo đã phê duyệt hồ sơ",
+                3);
+    }
+
+    private void recordStepCompletion(org.example.project_module4_dvc.entity.ops.OpsDossier dossier, Long actorId,
+            String action, String prevStatus,
+            String nextStatus, String comments, int stepOrder) {
+        // Create Log
+        org.example.project_module4_dvc.entity.ops.OpsDossierLog log = new org.example.project_module4_dvc.entity.ops.OpsDossierLog();
+        log.setDossier(dossier);
+        log.setActorId(actorId);
+        log.setAction(action);
+        log.setPrevStatus(prevStatus);
+        log.setNextStatus(nextStatus);
+        log.setComments(comments);
+        log.setCreatedAt(LocalDateTime.now());
+        org.example.project_module4_dvc.entity.ops.OpsDossierLog savedLog = dossierLogRepository.save(log);
+
+        // Find Step
+        catWorkflowStepRepository.findAll().stream()
+                .filter(s -> s.getService().getId().equals(dossier.getService().getId())
+                        && s.getStepOrder() == stepOrder)
+                .findFirst()
+                .ifPresent(step -> {
+                    org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep lws = new org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep();
+                    lws.setLog(savedLog);
+                    lws.setWorkflowStep(step);
+                    lws.setDescription(step.getStepName() + " hoàn thành");
+                    lws.setCreatedAt(java.time.Instant.now());
+                    opsLogWorkflowStepRepository.save(lws);
+                });
     }
 
     @Override
@@ -80,7 +135,6 @@ public class LeaderService implements ILeaderService {
         return opsDossierRepository.countAllDossiersByDept(deptId);
     }
 
-
     @Override
     public long countOverdueDossiersByDept(Long deptId) {
         return opsDossierRepository.countOverdueDossiersByDept(deptId);
@@ -90,7 +144,6 @@ public class LeaderService implements ILeaderService {
     public Double getAverageSatisfactionScoreByDept(Long deptId) {
         return opsDossierRepository.getAverageSatisfactionScoreByDept(deptId);
     }
-
 
     @Override
     public DelegationConfigDTO getDelegationConfigData(Long leaderId) {
@@ -104,12 +157,11 @@ public class LeaderService implements ILeaderService {
         List<SysUser> potentialDelegatees = sysUserRepository.findPotentialDelegatees(
                 deptId,
                 leaderId,
-                targetRoles
-        );
+                targetRoles);
 
         // 2. Get current delegations
-        List<SysUserDelegation> currentDelegations =
-                sysUserDelegationRepository.findByFromUser_IdOrderByStartTimeDesc(leaderId);
+        List<SysUserDelegation> currentDelegations = sysUserDelegationRepository
+                .findByFromUser_IdOrderByStartTimeDesc(leaderId);
 
         return new DelegationConfigDTO(potentialDelegatees, currentDelegations);
     }
@@ -118,7 +170,8 @@ public class LeaderService implements ILeaderService {
     @Transactional
     public void createDelegation(Long leaderId, DelegationRequestDTO request) {
         // 1. Validation
-        if (request.getDelegateeId() == null) throw new IllegalArgumentException("Chưa chọn người ủy quyền");
+        if (request.getDelegateeId() == null)
+            throw new IllegalArgumentException("Chưa chọn người ủy quyền");
         if (request.getFromDate() == null || request.getToDate() == null)
             throw new IllegalArgumentException("Chưa chọn thời gian");
 
@@ -225,8 +278,10 @@ public class LeaderService implements ILeaderService {
     }
 
     private String formatPeriodName(String type, Integer value, int year) {
-        if ("MONTH".equalsIgnoreCase(type)) return "Tháng " + value + "/" + year;
-        if ("QUARTER".equalsIgnoreCase(type)) return "Quý " + value + "/" + year;
+        if ("MONTH".equalsIgnoreCase(type))
+            return "Tháng " + value + "/" + year;
+        if ("QUARTER".equalsIgnoreCase(type))
+            return "Quý " + value + "/" + year;
         return "Năm " + year;
     }
 }

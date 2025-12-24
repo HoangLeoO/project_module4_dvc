@@ -83,97 +83,11 @@
                     </div>
                 </div>
 
-                <!-- Form Data Display (Added) -->
-                <div class="card card-modern border-0 shadow-sm p-4 mb-4"
-                    th:if="${(d.serviceCode == 'HK01_TRE' || d.serviceCode == 'HS-KS-TRE') && d.formData != null}">
-                    <h5 class="fw-bold text-dark mb-4 border-start border-4 border-success ps-3">Thông tin đăng ký khai
-                        sinh
-                    </h5>
+                <!-- Form Data Display (Fragments) -->
+                <div th:replace="~{citizen/dossier/fragments/birth_registration :: birth_registration(${d})}"></div>
+                <div th:replace="~{citizen/dossier/fragments/business_household :: business_household(${d})}"></div>
+                <div th:replace="~{citizen/dossier/fragments/death_registration :: death_registration(${d})}"></div>
 
-                    <div class="row g-3">
-                        <!-- Child Info -->
-                        <div class="col-12">
-                            <h6 class="text-primary fw-bold mb-3"><i class="bi bi-person-badge me-2"></i>Thông tin Trẻ
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6 mb-3">
-                                    <label class="small text-muted d-block">Họ và tên</label>
-                                    <span class="fw-bold" th:text="${d.formData['childFullName']}">---</span>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="small text-muted d-block">Giới tính</label>
-                                    <span class="fw-bold" th:switch="${d.formData['gender']}">
-                                        <span th:case="'MALE'">Nam</span>
-                                        <span th:case="'FEMALE'">Nữ</span>
-                                        <span th:case="*">---</span>
-                                    </span>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="small text-muted d-block">Ngày sinh</label>
-                                    <span class="fw-bold" th:if="${d.formData['dateOfBirth'] != null}"
-                                        th:with="dobStr=${d.formData['dateOfBirth'].toString()}"
-                                        th:text="${dobStr.contains('-') ? #strings.substring(dobStr,8,10) + '/' + #strings.substring(dobStr,5,7) + '/' + #strings.substring(dobStr,0,4) : dobStr}">---</span>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="small text-muted d-block">Dân tộc</label>
-                                    <span class="fw-bold" th:text="${d.formData['childEthnicity']}">---</span>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="small text-muted d-block">Nơi sinh</label>
-                                    <span class="fw-bold" th:text="${d.formData['placeOfBirth']}">---</span>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <label class="small text-muted d-block">Nơi đăng ký khai sinh</label>
-                                    <span class="fw-bold" th:text="${d.formData['registeredAddress']}">---</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Parents Info -->
-                        <div class="col-12">
-                            <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-people me-2"></i>Thông
-                                tin Cha Mẹ</h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="bg-light p-3 rounded h-100">
-                                        <div class="fw-bold mb-2 text-dark">THÔNG TIN CHA</div>
-                                        <div class="mb-1">
-                                            <span class="small text-muted">Họ tên:</span>
-                                            <span class="fw-bold" th:text="${d.formData['fatherFullName']}">---</span>
-                                        </div>
-                                        <div>
-                                            <span class="small text-muted">CCCD:</span>
-                                            <span class="fw-bold" th:text="${d.formData['fatherIdNumber']}">---</span>
-                                        </div>
-                                        <div>
-                                            <span class="small text-muted">Năm sinh:</span>
-                                            <span class="fw-bold"
-                                                th:text="${d.formData['fatherYearOfBirth']}">---</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="bg-light p-3 rounded h-100">
-                                        <div class="fw-bold mb-2 text-dark">THÔNG TIN MẸ</div>
-                                        <div class="mb-1">
-                                            <span class="small text-muted">Họ tên:</span>
-                                            <span class="fw-bold" th:text="${d.formData['motherFullName']}">---</span>
-                                        </div>
-                                        <div>
-                                            <span class="small text-muted">CCCD:</span>
-                                            <span class="fw-bold" th:text="${d.formData['motherIdNumber']}">---</span>
-                                        </div>
-                                        <div>
-                                            <span class="small text-muted">Năm sinh:</span>
-                                            <span class="fw-bold"
-                                                th:text="${d.formData['motherYearOfBirth']}">---</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Uploaded Files -->
                 <div class="card card-modern border-0 shadow-sm p-4 mb-4"
@@ -211,7 +125,8 @@
                         <div th:each="log : ${history}" class="d-flex gap-3 mb-4 last-no-border">
                             <div class="flex-shrink-0 text-center" style="width: 60px;">
                                 <div class="small fw-bold text-dark"
-                                    th:text="${#temporals.format(log.createdAt, 'dd/MM')}">15/05</div>
+                                    th:text="${#temporals.format(log.createdAt, 'dd/MM')}">
+                                    15/05</div>
                                 <div class="small text-muted" th:text="${#temporals.format(log.createdAt, 'HH:mm')}">
                                     14:30</div>
                             </div>
@@ -266,7 +181,8 @@
                     <hr class="opacity-10">
 
                     <!-- Result Section -->
-                    <div th:if="${d.resultFileUrl != null}"
+                    <!--                    <div th:if="${(d.dossierStatus == 'RESULT_RETURNED' or d.dossierStatus == 'COMPLETED') and d.resultFileUrl != null}"-->
+                    <div th:if="${(d.dossierStatus == 'RESULT_RETURNED') and d.resultFileUrl != null}"
                         class="mt-4 p-3 bg-success bg-opacity-10 border border-success border-opacity-20 rounded-3 text-center">
                         <div class="mb-2">
                             <i class="bi bi-patch-check-fill text-success fs-3"></i>

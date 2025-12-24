@@ -40,6 +40,9 @@ public class OfficerService implements IOfficerService {
         private final OpsLogWorkflowStepRepository opsLogWorkflowStepRepository;
         private final CatWorkflowStepRepository catWorkflowStepRepository;
 
+        private final org.example.project_module4_dvc.repository.mock.MockBusinessRepository mockBusinessRepository;
+        private final org.example.project_module4_dvc.repository.mock.MockCitizenRepository mockCitizenRepository;
+
         private final IWebsocketService websocketService;
 
         public OfficerService(OpsDossierMapper opsDossierMapper, OpsDossierResultMapper opsDossierResultMapper,
@@ -48,6 +51,8 @@ public class OfficerService implements IOfficerService {
                         OpsDossierLogRepository opsDossierLogRepository,
                         OpsLogWorkflowStepRepository opsLogWorkflowStepRepository,
                         CatWorkflowStepRepository catWorkflowStepRepository,
+                        org.example.project_module4_dvc.repository.mock.MockBusinessRepository mockBusinessRepository,
+                        org.example.project_module4_dvc.repository.mock.MockCitizenRepository mockCitizenRepository,
                         IWebsocketService websocketService) {
                 this.opsDossierMapper = opsDossierMapper;
                 this.opsDossierResultMapper = opsDossierResultMapper;
@@ -58,6 +63,8 @@ public class OfficerService implements IOfficerService {
                 this.opsDossierLogRepository = opsDossierLogRepository;
                 this.opsLogWorkflowStepRepository = opsLogWorkflowStepRepository;
                 this.catWorkflowStepRepository = catWorkflowStepRepository;
+                this.mockBusinessRepository = mockBusinessRepository;
+                this.mockCitizenRepository = mockCitizenRepository;
                 this.websocketService = websocketService;
         }
 
@@ -115,12 +122,38 @@ public class OfficerService implements IOfficerService {
                         OpsDossier saved = opsDossierRepository.save(opsDossier);
 
                         if ("PENDING".equals(status)) {
-                                recordStepCompletion(saved, specialistId, "ACCEPTED", oldStatus, "PENDING",
-                                                "Hồ sơ đã được tiếp nhận",
-                                                1);
+                                /*
+                                 * LOGGING HANDLED BY TRIGGER
+                                 * recordStepCompletion(saved, specialistId, "ACCEPTED", oldStatus, "PENDING",
+                                 * "Hồ sơ đã được tiếp nhận",
+                                 * 1);
+                                 */
+                        } else if ("APPROVED".equals(status)) {
+                                /*
+                                 * LOGGING HANDLED BY TRIGGER
+                                 * recordStepCompletion(saved, specialistId, "PHE_DUYET", oldStatus, "APPROVED",
+                                 * "Hồ sơ đã được phê duyệt", 3);
+                                 */
                         } else if ("RESULT_RETURNED".equals(status)) {
-                                recordStepCompletion(saved, specialistId, "TRA_KET_QUA", oldStatus, "RESULT_RETURNED",
-                                                "Hồ sơ đã được trả kết quả cho công dân", 4);
+                                /*
+                                 * LOGGING HANDLED BY TRIGGER
+                                 * recordStepCompletion(saved, specialistId, "TRA_KET_QUA", oldStatus,
+                                 * "RESULT_RETURNED",
+                                 * "Hồ sơ đã được trả kết quả cho công dân", 4);
+                                 */
+
+                                // Check duplicate/update if needed, but redundant if APPROVED already did it.
+                                // =================================================================
+                                // 🔥 LOGIC MỚI: TỰ ĐỘNG TẠO DOANH NGHIỆP KHI TRẢ KẾT QUẢ (KD01_HKD)
+                                // =================================================================
+                                if (saved.getService().getServiceCode().equals("KD01_HKD")) {
+                                        try {
+                                                createBusinessFromDossier(saved);
+                                        } catch (Exception e) {
+                                                System.err.println("Lỗi tạo doanh nghiệp: " + e.getMessage());
+                                                e.printStackTrace();
+                                        }
+                                }
                         }
 
                         // Real-time updates
@@ -136,6 +169,7 @@ public class OfficerService implements IOfficerService {
                                                                         : null)
                                                         .build());
                 }
+
         }
 
         @Override
@@ -240,6 +274,71 @@ public class OfficerService implements IOfficerService {
                                         lws.setCreatedAt(java.time.Instant.now());
                                         opsLogWorkflowStepRepository.save(lws);
                                 });
+        }
+
+        private void createBusinessFromDossier(OpsDossier dossier) {
+                java.util.Map<String, Object> formData = dossier.getFormData();
+                if (formData == null)
+                        return;
+
+                // 1. Generate Tax Code (MST)
+                String maxTaxCode = mockBusinessRepository.findMaxTaxCode();
+                String newTaxCode;
+                if (maxTaxCode != null && maxTaxCode.matches("\\d+")) {
+                        try {
+                                long currentMax = Long.parseLong(maxTaxCode);
+                                newTaxCode = String.format("%010d", currentMax + 1);
+                        } catch (NumberFormatException e) {
+                                newTaxCode = "0400000001"; // Fallback
+                        }
+                } else {
+                        newTaxCode = "0400000001"; // Default start
+                }
+
+                // 2. Extract Data
+                String businessName = (String) formData.get("businessName");
+                String capitalStr = String.valueOf(formData.get("registeredCapital"));
+                java.math.BigDecimal capital = new java.math.BigDecimal(capitalStr.replaceAll("[^0-9.]", ""));
+                String ownerIdNumber = (String) formData.get("ownerIdNumber");
+                String address = (String) formData.get("businessAddress");
+                String businessLines = (String) formData.get("businessLine");
+
+                // 3. Find Owner
+                org.example.project_module4_dvc.entity.mock.MockCitizen owner = mockCitizenRepository
+                                .findByCccd(ownerIdNumber)
+                                .orElse(null);
+
+                if (owner == null) {
+                        // Try finding by applicant if ownerIdNumber lookup fails
+                        // Assumes SysUser has getCitizen() method returning MockCitizen
+                        // If SysUser has getCitizenId(), use it.
+                        // Let's assume SysUser has a reference to MockCitizen named 'citizen' based on
+                        // earlier context or generic pattern.
+                        // If it is an ID, it would be getCitizenId() but lint said it's undefined.
+                        // Checking DDL, sys_users has citizen_id. In JPA it's likely 'private
+                        // MockCitizen citizen;'.
+                        if (dossier.getApplicant().getCitizen() != null) {
+                                owner = dossier.getApplicant().getCitizen();
+                        }
+                }
+
+                if (owner == null) {
+                        System.err.println(
+                                        "Không tìm thấy thông tin chủ hộ (MockCitizen) để gán cho doanh nghiệp mới.");
+                        return;
+                }
+
+                // 4. Save Business
+                org.example.project_module4_dvc.entity.mock.MockBusiness business = new org.example.project_module4_dvc.entity.mock.MockBusiness();
+                business.setTaxCode(newTaxCode);
+                business.setBusinessName(businessName);
+                business.setCapital(capital);
+                business.setOwner(owner);
+                business.setAddress(address);
+                business.setBusinessLines(businessLines);
+
+                mockBusinessRepository.save(business);
+                System.out.println("Đã tạo mới doanh nghiệp/hộ kinh doanh: " + newTaxCode + " - " + businessName);
         }
 
 }

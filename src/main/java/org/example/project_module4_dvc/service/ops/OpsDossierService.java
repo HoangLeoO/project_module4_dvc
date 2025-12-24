@@ -34,6 +34,10 @@ public class OpsDossierService implements IOpsDossierService {
     @Autowired
     private org.example.project_module4_dvc.repository.sys.SysDepartmentRepository sysDepartmentRepository;
     @Autowired
+    private org.example.project_module4_dvc.repository.ops.OpsLogWorkflowStepRepository opsLogWorkflowStepRepository;
+    @Autowired
+    private org.example.project_module4_dvc.repository.cat.CatWorkflowStepRepository catWorkflowStepRepository;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private IWebsocketService websocketService;
@@ -377,20 +381,52 @@ public class OpsDossierService implements IOpsDossierService {
 
         // 7. Log Interaction
         // (Optional: You might want to add an entry to ops_dossier_logs here)
-        org.example.project_module4_dvc.entity.ops.OpsDossierLog log = new org.example.project_module4_dvc.entity.ops.OpsDossierLog();
-        log.setDossier(dossier);
-        log.setActorId(applicant.getId());
-        log.setAction("NOP_HO_SO");
-        log.setComments("Công dân nộp hồ sơ trực tuyến");
-        log.setNextStatus("NEW");
-        log.setCreatedAt(submissionDate);
+        // org.example.project_module4_dvc.entity.ops.OpsDossierLog log = new
+        // org.example.project_module4_dvc.entity.ops.OpsDossierLog();
+        // log.setDossier(dossier);
+        // log.setActorId(applicant.getId());
+        // log.setAction("NOP_HO_SO");
+        // log.setComments("Công dân nộp hồ sơ trực tuyến");
+        // log.setNextStatus("NEW");
+        // log.setCreatedAt(submissionDate);
+        //
+        // dossierLogRepository.save(log);
 
-        dossierLogRepository.save(log);
+        // 7. Ghi Log + Workflow Step (Bước 1: Nộp hồ sơ)
+        recordStepCompletion(dossier, applicant.getId(), "NOP_HO_SO", null, "NEW", "Công dân nộp hồ sơ trực tuyến", 1);
 
         // 8. WebSocket Notify
         if (receivingDept != null) {
             websocketService.broadcastNewDossierToList(receivingDept.getDeptName(), dossier);
         }
+    }
+
+    private void recordStepCompletion(OpsDossier dossier, Long actorId, String action, String prevStatus,
+            String nextStatus, String comments, int stepOrder) {
+        // Create Log
+        org.example.project_module4_dvc.entity.ops.OpsDossierLog log = new org.example.project_module4_dvc.entity.ops.OpsDossierLog();
+        log.setDossier(dossier);
+        log.setActorId(actorId);
+        log.setAction(action);
+        log.setPrevStatus(prevStatus);
+        log.setNextStatus(nextStatus);
+        log.setComments(comments);
+        log.setCreatedAt(java.time.LocalDateTime.now());
+        org.example.project_module4_dvc.entity.ops.OpsDossierLog savedLog = dossierLogRepository.save(log);
+
+        // Find Step for this service
+        catWorkflowStepRepository.findAll().stream()
+                .filter(s -> s.getService().getId().equals(dossier.getService().getId())
+                        && s.getStepOrder() == stepOrder)
+                .findFirst()
+                .ifPresent(step -> {
+                    org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep lws = new org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep();
+                    lws.setLog(savedLog);
+                    lws.setWorkflowStep(step);
+                    lws.setDescription(step.getStepName() + " hoàn thành");
+                    lws.setCreatedAt(java.time.Instant.now());
+                    opsLogWorkflowStepRepository.save(lws);
+                });
     }
 
 }

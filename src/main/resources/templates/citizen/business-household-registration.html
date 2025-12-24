@@ -387,6 +387,9 @@
                 fields.forEach(id => {
                     const el = document.getElementById(id);
                     const errorEl = document.getElementById(id + 'Error');
+                    let fieldValid = true;
+
+                    // 1. Check Required
                     if (!el.value || el.value.trim() === '') {
                         el.classList.add('is-invalid');
                         if (errorEl) {
@@ -394,7 +397,40 @@
                             errorEl.style.display = 'block';
                         }
                         isValid = false;
-                    } else {
+                        fieldValid = false;
+                    }
+
+                    // 2. Specific Validations (only if not empty)
+                    if (fieldValid) {
+                        if (id === 'registeredCapital') {
+                            const val = Number(el.value);
+                            if (val < 0) {
+                                el.classList.add('is-invalid');
+                                errorEl.innerText = 'Số vốn kinh doanh không được âm.';
+                                errorEl.style.display = 'block';
+                                isValid = false;
+                                fieldValid = false;
+                            } else if (val < 50000000) {
+                                el.classList.add('is-invalid');
+                                errorEl.innerText = 'Số vốn kinh doanh phải tối thiểu 50.000.000 VNĐ.';
+                                errorEl.style.display = 'block';
+                                isValid = false;
+                                fieldValid = false;
+                            }
+                        } else if (id === 'numberOfEmployees') {
+                            const val = Number(el.value);
+                            if (val <= 0) {
+                                el.classList.add('is-invalid');
+                                errorEl.innerText = 'Số lượng lao động phải lớn hơn 0.';
+                                errorEl.style.display = 'block';
+                                isValid = false;
+                                fieldValid = false;
+                            }
+                        }
+                    }
+
+                    // 3. Cleanup if valid
+                    if (fieldValid) {
                         el.classList.remove('is-invalid');
                         if (errorEl) errorEl.style.display = 'none';
                     }
