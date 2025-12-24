@@ -441,8 +441,14 @@
                 </div>
                 <div class="modal-body text-center py-4">
                     <i class="bi bi-question-circle-fill text-warning display-4 mb-3"></i>
-                    <p class="mb-0 fs-5">Bạn có chắc chắn muốn nộp hồ sơ này không?</p>
-                    <p class="text-muted small mt-2">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.</p>
+                    <h5 class="fw-bold">Xác nhận nộp hồ sơ?</h5>
+
+                    <!-- SUMMARY CONTENT -->
+                    <div id="modalSummaryContent" class="text-start bg-light p-3 rounded border mt-3 small">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <p class="text-muted small mt-3 mb-0">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.</p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pb-4">
                     <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Xem lại</button>
@@ -797,6 +803,48 @@
 
         // CONFIRMATION MODAL LOGIC
         function showConfirmModal() {
+            // 1. Get Values
+            const applicantName = document.querySelector('input[name="relativeFullName"]').value || '---';
+            const applicantId = document.querySelector('input[name="relativeIdNumber"]').value || '---';
+            const deceasedName = document.querySelector('input[name="deceasedFullName"]').value || '---';
+            const deathDate = document.querySelector('input[name="dateOfDeath"]').value || '---';
+
+            // 2. Get Files
+            let fileListHtml = '<ul class="ps-3 mb-0">';
+            if (fileStore.files.length === 0) {
+                fileListHtml += '<li class="text-danger fst-italic">Chưa có tệp đính kèm</li>';
+            } else {
+                Array.from(fileStore.files).forEach(f => {
+                    fileListHtml += `<li>${f.name} <span class="text-muted">(${(f.size / 1024 / 1024).toFixed(2)} MB)</span></li>`;
+                });
+            }
+            fileListHtml += '</ul>';
+
+            // 3. Construct HTML
+            const summaryHtml = `
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <td class="fw-bold text-nowrap" style="width: 140px;">Người đi khai:</td>
+                        <td>${applicantName} <br><small class="text-muted">(CCCD: ${applicantId})</small></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold text-nowrap">Người mất:</td>
+                        <td class="text-uppercase text-danger fw-bold">${deceasedName}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold text-nowrap">Ngày mất:</td>
+                        <td>${deathDate.split('-').reverse().join('/')}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold text-nowrap align-top">Tài liệu:</td>
+                        <td>${fileListHtml}</td>
+                    </tr>
+                </table>
+            `;
+
+            // 4. Inject
+            document.getElementById('modalSummaryContent').innerHTML = summaryHtml;
+
             const modal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
             modal.show();
         }

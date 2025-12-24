@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nộp Hồ sơ: Chuyển Mục Đích Sử Dụng Đất - Dịch vụ công Đà Nẵng</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/portal.css}">
+    <style>
+        .wizard-step {
+            position: relative;
+            z-index: 1;
+        }
+
+        .wizard-step .btn-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #dee2e6;
+            background: white;
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .wizard-step.active .btn-circle {
+            border-color: var(--bs-primary);
+            background: var(--bs-primary);
+            color: white;
+        }
+
+        .wizard-connector {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- 1. HEADER -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm-soft py-3 bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" th:href="@{/citizen/portal}">
+                <i class="bi bi-bank2 me-2"></i>DỊCH VỤ CÔNG ĐÀ NẴNG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="landingNav">
+                <ul class="navbar-nav ms-auto gap-3 mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link fw-medium text-white-50 hover-white"
+                            th:href="@{/citizen/portal}">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium text-white-50 hover-white"
+                            th:href="@{/templates/citizen/services}">Dịch vụ công</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium text-white-50 hover-white" href="#">Hướng dẫn</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium text-white-50 hover-white"
+                            th:href="@{/citizen/feedback}">Phản ánh kiến nghị</a></li>
+                </ul>
+                <div class="ms-lg-4">
+                    <!-- User Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <img th:src="'https://ui-avatars.com/api/?name=' + ${#authentication.principal.fullName} + '&background=random'"
+                                class="rounded-circle me-2" width="32">
+                            <span th:text="${#authentication.principal.fullName}">Lê Văn Dân</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" th:href="@{/citizen/profile}"><i
+                                        class="bi bi-person me-2"></i>Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" th:href="@{/citizen/vault}"><i class="bi bi-safe me-2"></i>Kho
+                                    dữ
+                                    liệu số</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" th:href="@{/logout/citizen}"><i
+                                        class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mt-5 pt-5 mb-5">
+
+        <!-- Page Title -->
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary mb-2">Nộp Hồ sơ Trực tuyến</h2>
+            <p class="text-muted fs-5">Thủ tục: <strong>Chuyển mục đích sử dụng đất</strong></p>
+        </div>
+
+        <!-- 2. WIZARD NAV -->
+        <div class="position-relative mb-5 mx-auto" style="max-width: 800px;">
+            <!-- Toast Container -->
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+            <div class="wizard-connector"></div>
+            <div class="d-flex justify-content-between position-relative">
+
+                <div class="wizard-step active" id="navStep1">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">1</div>
+                        <small class="fw-bold">Thông tin chủ đất</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep2">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">2</div>
+                        <small class="text-muted">Chọn Thửa đất</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep3">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">3</div>
+                        <small class="text-muted">Thành phần Hồ sơ</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep4">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">4</div>
+                        <small class="text-muted">Lệ phí & Nộp</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- WIZARD CONTENT -->
+        <div class="card shadow-sm border-0 rounded-3 wizard-content mx-auto" style="max-width: 900px;">
+            <div class="card-body p-4 p-lg-5">
+
+                <form id="submissionForm" enctype="multipart/form-data">
+                    <input type="hidden" name="serviceCode" value="DD-CMDSD">
+
+                    <!-- Step 1: Owner Info -->
+                    <div id="step1">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Chủ sở hữu hiện
+                                    tại</label>
+                                <input type="text" class="form-control bg-light fw-bold text-primary"
+                                    name="currentOwner" th:value="${#authentication.principal.fullName}" readonly
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Số CCCD/Định
+                                    danh</label>
+                                <input type="text" class="form-control bg-light" name="ownerIdNumber"
+                                    th:value="${#authentication.principal.username}" readonly required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Địa chỉ thường
+                                    trú</label>
+                                <input type="text" class="form-control bg-light" name="ownerAddress" value="Đà Nẵng"
+                                    readonly required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Nơi nộp hồ sơ</label>
+                                <select class="form-select" name="receivingDeptId" required>
+                                    <option value="">-- Chọn Đơn vị tiếp nhận --</option>
+                                    <option value="1">Sở Tài nguyên và Môi trường</option>
+                                    <option value="2">UBND Quận Hải Châu</option>
+                                    <option value="3">UBND Quận Thanh Khê</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: LAND SELECTION & PURPOSE CHANGE -->
+                    <div id="step2" class="d-none">
+                        <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Chọn Thửa đất & Mục đích mới
+                        </h5>
+
+                        <div id="formLand">
+                            <h6 class="fw-bold text-uppercase mb-3 text-secondary">A. Thông tin thửa đất</h6>
+
+                            <!-- Hidden fields -->
+                            <input type="hidden" name="landCertificateNumber">
+                            <input type="hidden" name="landPlotNumber">
+                            <input type="hidden" name="landMapSheet">
+                            <input type="hidden" name="landAddress">
+                            <input type="hidden" name="landArea">
+                            <input type="hidden" name="landUseType">
+                            <input type="hidden" name="landPurpose">
+
+                            <!-- Asset Selector -->
+                            <div class="row row-cols-1 row-cols-md-2 g-4 mb-4" id="landAssetList">
+                                <div class="col-12 text-center py-5 text-muted">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 small">Đang tải dữ liệu đất đai...</p>
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold text-uppercase mt-4 mb-3 text-secondary">B. Thông tin chuyển đổi mục đích
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">Mục đích sử dụng hiện tại <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control bg-light" id="currentPurpose" readonly>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Mục đích sử dụng mới <span
+                                            class="text-danger">*</span></label>
+                                    <select class="form-select" name="newPurpose" required>
+                                        <option value="">-- Chọn mục đích mới --</option>
+                                        <option value="ODT">Đất ở đô thị (ODT)</option>
+                                        <option value="ONT">Đất ở nông thôn (ONT)</option>
+                                        <option value="TMC">Đất thương mại dịch vụ (TMC)</option>
+                                        <option value="SXK">Đất sản xuất kinh doanh phi nông nghiệp (SXK)</option>
+                                        <option value="NKH">Đất nông nghiệp khác (NKH)</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn mục đích sử dụng mới.</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Lý do chuyển đổi <span
+                                            class="text-danger">*</span></label>
+                                    <textarea class="form-control" name="changeReason" rows="3"
+                                        placeholder="VD: Chuyển đất nông nghiệp sang đất ở để xây dựng nhà ở gia đình..."
+                                        required></textarea>
+                                    <div class="invalid-feedback">Vui lòng nhập lý do chuyển đổi.</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="alert alert-info border-0">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        <strong>Lưu ý:</strong> Việc chuyển mục đích sử dụng đất phải tuân thủ quy hoạch
+                                        sử dụng đất đã được phê duyệt và có thể phải nộp thêm tiền sử dụng đất.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: UPLOAD ZONE -->
+                    <div id="step3" class="d-none">
+                        <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Thành phần Hồ sơ</h5>
+
+                        <div class="alert alert-info border-0 shadow-sm-soft mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Vui lòng đính kèm bản scan hoặc ảnh chụp rõ nét của các giấy tờ sau.
+                        </div>
+
+                        <!-- 1. DON XIN CHUYEN MUC DICH -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">1. Đơn xin chuyển mục đích sử dụng đất <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="file_don_xin"
+                                    accept=".pdf,.jpg,.jpeg,.png" required onchange="validateFileSize(this)">
+                                <button class="btn btn-outline-secondary" type="button"
+                                    onclick="window.open('/assets/forms/Mau-Don-Chuyen-Muc-Dich.pdf', '_blank')">
+                                    <i class="bi bi-download me-1"></i>Tải mẫu
+                                </button>
+                            </div>
+                            <div class="form-text">Đơn theo mẫu quy định, có chữ ký của người sử dụng đất.</div>
+                        </div>
+
+                        <!-- 2. GIAY CHUNG NHAN (SO DO) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">2. Giấy chứng nhận QSDĐ (Sổ đỏ) <span
+                                    class="text-danger">*</span></label>
+                            <input type="file" class="form-control" name="file_so_do" accept=".pdf,.jpg,.jpeg,.png"
+                                required onchange="validateFileSize(this)">
+                            <div class="form-text">Bản gốc GPCN đã cấp (Scan đầy đủ các trang).</div>
+                        </div>
+
+                        <!-- 3. DE AN SU DUNG DAT -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">3. Đề án sử dụng đất (nếu có)</label>
+                            <input type="file" class="form-control" name="file_de_an" accept=".pdf,.jpg,.jpeg,.png"
+                                onchange="validateFileSize(this)">
+                            <div class="form-text">Đề án/Phương án sử dụng đất theo mục đích mới (nếu quy định yêu cầu).
+                            </div>
+                        </div>
+
+                        <!-- 4. GIAY TO KHAC -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">4. Giấy tờ khác (Tờ khai thuế, phí, lệ phí...)</label>
+                            <input type="file" class="form-control" name="file_khac" multiple
+                                accept=".pdf,.jpg,.jpeg,.png" onchange="validateFileSize(this)">
+                            <div class="form-text">Có thể chọn nhiều file.</div>
+                        </div>
+
+                        <!-- COMMITMENT -->
+                        <div class="form-check mt-5 p-3 rounded-3 bg-light border">
+                            <input class="form-check-input" type="checkbox" id="commitmentCheck" required
+                                style="transform: scale(1.2); margin-top: 0.25rem;">
+                            <label class="form-check-label ms-2" for="commitmentCheck">
+                                Tôi cam kết thông tin kê khai và tài liệu đính kèm là đúng sự thật. Tôi chịu hoàn toàn
+                                trách nhiệm trước pháp luật về tính chính xác, trung thực của hồ sơ.
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- STEP 4: PAYMENT & SUBMIT -->
+                    <div id="step4" class="d-none">
+                        <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 4: Xác nhận & Nộp hồ sơ</h5>
+
+                        <div class="alert alert-success border-0 shadow-sm text-center py-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                            <h4 class="fw-bold mt-3">Hồ sơ đã sẵn sàng!</h4>
+                            <p class="text-muted">Vui lòng kiểm tra lại thông tin trước khi nộp.</p>
+                        </div>
+
+                        <div class="bg-white p-3 border rounded mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Phí thẩm định:</span>
+                                <span class="fw-bold">300,000 VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Lệ phí cấp GCN:</span>
+                                <span class="fw-bold">100,000 VNĐ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tiền sử dụng đất (chênh lệch):</span>
+                                <span class="fw-bold text-muted fw-normal">Chờ thông báo (Sau thẩm định)</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fs-5 fw-bold text-primary">
+                                <span>Tạm thu:</span>
+                                <span>400,000 VNĐ</span>
+                            </div>
+                        </div>
+
+                        <p class="text-center small text-muted">
+                            Bằng việc nhấn "Nộp hồ sơ", bạn cam kết chịu trách nhiệm về tính chính xác của thông tin.
+                        </p>
+
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                        <button class="btn btn-secondary px-4 disabled" id="btnBack" type="button"
+                            onclick="changeStep(-1)">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại
+                        </button>
+                        <button class="btn btn-primary px-4 fw-bold" id="btnNext" type="button" onclick="changeStep(1)">
+                            Tiếp tục <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-footer-dark text-white py-5 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Đơn vị vận hành</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-building fs-1 me-3 opacity-50"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">TRUNG TÂM HÀNH CHÍNH CÔNG</h6>
+                            <p class="mb-0 small opacity-75">Thành phố Đà Nẵng</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 offset-md-1">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên kết</h5>
+                    <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white text-decoration-none hover-white"><i
+                                    class="bi bi-chevron-right me-2"></i>Cổng thông tin Tp.</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4 text-uppercase text-white-50 small ls-1">Liên hệ</h5>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-geo-alt me-2"></i>24 Trần Phú, Hải Châu</p>
+                    <p class="small opacity-75 mb-1"><i class="bi bi-telephone me-2"></i>(0236) 1022</p>
+                </div>
+            </div>
+            <hr class="opacity-10 my-4">
+            <div class="text-center small opacity-50">
+                &copy; 2025 E-Gov Simulation System
+            </div>
+        </div>
+    </footer>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary">Xác nhận nộp hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-question-circle-fill text-warning display-4 mb-3"></i>
+                    <p class="mb-0 fs-5">Bạn có chắc chắn muốn nộp hồ sơ này không?</p>
+                    <p class="text-muted small mt-2">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Xem lại</button>
+                    <button type="button" class="btn btn-primary px-4 fw-bold" onclick="onModalConfirm()">
+                        <i class="bi bi-check-circle me-2"></i>Đồng ý nộp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+            let bgClass = 'bg-primary';
+            let icon = 'bi-info-circle';
+
+            if (type === 'success') {
+                bgClass = 'bg-success';
+                icon = 'bi-check-circle-fill';
+            } else if (type === 'error' || type === 'danger') {
+                bgClass = 'bg-danger';
+                icon = 'bi-exclamation-triangle-fill';
+            } else if (type === 'warning') {
+                bgClass = 'bg-warning text-dark';
+                icon = 'bi-exclamation-circle-fill';
+            }
+
+            const html = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            <i class="bi ${icon} fs-5 me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', html);
+            const toastEl = document.getElementById(toastId);
+            const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            bsToast.show();
+            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+        }
+
+        // NAVIGATION LOGIC
+        function changeStep(n) {
+            if (n > 0 && !validateStep(currentStep)) {
+                return;
+            }
+
+            currentStep += n;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > 4) currentStep = 4;
+            updateWizardUI();
+        }
+
+        function validateStep(step) {
+            const stepEl = document.getElementById(`step${step}`);
+            if (!stepEl) return true;
+
+            let isValid = true;
+            stepEl.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            const inputs = stepEl.querySelectorAll('input[required], select[required], textarea[required]');
+            for (let input of inputs) {
+                if (!input.checkValidity() || !input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    if (isValid) {
+                        input.focus();
+                        isValid = false;
+                    }
+                } else {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                }
+            }
+
+            return isValid;
+        }
+
+        function updateWizardUI() {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`step${i}`);
+                const navEl = document.getElementById(`navStep${i}`);
+                if (i === currentStep) {
+                    el.classList.remove('d-none');
+                    navEl.classList.add('active');
+                    navEl.querySelector('.btn-circle').classList.remove('text-muted');
+                    navEl.querySelector('small').classList.remove('text-muted');
+                    navEl.querySelector('small').classList.add('fw-bold');
+                } else {
+                    el.classList.add('d-none');
+                    navEl.classList.remove('active');
+                }
+            }
+
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+
+            if (currentStep === 1) {
+                btnBack.classList.add('disabled');
+            } else {
+                btnBack.classList.remove('disabled');
+            }
+
+            if (currentStep === 4) {
+                btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
+                btnNext.classList.remove('btn-primary');
+                btnNext.classList.add('btn-success');
+                btnNext.onclick = function () {
+                    showConfirmModal();
+                };
+            } else {
+                btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
+                btnNext.classList.add('btn-primary');
+                btnNext.classList.remove('btn-success');
+                btnNext.onclick = function () { changeStep(1); };
+            }
+        }
+
+        function showConfirmModal() {
+            const modal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+            modal.show();
+        }
+
+        function onModalConfirm() {
+            const modalEl = document.getElementById('confirmSubmitModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            submitDossier();
+        }
+
+        async function submitDossier() {
+            const btnNext = document.getElementById('btnNext');
+            const originalText = btnNext.innerHTML;
+            btnNext.disabled = true;
+            btnNext.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Đang xử lý...';
+
+            try {
+                const form = document.getElementById('submissionForm');
+                const formData = new FormData(form);
+
+                const fileInputs = form.querySelectorAll('input[type="file"]');
+                fileInputs.forEach(input => {
+                    if (input.files.length > 0) {
+                        for (let i = 0; i < input.files.length; i++) {
+                            formData.append('files', input.files[i]);
+                        }
+                    }
+                });
+
+                const response = await fetch('/citizen/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    window.location.href = '/citizen/hoso';
+                } else {
+                    showToast("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'), 'error');
+                    btnNext.disabled = false;
+                    btnNext.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showToast("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.", 'error');
+                btnNext.disabled = false;
+                btnNext.innerHTML = originalText;
+            }
+        }
+
+        function validateFileSize(input) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            for (let file of input.files) {
+                if (file.size > maxSize) {
+                    showToast(`File "${file.name}" vượt quá 10MB. Vui lòng chọn file nhỏ hơn.`, 'warning');
+                    input.value = '';
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+
+</body>
+
+</html>

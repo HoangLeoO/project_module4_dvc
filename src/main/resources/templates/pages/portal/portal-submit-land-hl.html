@@ -322,43 +322,74 @@
                     <div id="step3" class="d-none">
                         <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Thành phần Hồ sơ</h5>
 
-                        <div class="border border-2 border-dashed p-5 text-center bg-light rounded-3 mb-4">
-                            <i class="bi bi-cloud-arrow-up text-secondary" style="font-size: 3rem;"></i>
-                            <h6 class="mt-3 fw-bold">Kéo thả file vào đây hoặc Chọn file từ máy</h6>
-                            <p class="small text-muted">Hỗ trợ PDF, JPG. Tối đa 20MB/file.</p>
-
-                            <div class="d-flex justify-content-center gap-2 mt-3">
-                                <input type="file" id="fileInput" name="files" multiple style="display: none;"
-                                    onchange="handleFileSelect(this)">
-                                <button class="btn btn-primary btn-sm rounded-pill px-3" type="button"
-                                    onclick="document.getElementById('fileInput').click()">
-                                    <i class="bi bi-folder2-open me-1"></i>Chọn file
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                                    <i class="bi bi-safe me-1"></i>Kho dữ liệu (Vault)
-                                </button>
-                            </div>
+                        <div class="alert alert-info border-0 shadow-sm-soft mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Vui lòng đính kèm bản scan hoặc ảnh chụp rõ nét của các giấy tờ sau.
                         </div>
 
-                        <!-- File List -->
-                        <div class="list-group" id="fileList">
-                            <!-- Files will be added here dynamically -->
-
-                            <!-- AUTHORIZATION FILE (Hidden by default) -->
-                            <div id="authFileItem"
-                                class="list-group-item d-flex justify-content-between align-items-center d-none animate-fade-in bg-light-warning">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-lock2-fill text-warning fs-4 me-3"></i>
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold text-dark">
-                                            Giay-uy-quyen-hoac-Minh-chung-quan-he.pdf
-                                            <span class="text-danger">*</span>
-                                        </h6>
-                                        <small class="text-secondary fst-italic">Bắt buộc đối với hồ sơ nộp thay</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i></button>
+                        <!-- 1. DON DANG KY (Mau 09/OK) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">1. Đơn đăng ký biến động đất đai (Mẫu 09/ĐK) <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="file_don_dang_ky"
+                                    accept=".pdf,.jpg,.jpeg,.png" required onchange="validateFileSize(this)">
+                                <button class="btn btn-outline-secondary" type="button"
+                                    onclick="window.open('/assets/forms/Mau-09-DK.pdf', '_blank')">
+                                    <i class="bi bi-download me-1"></i>Tải mẫu
+                                </button>
                             </div>
+                            <div class="form-text">Bản chính hoặc bản sao điện tử có giá trị pháp lý.</div>
+                        </div>
+
+                        <!-- 2. HOP DONG CHUYEN NHUONG -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">2. Hợp đồng/Văn bản về chuyển quyền <span
+                                    class="text-danger">*</span></label>
+                            <input type="file" class="form-control" name="file_hop_dong" accept=".pdf,.jpg,.jpeg,.png"
+                                required onchange="validateFileSize(this)">
+                            <div class="form-text text-muted">Hợp đồng chuyển nhượng, tặng cho, văn bản thừa kế... đã
+                                công chứng/chứng thực.</div>
+                        </div>
+
+                        <!-- 3. GIAY CHUNG NHAN (SO DO) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">3. Giấy chứng nhận QSDĐ (Sổ đỏ) <span
+                                    class="text-danger">*</span></label>
+                            <input type="file" class="form-control" name="file_so_do" accept=".pdf,.jpg,.jpeg,.png"
+                                required onchange="validateFileSize(this)">
+                            <div class="form-text">Bản gốc GPCN đã cấp (Scan đầy đủ các trang).</div>
+                        </div>
+
+                        <!-- 4. GIAY TO KHAC -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">4. Giấy tờ khác (Tờ khai thuế, phí, lệ phí...)</label>
+                            <input type="file" class="form-control" name="file_khac" multiple
+                                accept=".pdf,.jpg,.jpeg,.png" onchange="validateFileSize(this)">
+                            <div class="form-text">Có thể chọn nhiều file.</div>
+                        </div>
+
+                        <!-- AUTHORIZATION FILE (Conditional) -->
+                        <div id="authFileItem"
+                            class="mb-4 d-none animate-fade-in p-3 bg-light-warning rounded-3 border border-warning border-opacity-25">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="bi bi-file-earmark-lock2-fill text-warning me-2"></i>5. Giấy ủy quyền / Minh
+                                chứng quan hệ <span class="text-danger">*</span>
+                            </label>
+                            <input type="file" class="form-control" name="file_uy_quyen" id="fileUyQuyenInput"
+                                accept=".pdf,.jpg,.jpeg,.png" onchange="validateFileSize(this)">
+                            <div class="form-text text-dark opacity-75">Bắt buộc đối với trường hợp nộp thay (Được ủy
+                                quyền).</div>
+                        </div>
+
+                        <!-- COMMITMENT -->
+                        <div class="form-check mt-5 p-3 rounded-3 bg-light border">
+                            <input class="form-check-input" type="checkbox" id="commitmentCheck" required
+                                style="transform: scale(1.2); margin-top: 0.25rem;">
+                            <label class="form-check-label ms-2" for="commitmentCheck">
+                                Tôi cam kết thông tin kê khai và tài liệu đính kèm là đúng sự thật. Tôi chịu hoàn toàn
+                                trách nhiệm trước pháp luật về tính chính xác, trung thực của hồ sơ.
+                            </label>
                         </div>
 
                     </div>
@@ -679,16 +710,15 @@
                 const form = document.getElementById('submissionForm');
                 const formData = new FormData(form);
 
-                // IMPORTANT: Overwrite 'files' from our staging area
-                // First delete any files automatically picked up by FormData from the input tag
-                formData.delete('files');
-
-                // Append files from fileStore
-                if (fileStore.files.length > 0) {
-                    for (let i = 0; i < fileStore.files.length; i++) {
-                        formData.append('files', fileStore.files[i]);
+                // IMPORTANT: Aggregate specific named file inputs into the 'files' parameter expected by the Controller
+                const fileInputs = form.querySelectorAll('input[type="file"]');
+                fileInputs.forEach(input => {
+                    if (input.files.length > 0) {
+                        for (let i = 0; i < input.files.length; i++) {
+                            formData.append('files', input.files[i]);
+                        }
                     }
-                }
+                });
 
                 const response = await fetch('/citizen/submit', {
                     method: 'POST',
@@ -837,17 +867,42 @@
                         return;
                     }
 
+                    let firstValidIndex = -1;
+
                     lands.forEach((land, index) => {
-                        const isChecked = index === 0 ? 'checked' : '';
-                        const borderClass = index === 0 ? 'border-primary shadow-sm bg-light-primary' : 'bg-light border-0';
-                        const textClass = index === 0 ? 'text-primary' : '';
+                        const status = land.landStatus || 'Hợp pháp';
+                        const isBlocked = status !== 'Hợp pháp';
+
+                        // Check if this is the first valid item to auto-select
+                        let isChecked = '';
+                        let borderClass = 'bg-light border-0';
+                        let textClass = '';
+                        let cursorClass = 'cursor-pointer';
+                        let opacityClass = '';
+                        let clickAction = `onclick="selectLand(this, ${index})"`;
+                        let disabledAttr = '';
+
+                        if (isBlocked) {
+                            borderClass = 'bg-light border-secondary border-opacity-25'; // distinct look for disabled
+                            cursorClass = 'cursor-not-allowed';
+                            opacityClass = 'opacity-75';
+                            clickAction = ''; // No click
+                            disabledAttr = 'disabled';
+                        } else {
+                            if (firstValidIndex === -1) {
+                                firstValidIndex = index;
+                                isChecked = 'checked';
+                                borderClass = 'border-primary shadow-sm bg-light-primary';
+                                textClass = 'text-primary';
+                            }
+                        }
 
                         const html = `
                         <div class="col">
-                            <label class="card h-100 cursor-pointer ${borderClass}" onclick="selectLand(this, ${index})">
+                            <label class="card h-100 ${cursorClass} ${borderClass} ${opacityClass}" ${clickAction}>
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="landAsset" ${isChecked} required>
+                                        <input class="form-check-input" type="radio" name="landAsset" ${isChecked} ${disabledAttr} required>
                                         <h6 class="form-check-label fw-bold ${textClass}">Thửa ${land.parcelNumber}, Tờ bản đồ ${land.mapSheetNumber}</h6>
                                     </div>
                                     <hr class="my-2 opacity-50">
@@ -861,7 +916,8 @@
                                         <li class="text-dark"><i class="bi bi-info-circle me-2"></i>Nguồn gốc: ${land.assetNotes || 'Công nhận QSDĐ'}</li>
                                         
                                         <li class="mt-2 pt-2 border-top text-end">
-                                            Trạng thái: <span class="badge ${land.landStatus === 'Đang thế chấp' ? 'bg-danger' : 'bg-success'}">${land.landStatus || 'Bình thường'}</span>
+                                            Trạng thái: <span class="badge ${isBlocked ? 'bg-danger' : 'bg-success'}">${status}</span>
+                                            ${isBlocked ? '<div class="text-danger small fw-bold mt-1"><i class="bi bi-slash-circle me-1"></i>Không thể giao dịch</div>' : ''}
                                         </li>
                                     </ul>
                                 </div>
@@ -871,9 +927,9 @@
                         landListContainer.insertAdjacentHTML('beforeend', html);
                     });
 
-                    // Auto-select the first one
-                    if (lands.length > 0) {
-                        updateHiddenLandFields(0);
+                    // Auto-select the first valid one
+                    if (firstValidIndex !== -1) {
+                        updateHiddenLandFields(firstValidIndex);
                     }
                 }
             } catch (error) {
@@ -947,78 +1003,51 @@
 
 
         // --- FILE HANDLING LOGIC ---
-        // Global array to store selected files
-        const fileStore = new DataTransfer();
-
-        function handleFileSelect(input) {
+        function validateFileSize(input) {
             if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => {
-                    // Check for duplicates (optional but good UX)
-                    let exists = false;
-                    for (let i = 0; i < fileStore.files.length; i++) {
-                        if (fileStore.files[i].name === file.name && fileStore.files[i].size === file.size) {
-                            exists = true;
-                            break;
-                        }
+                const maxSize = 20 * 1024 * 1024; // 20MB
+                for (let i = 0; i < input.files.length; i++) {
+                    const file = input.files[i];
+                    if (file.size > maxSize) {
+                        showToast(`File "${file.name}" quá lớn (Tối đa 20MB).`, 'error');
+                        input.value = ''; // Reset input
+                        return;
                     }
-                    if (!exists) {
-                        fileStore.items.add(file);
-                    }
-                });
-                // Reset input so same file can be selected again if needed (though we handle dups)
-                input.value = '';
-
-                renderFileList();
+                }
             }
         }
 
-        function renderFileList() {
-            const fileList = document.getElementById('fileList');
-            // Clear current list items EXCEPT authFileItem
-            Array.from(fileList.children).forEach(child => {
-                if (child.id !== 'authFileItem') {
-                    child.remove();
-                }
-            });
+        // Update Authorization Toggle to Show/Hide File Input
+        const originalToggleAuth = toggleAuthorization;
+        toggleAuthorization = function () {
+            // Call original logic first (UI toggle for Step 1)
+            const isChecked = document.getElementById('authToggle').checked;
+            const section = document.getElementById('authSection');
 
-            // Re-render from fileStore
-            Array.from(fileStore.files).forEach((file, index) => {
-                const item = document.createElement('div');
-                item.className = 'list-group-item d-flex justify-content-between align-items-center animate-fade-in';
-                item.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-text-fill text-primary fs-4 me-3"></i>
-                        <div>
-                            <h6 class="mb-0 small fw-bold">${file.name}</h6>
-                            <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
-                        </div>
-                    </div>
-                    <button class="btn btn-sm btn-link text-danger" type="button" onclick="removeFile(${index})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                 `;
+            if (isChecked) {
+                section.classList.remove('d-none');
+                setTimeout(() => document.getElementById('authorizerCccd').focus(), 100);
+            } else {
+                section.classList.add('d-none');
+                // Reset to logged-in user data
+                const initialCccd = '[[${opsDossier.formData["ownerIdNumber"]}]]';
+                document.querySelector('input[name="currentOwner"]').value = '[[${opsDossier.formData["currentOwner"]}]]';
+                document.querySelector('input[name="ownerIdNumber"]').value = initialCccd;
+                document.querySelector('input[name="ownerAddress"]').value = '[[${opsDossier.formData["ownerAddress"]}]]';
+                fetchLandAssets(initialCccd);
+            }
 
-                // Insert before authItem
-                const authItem = document.getElementById('authFileItem');
-                if (authItem) {
-                    fileList.insertBefore(item, authItem);
-                } else {
-                    fileList.appendChild(item);
-                }
-            });
-        }
-
-        function removeFile(index) {
-            const newDt = new DataTransfer();
-            Array.from(fileStore.files).forEach((file, i) => {
-                if (i !== index) newDt.items.add(file);
-            });
-
-            // Clear and reload fileStore
-            fileStore.items.clear();
-            Array.from(newDt.files).forEach(f => fileStore.items.add(f));
-
-            renderFileList();
+            // Step 3 UI Toggle
+            const authFileItem = document.getElementById('authFileItem');
+            const authFileInput = document.getElementById('fileUyQuyenInput');
+            if (isChecked) {
+                if (authFileItem) authFileItem.classList.remove('d-none');
+                if (authFileInput) authFileInput.setAttribute('required', 'required');
+            } else {
+                if (authFileItem) authFileItem.classList.add('d-none');
+                if (authFileInput) authFileInput.removeAttribute('required');
+                if (authFileInput) authFileInput.value = ''; // Clear file if unchecked
+            }
         }
 
 
