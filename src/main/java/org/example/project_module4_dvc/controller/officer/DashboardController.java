@@ -17,10 +17,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -38,9 +40,12 @@ public class DashboardController {
 
     private final IOpsDossierFileService opsDossierFileService;
 
+    public DashboardController(IOfficerService officerService, SimpMessagingTemplate messagingTemplate, FileStorageService fileStorageService,
+                               IOpsDossierFileService opsDossierFileService) {
     public DashboardController(IOfficerService officerService, FileStorageService fileStorageService,
                                IOpsDossierFileService opsDossierFileService) {
         this.officerService = officerService;
+        this.messagingTemplate = messagingTemplate;
         this.fileStorageService = fileStorageService;
         this.opsDossierFileService = opsDossierFileService;
     }
@@ -133,14 +138,31 @@ public class DashboardController {
     @GetMapping("reception/update")
     public String updateDossierStatus(@RequestParam("dossierId") Long id,
                                       @RequestParam("specialistId") Long specialistId,
+                                      @RequestParam("dueDate") LocalDateTime dueDate, RedirectAttributes redirectAttributes) {
+                                      @RequestParam("specialistId") Long specialistId,
                                       @RequestParam("dueDate") LocalDateTime dueDate) {
         officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate, "");
+        messagingTemplate.convertAndSend("/topic/dossiers/pending", "pending");
+        redirectAttributes.addFlashAttribute("toastType", "success");
+        redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
+        return "redirect:/officer/dashboard";
+    }
+
+    @PostMapping("reception/supplement")
+    public String supplementDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason, RedirectAttributes redirectAttributes) {
+        officerService.updateDossierRejectStatus(id, "SUPPLEMENT_REQUIRED", reason);
+        redirectAttributes.addFlashAttribute("toastType", "success");
+        messagingTemplate.convertAndSend("/topic/dossiers/supplement", "supplemt");
+        redirectAttributes.addFlashAttribute("toastMessage", "Đã yêu cầu bổ sung hồ sơ thành công!");
         return "redirect:/officer/dashboard";
     }
 
     @PostMapping("reception/reject")
-    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
-        officerService.updateDossierRejectStatus(id, "REJECTED", reason);
+    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason, RedirectAttributes redirectAttributes) {
+        officerService.updateDossierRejectStatus(id, "REJECT", reason);
+        redirectAttributes.addFlashAttribute("toastType", "success");
+        messagingTemplate.convertAndSend("/topic/dossiers/reject", "reject");
+        redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
         return "redirect:/officer/dashboard";
     }
 

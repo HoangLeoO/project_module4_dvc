@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tiếp nhận Hồ sơ - Hệ thống Một cửa</title>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- SockJS và STOMP (Dùng CDN cho nhanh) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -171,13 +174,6 @@
                 Trả kết quả
             </a>
 
-            <a href="officer-complaints.html" class="nav-link-custom d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-megaphone-fill"></i>
-                    Phản ánh
-                </div>
-                <span class="badge bg-danger rounded-pill shadow-sm" style="font-size: 0.7rem;">1</span>
-            </a>
 
             <div class="my-4 border-top mx-4 op-2"></div>
 
@@ -355,12 +351,16 @@
                         <div class="d-grid gap-3">
                             <button type="button" class="btn btn-primary btn-action text-white" data-bs-toggle="modal"
                                 data-bs-target="#assignModal">
-                                <i class="bi bi-printer-fill me-2"></i>Tiếp nhận & In phiếu
+                                <i class="bi bi-printer-fill me-2"></i>Tiếp nhận & chuyển tiếp hồ sơ
                             </button>
 
+                            <button class="btn btn-outline-warning btn-action border-2" data-bs-toggle="modal"
+                                data-bs-target="#supplementModal">
+                                <i class="bi bi-arrow-counterclockwise"></i> Yêu cầu bổ sung
+                            </button>
                             <button class="btn btn-outline-danger btn-action border-2" data-bs-toggle="modal"
-                                data-bs-target="#actionModal">
-                                <i class="bi bi-arrow-return-left me-2"></i> Yêu cầu bổ sung
+                                    data-bs-target="#rejectModal">
+                                <i class="bi bi-arrow-return-left me-2"></i> Từ chối hồ sơ
                             </button>
                         </div>
 
@@ -378,6 +378,7 @@
     </div>
 
     <!-- Modals Include -->
+    <th:block th:replace="~{components/modals/supplement-reason-modal :: supplementReasonModal}"></th:block>
     <th:block th:replace="~{components/modals/reject-reason-modal :: rejectReasonModal}"></th:block>
     <th:block th:replace="~{components/modals/assign-specialist-modal :: assignModal}"></th:block>
     <th:block th:replace="~{components/modals/view-file-modal :: viewFileModal}"></th:block>

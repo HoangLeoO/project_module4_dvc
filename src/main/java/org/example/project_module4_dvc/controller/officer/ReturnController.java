@@ -6,20 +6,25 @@ import org.example.project_module4_dvc.service.officer.IOfficerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/officer/dashboard/return")
 public class ReturnController {
     private final IOfficerService officerService;
 
-    public ReturnController(IOfficerService officerService) {
+    private SimpMessagingTemplate messagingTemplate;
+
+    public ReturnController(IOfficerService officerService, SimpMessagingTemplate messagingTemplate) {
         this.officerService = officerService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("")
@@ -33,9 +38,12 @@ public class ReturnController {
     }
 
     @GetMapping("/result")
-    public String returnDossier(@RequestParam("id") Long id) {
+    public String returnDossier(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         NewDossierDTO dossier = officerService.findById(id);
         officerService.updateDossierStatus(id, "RESULT_RETURNED", dossier.getSpecialistId(), dossier.getDueDate(), dossier.getRejectionReason());
+        redirectAttributes.addFlashAttribute("toastType", "success");
+        redirectAttributes.addFlashAttribute("toastMessage", "Đã trả kết quả hồ sơ thành công!");
+        messagingTemplate.convertAndSend("/topic/dossiers/returned", "returned");
         return "redirect:/officer/dashboard/return";
 
     }

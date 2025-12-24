@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Đăng ký Kết hôn')}">
+</head>
+
+<style>
+    .wizard-step {
+        position: relative;
+        z-index: 1;
+    }
+
+    .wizard-step .btn-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #dee2e6;
+        background: white;
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    .wizard-step.active .btn-circle {
+        border-color: var(--bs-primary);
+        background: var(--bs-primary);
+        color: white;
+    }
+
+    .wizard-connector {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #dee2e6;
+        z-index: 0;
+    }
+
+    .person-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .person-card:hover {
+        border-color: var(--bs-primary);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+    }
+
+    .person-card.verified {
+        border-color: #198754;
+        background: linear-gradient(135deg, rgba(25, 135, 84, 0.05), rgba(25, 135, 84, 0.02));
+    }
+
+    .person-card.error {
+        border-color: #dc3545;
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.05), rgba(220, 53, 69, 0.02));
+    }
+
+    .lookup-btn {
+        min-width: 100px;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <main class="container mt-5 pt-5 mb-5">
+
+        <!-- Page Title -->
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary mb-2">Đăng ký Kết hôn</h2>
+            <p class="text-muted">Thủ tục đăng ký kết hôn theo Luật Hộ tịch</p>
+        </div>
+
+        <!-- Wizard Nav -->
+        <div class="position-relative mb-5 mx-auto" style="max-width: 700px;">
+            <div class="wizard-connector"></div>
+            <div class="d-flex justify-content-between position-relative">
+
+                <div class="wizard-step active" id="navStep1">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">1</div>
+                        <small class="fw-bold">Thông tin bên kết hôn</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep2">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">2</div>
+                        <small class="text-muted">Thành phần hồ sơ</small>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="navStep3">
+                    <div class="text-center">
+                        <div class="btn-circle mx-auto mb-2">3</div>
+                        <small class="text-muted">Thanh toán & Nộp</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Wizard Content -->
+        <div class="card shadow-sm border-0 rounded-3 wizard-content mx-auto" style="max-width: 1000px;">
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- Hidden Fields -->
+                <input type="hidden" id="serviceId" th:value="${s != null ? s.id : 2}">
+                <input type="hidden" id="serviceCode" th:value="${s != null ? s.serviceCode : 'HT03_DANGKYKH'}">
+                <input type="hidden" id="currentUserCccd" th:value="${currentUserCccd}">
+
+                <!-- STEP 1: Marriage Party Info -->
+                <div id="step1">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 1: Thông tin bên kết hôn</h5>
+
+                    <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+                        <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                        <div>Nhập số CCCD và nhấn <strong>"Tra cứu"</strong> để tự động điền thông tin từ Cơ sở dữ liệu
+                            quốc gia về dân cư. Chỉ áp dụng cho công dân <strong>chưa kết hôn</strong>.</div>
+                    </div>
+
+                    <!-- Husband Section -->
+                    <div class="person-card p-4 mb-4" id="husbandCard">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-0">
+                                <i class="bi bi-person-fill me-2 text-primary"></i>Thông tin Chồng
+                            </h6>
+                            <span class="status-badge bg-secondary-subtle text-secondary" id="husbandStatus">Chưa tra
+                                cứu</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">Số CCCD <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="husbandCccd" class="form-control"
+                                        placeholder="Nhập 12 số CCCD" maxlength="12">
+                                    <button type="button" class="btn btn-primary lookup-btn"
+                                        onclick="lookupCitizen('husband')">
+                                        <i class="bi bi-search me-1"></i>Tra cứu
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold text-muted">Họ và tên <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="husbandFullName" class="form-control bg-light" readonly
+                                    placeholder="Tự động điền sau khi tra cứu">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">Ngày sinh <span
+                                        class="text-danger">*</span></label>
+                                <input type="date" id="husbandDob" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">Giới tính</label>
+                                <input type="text" id="husbandGender" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">Dân tộc</label>
+                                <input type="text" id="husbandEthnic" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Địa chỉ thường trú</label>
+                                <input type="text" id="husbandAddress" class="form-control bg-light" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wife Section -->
+                    <div class="person-card p-4 mb-4" id="wifeCard">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-0">
+                                <i class="bi bi-person-fill me-2 text-danger"></i>Thông tin Vợ
+                            </h6>
+                            <span class="status-badge bg-secondary-subtle text-secondary" id="wifeStatus">Chưa tra
+                                cứu</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">Số CCCD <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="wifeCccd" class="form-control" placeholder="Nhập 12 số CCCD"
+                                        maxlength="12">
+                                    <button type="button" class="btn btn-primary lookup-btn"
+                                        onclick="lookupCitizen('wife')">
+                                        <i class="bi bi-search me-1"></i>Tra cứu
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold text-muted">Họ và tên <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="wifeFullName" class="form-control bg-light" readonly
+                                    placeholder="Tự động điền sau khi tra cứu">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">Ngày sinh <span
+                                        class="text-danger">*</span></label>
+                                <input type="date" id="wifeDob" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">Giới tính</label>
+                                <input type="text" id="wifeGender" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">Dân tộc</label>
+                                <input type="text" id="wifeEthnic" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Địa chỉ thường trú</label>
+                                <input type="text" id="wifeAddress" class="form-control bg-light" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marriage Info -->
+                    <div class="card border shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">
+                                <i class="bi bi-heart-fill me-2 text-danger"></i>Thông tin hôn nhân
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Ngày dự kiến kết hôn <span
+                                            class="text-danger">*</span></label>
+                                    <input type="date" id="intendedMarriageDate" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Nơi đăng ký kết hôn <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" id="registeredPlace" class="form-control"
+                                        placeholder="VD: UBND Phường Bến Nghé, Quận 1, TP.HCM" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: File Upload -->
+                <div id="step2" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Thành phần hồ sơ</h5>
+
+                    <div class="alert alert-warning small d-flex align-items-center mb-4">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 me-3"></i>
+                        <div><strong>Lưu ý:</strong> Giấy xác nhận tình trạng hôn nhân của cả hai bên là <strong>bắt
+                                buộc</strong>. Dung lượng mỗi file không quá 10MB.</div>
+                    </div>
+
+                    <div id="uploadList" class="row g-3">
+                        <!-- Husband's Marital Status Certificate -->
+                        <div class="col-12">
+                            <div class="card border border-primary shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1 text-primary">
+                                                <i class="bi bi-file-earmark-text me-2"></i>Giấy xác nhận tình trạng hôn
+                                                nhân - CHỒNG <span class="text-danger">*</span>
+                                            </h6>
+                                            <p class="small text-muted mb-0">Giấy xác nhận tình trạng hôn nhân do UBND
+                                                cấp xã nơi cư trú cấp</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="husbandMaritalCertFiles"
+                                                class="form-control form-control-sm" multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'husbandMaritalCert')">
+                                        </div>
+                                    </div>
+                                    <div id="husbandMaritalCertFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wife's Marital Status Certificate -->
+                        <div class="col-12">
+                            <div class="card border border-danger shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1 text-danger">
+                                                <i class="bi bi-file-earmark-text me-2"></i>Giấy xác nhận tình trạng hôn
+                                                nhân - VỢ <span class="text-danger">*</span>
+                                            </h6>
+                                            <p class="small text-muted mb-0">Giấy xác nhận tình trạng hôn nhân do UBND
+                                                cấp xã nơi cư trú cấp</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="wifeMaritalCertFiles"
+                                                class="form-control form-control-sm" multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'wifeMaritalCert')">
+                                        </div>
+                                    </div>
+                                    <div id="wifeMaritalCertFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CCCD of both parties -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Bản sao CCCD/CMND của hai bên <span
+                                                    class="text-danger">*</span></h6>
+                                            <p class="small text-muted mb-0">Đính kèm bản sao hoặc ảnh chụp 2 mặt CCCD
+                                                của cả chồng và vợ</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="idCardFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'idCard')">
+                                        </div>
+                                    </div>
+                                    <div id="idCardFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other documents -->
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Giấy tờ bổ sung (nếu có)</h6>
+                                            <p class="small text-muted mb-0">Giấy tờ chứng minh (GKS, bản án ly hôn đã
+                                                có hiệu lực...)</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="otherFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'other')">
+                                        </div>
+                                    </div>
+                                    <div id="otherFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Payment & Submit -->
+                <div id="step3" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Thanh toán & Nộp hồ sơ</h5>
+
+                    <!-- Review Summary -->
+                    <div class="card border border-light shadow-sm mb-4">
+                        <div class="card-header bg-light py-2">
+                            <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2"></i>Thông tin đã khai</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- Husband Info -->
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-primary-subtle rounded">
+                                        <h6 class="fw-bold text-primary mb-2"><i class="bi bi-person me-1"></i>Chồng
+                                        </h6>
+                                        <div class="small">
+                                            <div><strong>Họ tên:</strong> <span id="reviewHusbandName">---</span></div>
+                                            <div><strong>Ngày sinh:</strong> <span id="reviewHusbandDob">---</span>
+                                            </div>
+                                            <div><strong>CCCD:</strong> <span id="reviewHusbandCccd">---</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Wife Info -->
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-danger-subtle rounded">
+                                        <h6 class="fw-bold text-danger mb-2"><i class="bi bi-person me-1"></i>Vợ</h6>
+                                        <div class="small">
+                                            <div><strong>Họ tên:</strong> <span id="reviewWifeName">---</span></div>
+                                            <div><strong>Ngày sinh:</strong> <span id="reviewWifeDob">---</span></div>
+                                            <div><strong>CCCD:</strong> <span id="reviewWifeCccd">---</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Marriage Info -->
+                                <div class="col-12">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>Ngày dự kiến kết hôn:</strong> <span
+                                                    id="reviewMarriageDate">---</span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Nơi đăng ký:</strong> <span
+                                                    id="reviewRegisteredPlace">---</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Receiving Department -->
+                    <div class="card border shadow-sm mb-4">
+                        <div class="card-body">
+                            <label class="form-label fw-bold">Đơn vị tiếp nhận hồ sơ <span
+                                    class="text-danger">*</span></label>
+                            <select id="receivingDeptId" class="form-select border-primary" required>
+                                <option value="" selected disabled>-- Chọn Phường/Xã tiếp nhận --</option>
+                                <option th:each="dept : ${sysDepartments}" th:if="${dept.level == 2}"
+                                    th:value="${dept.id}" th:text="${dept.deptName}">Phường A</option>
+                            </select>
+                            <p class="invalid-feedback" id="receivingDeptIdError" style="display: none;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Fee Info -->
+                    <div class="bg-white p-4 border rounded mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Lệ phí thủ tục:</span>
+                            <span class="fw-bold text-danger fs-5" id="totalFeeDisplay"
+                                th:text="${s != null ? #numbers.formatDecimal(s.feeAmount, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '0 VNĐ'}">0
+                                VNĐ</span>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle me-1"></i>Thanh toán tại bộ phận một cửa khi nhận kết quả.
+                        </small>
+                    </div>
+
+                    <!-- Confirmation -->
+                    <div class="form-check p-3 bg-light rounded border mb-1">
+                        <input class="form-check-input ms-0 me-3" type="checkbox" id="confirmDataCorrect" required>
+                        <label class="form-check-label fw-bold" for="confirmDataCorrect">
+                            Tôi cam đoan toàn bộ thông tin đã cung cấp là chính xác và chịu trách nhiệm trước pháp luật.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                    <button class="btn btn-secondary px-4 disabled" id="btnBack" onclick="changeStep(-1)">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại
+                    </button>
+                    <button class="btn btn-primary px-4 fw-bold" id="btnNext" onclick="changeStep(1)">
+                        Tiếp tục <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+    <!-- Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-primary" id="messageModalTitle">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-info-circle-fill text-primary" style="font-size: 3rem;"
+                            id="messageModalIcon"></i>
+                    </div>
+                    <p class="mb-0 fs-5" id="messageModalBody">Nội dung thông báo</p>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center">
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script th:inline="javascript">
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        // Citizen data storage
+        let husbandData = null;
+        let wifeData = null;
+
+        // File storage
+        let selectedHusbandMaritalCertFiles = [];
+        let selectedWifeMaritalCertFiles = [];
+        let selectedIdCardFiles = [];
+        let selectedOtherFiles = [];
+
+        // Helper: Show Modal
+        function showModal(message, type = 'info') {
+            const modalEl = document.getElementById('messageModal');
+            const titleEl = document.getElementById('messageModalTitle');
+            const bodyEl = document.getElementById('messageModalBody');
+            const iconEl = document.getElementById('messageModalIcon');
+            const modal = new bootstrap.Modal(modalEl);
+
+            bodyEl.innerText = message;
+
+            if (type === 'error') {
+                titleEl.innerText = 'Lỗi';
+                titleEl.className = 'modal-title fw-bold text-danger';
+                iconEl.className = 'bi bi-x-circle-fill text-danger';
+            } else if (type === 'warning') {
+                titleEl.innerText = 'Lưu ý';
+                titleEl.className = 'modal-title fw-bold text-warning';
+                iconEl.className = 'bi bi-exclamation-triangle-fill text-warning';
+            } else if (type === 'success') {
+                titleEl.innerText = 'Thành công';
+                titleEl.className = 'modal-title fw-bold text-success';
+                iconEl.className = 'bi bi-check-circle-fill text-success';
+            } else {
+                titleEl.innerText = 'Thông báo';
+                titleEl.className = 'modal-title fw-bold text-primary';
+                iconEl.className = 'bi bi-info-circle-fill text-primary';
+            }
+
+            modal.show();
+        }
+
+        // CCCD Lookup function
+        async function lookupCitizen(type) {
+            const cccdInput = document.getElementById(type + 'Cccd');
+            const cccd = cccdInput.value.trim();
+
+            if (!cccd || cccd.length !== 12) {
+                showModal('Vui lòng nhập đúng 12 số CCCD.', 'warning');
+                return;
+            }
+
+            const card = document.getElementById(type + 'Card');
+            const statusBadge = document.getElementById(type + 'Status');
+
+            try {
+                statusBadge.className = 'status-badge bg-warning-subtle text-warning';
+                statusBadge.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang tra cứu...';
+
+                const response = await fetch('/api/autofill/citizen/' + cccd);
+
+                if (!response.ok) {
+                    throw new Error('Không tìm thấy công dân với số CCCD này.');
+                }
+
+                const citizen = await response.json();
+
+                // Check marital status
+                if (citizen.maritalStatus && citizen.maritalStatus.toUpperCase() == 'MARRIED') {
+                    card.classList.remove('verified');
+                    card.classList.add('error');
+                    statusBadge.className = 'status-badge bg-danger-subtle text-danger';
+                    statusBadge.innerHTML = '<i class="bi bi-x-circle me-1"></i>Không đủ điều kiện';
+
+                    showModal('Công dân này hiện có tình trạng hôn nhân: ' + getMaritalStatusText(citizen.maritalStatus) + '. Chỉ công dân chưa kết hôn mới được đăng ký.', 'error');
+                    clearCitizenFields(type);
+                    return;
+                }
+
+                // Fill in the data
+                fillCitizenFields(type, citizen);
+
+                // Store data
+                if (type === 'husband') {
+                    husbandData = citizen;
+                } else {
+                    wifeData = citizen;
+                }
+
+                // Update UI
+                card.classList.remove('error');
+                card.classList.add('verified');
+                statusBadge.className = 'status-badge bg-success-subtle text-success';
+                statusBadge.innerHTML = '<i class="bi bi-check-circle me-1"></i>Đã xác thực';
+
+            } catch (error) {
+                console.error('Lookup error:', error);
+                card.classList.remove('verified');
+                card.classList.add('error');
+                statusBadge.className = 'status-badge bg-danger-subtle text-danger';
+                statusBadge.innerHTML = '<i class="bi bi-x-circle me-1"></i>Không tìm thấy';
+
+                showModal(error.message || 'Có lỗi xảy ra khi tra cứu.', 'error');
+                clearCitizenFields(type);
+            }
+        }
+
+        function fillCitizenFields(type, citizen) {
+            document.getElementById(type + 'FullName').value = citizen.fullName || '';
+            document.getElementById(type + 'Dob').value = citizen.dob || '';
+            document.getElementById(type + 'Gender').value = citizen.gender || '';
+            document.getElementById(type + 'Ethnic').value = citizen.ethnicGroup || '';
+            document.getElementById(type + 'Address').value = citizen.permanentAddress || '';
+        }
+
+        function clearCitizenFields(type) {
+            document.getElementById(type + 'FullName').value = '';
+            document.getElementById(type + 'Dob').value = '';
+            document.getElementById(type + 'Gender').value = '';
+            document.getElementById(type + 'Ethnic').value = '';
+            document.getElementById(type + 'Address').value = '';
+
+            if (type === 'husband') {
+                husbandData = null;
+            } else {
+                wifeData = null;
+            }
+        }
+
+        function getMaritalStatusText(status) {
+            const map = {
+                'SINGLE': 'Chưa kết hôn',
+                'MARRIED': 'Đã kết hôn',
+                'DIVORCED': 'Đã ly hôn',
+                'WIDOWED': 'Góa'
+            };
+            return map[status?.toUpperCase()] || status;
+        }
+
+        // Wizard Navigation
+        function changeStep(delta) {
+            if (delta === 1 && !validateStep(currentStep)) return;
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            updateWizardUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                // Validate husband
+                if (!husbandData) {
+                    showModal('Vui lòng tra cứu và xác thực thông tin Chồng.', 'warning');
+                    return false;
+                }
+                // Validate wife
+                if (!wifeData) {
+                    showModal('Vui lòng tra cứu và xác thực thông tin Vợ.', 'warning');
+                    return false;
+                }
+                // Validate marriage info
+                const marriageDate = document.getElementById('intendedMarriageDate').value;
+                const registeredPlace = document.getElementById('registeredPlace').value.trim();
+
+                if (!marriageDate) {
+                    showModal('Vui lòng chọn ngày dự kiến kết hôn.', 'warning');
+                    return false;
+                }
+                if (!registeredPlace) {
+                    showModal('Vui lòng nhập nơi đăng ký kết hôn.', 'warning');
+                    return false;
+                }
+
+                // Validate one party must match current user
+                const currentUserCccd = document.getElementById('currentUserCccd').value;
+                const husbandCccd = document.getElementById('husbandCccd').value.trim();
+                const wifeCccd = document.getElementById('wifeCccd').value.trim();
+
+                // Check husband and wife are not the same person
+                if (husbandCccd === wifeCccd) {
+                    showModal('CCCD của chồng và vợ không được trùng nhau.', 'error');
+                    return false;
+                }
+
+                if (currentUserCccd && husbandCccd !== currentUserCccd && wifeCccd !== currentUserCccd) {
+                    showModal('Một trong hai bên kết hôn (chồng hoặc vợ) phải là bạn. Vui lòng nhập CCCD của bạn vào một trong hai ô.', 'error');
+                    return false;
+                }
+
+                return true;
+            }
+            if (step === 2) {
+                if (selectedHusbandMaritalCertFiles.length === 0) {
+                    showModal('Vui lòng đính kèm Giấy xác nhận tình trạng hôn nhân của CHỒNG.', 'warning');
+                    return false;
+                }
+                if (selectedWifeMaritalCertFiles.length === 0) {
+                    showModal('Vui lòng đính kèm Giấy xác nhận tình trạng hôn nhân của VỢ.', 'warning');
+                    return false;
+                }
+                if (selectedIdCardFiles.length === 0) {
+                    showModal('Vui lòng đính kèm bản sao CCCD của cả hai bên.', 'warning');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 3) {
+                const deptEl = document.getElementById('receivingDeptId');
+                if (!deptEl.value) {
+                    deptEl.classList.add('is-invalid');
+                    document.getElementById('receivingDeptIdError').innerText = 'Vui lòng chọn đơn vị tiếp nhận.';
+                    document.getElementById('receivingDeptIdError').style.display = 'block';
+                    return false;
+                }
+                const check = document.getElementById('confirmDataCorrect');
+                if (!check.checked) {
+                    showModal('Vui lòng xác nhận cam đoan thông tin là chính xác.', 'warning');
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        function updateWizardUI() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const el = document.getElementById(`step${i}`);
+                const navEl = document.getElementById(`navStep${i}`);
+                if (i === currentStep) {
+                    if (el) el.classList.remove('d-none');
+                    if (navEl) {
+                        navEl.classList.add('active');
+                        navEl.querySelector('small').className = 'fw-bold';
+                    }
+                } else {
+                    if (el) el.classList.add('d-none');
+                    if (navEl) {
+                        navEl.classList.remove('active');
+                        navEl.querySelector('small').className = 'text-muted';
+                    }
+                }
+            }
+
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+
+            if (currentStep === 1) btnBack.classList.add('disabled');
+            else btnBack.classList.remove('disabled');
+
+            if (currentStep === totalSteps) {
+                populateReviewStep();
+                btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
+                btnNext.className = 'btn btn-success px-4 fw-bold';
+                btnNext.onclick = function () { submitForm(); };
+            } else {
+                btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
+                btnNext.className = 'btn btn-primary px-4 fw-bold';
+                btnNext.onclick = function () { changeStep(1); };
+            }
+        }
+
+        function populateReviewStep() {
+            // Husband
+            document.getElementById('reviewHusbandName').innerText = document.getElementById('husbandFullName').value || '---';
+            document.getElementById('reviewHusbandDob').innerText = formatDate(document.getElementById('husbandDob').value);
+            document.getElementById('reviewHusbandCccd').innerText = document.getElementById('husbandCccd').value || '---';
+
+            // Wife
+            document.getElementById('reviewWifeName').innerText = document.getElementById('wifeFullName').value || '---';
+            document.getElementById('reviewWifeDob').innerText = formatDate(document.getElementById('wifeDob').value);
+            document.getElementById('reviewWifeCccd').innerText = document.getElementById('wifeCccd').value || '---';
+
+            // Marriage
+            document.getElementById('reviewMarriageDate').innerText = formatDate(document.getElementById('intendedMarriageDate').value);
+            document.getElementById('reviewRegisteredPlace').innerText = document.getElementById('registeredPlace').value || '---';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '---';
+            if (dateStr.includes('-')) {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        // File Upload Functions
+        function handleFileSelect(event, type) {
+            const files = Array.from(event.target.files);
+            if (type === 'husbandMaritalCert') {
+                selectedHusbandMaritalCertFiles = [...selectedHusbandMaritalCertFiles, ...files];
+                renderFileList('husbandMaritalCert');
+            } else if (type === 'wifeMaritalCert') {
+                selectedWifeMaritalCertFiles = [...selectedWifeMaritalCertFiles, ...files];
+                renderFileList('wifeMaritalCert');
+            } else if (type === 'idCard') {
+                selectedIdCardFiles = [...selectedIdCardFiles, ...files];
+                renderFileList('idCard');
+            } else {
+                selectedOtherFiles = [...selectedOtherFiles, ...files];
+                renderFileList('other');
+            }
+            event.target.value = '';
+        }
+
+        function renderFileList(type) {
+            let files, listEl;
+            if (type === 'husbandMaritalCert') {
+                files = selectedHusbandMaritalCertFiles;
+                listEl = document.getElementById('husbandMaritalCertFilesList');
+            } else if (type === 'wifeMaritalCert') {
+                files = selectedWifeMaritalCertFiles;
+                listEl = document.getElementById('wifeMaritalCertFilesList');
+            } else if (type === 'idCard') {
+                files = selectedIdCardFiles;
+                listEl = document.getElementById('idCardFilesList');
+            } else {
+                files = selectedOtherFiles;
+                listEl = document.getElementById('otherFilesList');
+            }
+            listEl.innerHTML = '';
+
+            files.forEach((file, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'badge bg-light border text-dark p-2 d-flex align-items-center gap-2';
+                badge.innerHTML = `
+                    <i class="bi bi-file-earmark-arrow-up text-primary"></i>
+                    <span class="text-truncate" style="max-width: 150px;">${file.name}</span>
+                    <button type="button" class="btn-close" style="font-size: 0.5rem;" onclick="removeFile('${type}', ${index})"></button>
+                `;
+                listEl.appendChild(badge);
+            });
+        }
+
+        function removeFile(type, index) {
+            if (type === 'husbandMaritalCert') {
+                selectedHusbandMaritalCertFiles.splice(index, 1);
+                renderFileList('husbandMaritalCert');
+            } else if (type === 'wifeMaritalCert') {
+                selectedWifeMaritalCertFiles.splice(index, 1);
+                renderFileList('wifeMaritalCert');
+            } else if (type === 'idCard') {
+                selectedIdCardFiles.splice(index, 1);
+                renderFileList('idCard');
+            } else {
+                selectedOtherFiles.splice(index, 1);
+                renderFileList('other');
+            }
+        }
+
+        // Submit Form
+        async function submitForm() {
+            const btn = document.getElementById('btnNext');
+            const originalContent = btn.innerHTML;
+
+            if (!validateStep(3)) return;
+
+            try {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+                btn.disabled = true;
+
+                const formData = new FormData();
+
+                // Basic fields
+                formData.append('serviceId', document.getElementById('serviceId').value);
+                formData.append('serviceCode', document.getElementById('serviceCode').value);
+                formData.append('receivingDeptId', document.getElementById('receivingDeptId').value);
+
+                // Husband info
+                formData.append('husbandCccd', document.getElementById('husbandCccd').value);
+                formData.append('husbandFullName', document.getElementById('husbandFullName').value);
+                formData.append('husbandDob', document.getElementById('husbandDob').value);
+                formData.append('husbandGender', document.getElementById('husbandGender').value);
+
+                // Wife info
+                formData.append('wifeCccd', document.getElementById('wifeCccd').value);
+                formData.append('wifeFullName', document.getElementById('wifeFullName').value);
+                formData.append('wifeDob', document.getElementById('wifeDob').value);
+                formData.append('wifeGender', document.getElementById('wifeGender').value);
+
+                // Marriage info
+                formData.append('intendedMarriageDate', document.getElementById('intendedMarriageDate').value);
+                formData.append('registeredPlace', document.getElementById('registeredPlace').value);
+                // Add all files
+                selectedHusbandMaritalCertFiles.forEach(file => formData.append('files', file));
+                selectedWifeMaritalCertFiles.forEach(file => formData.append('files', file));
+                selectedIdCardFiles.forEach(file => formData.append('files', file));
+                selectedOtherFiles.forEach(file => formData.append('files', file));
+
+                const response = await fetch('/citizen/tuphap/marriage-registration/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('Nộp hồ sơ thành công! Mã hồ sơ: ' + (result.dossierCode || ''), 'success');
+                    setTimeout(() => {
+                        window.location.href = '/citizen/hoso';
+                    }, 2000);
+                } else {
+                    throw new Error(result.message || 'Có lỗi xảy ra khi nộp hồ sơ');
+                }
+
+            } catch (error) {
+                console.error('Error in submitForm:', error);
+                showModal('Lỗi: ' + error.message, 'error');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const deptSelect = document.getElementById('receivingDeptId');
+            if (deptSelect) {
+                deptSelect.addEventListener('change', function () {
+                    this.classList.remove('is-invalid');
+                    document.getElementById('receivingDeptIdError').style.display = 'none';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

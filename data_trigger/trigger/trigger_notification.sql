@@ -64,7 +64,7 @@ BEGIN
                 SET v_title = 'Hồ sơ bị từ chối';
                 SET v_message = CONCAT('Hồ sơ ', NEW.dossier_code, ' đã bị từ chối. Lý do: ', COALESCE(NEW.rejection_reason, 'Không có lý do cụ thể.'));
 
-            WHEN 'NEEDS_SUPPLEMENT' THEN
+            WHEN 'SUPPLEMENT_REQUIRED' THEN
                 SET v_title = 'Yêu cầu bổ sung hồ sơ';
                 SET v_message = CONCAT('Hồ sơ ', NEW.dossier_code, ' cần được bổ sung thông tin/giấy tờ. Vui lòng kiểm tra lại.');
 

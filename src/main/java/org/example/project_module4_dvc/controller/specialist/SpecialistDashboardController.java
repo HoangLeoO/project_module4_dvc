@@ -20,13 +20,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -53,15 +51,19 @@ public class SpecialistDashboardController {
     private final IOpsDossierFileService opsDossierFileService;
     private final MockCitizenRepository mockCitizenRepository;
 
+
+    private SimpMessagingTemplate messagingTemplate;
+
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
-                                         ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-                                         SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
+            ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
+            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
         this.opsDossierFileService = opsDossierFileService;
         this.specialistService_1 = specialistService_1;
         this.mockCitizenRepository = mockCitizenRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("")
@@ -156,6 +158,13 @@ public class SpecialistDashboardController {
         specialistService.updateDossierStatus(id, "VERIFIED", Long.valueOf(2), newDossierDTO.getDueDate(), "");
         redirectAttributes.addFlashAttribute("toastType", "success");
         redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
+        return "redirect:/specialist/dashboard";
+    }
+    @PostMapping("reception/reject")
+    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason, RedirectAttributes redirectAttributes) {
+        officerService.updateDossierRejectStatus(id, "REJECTED", reason);
+        redirectAttributes.addFlashAttribute("toastType", "success");
+        redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
         return "redirect:/specialist/dashboard";
     }
 

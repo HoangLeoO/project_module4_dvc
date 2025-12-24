@@ -9,6 +9,7 @@
     <!-- SockJS và STOMP (Dùng CDN cho nhanh) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -242,14 +243,6 @@
             Trả kết quả
         </a>
 
-        <a href="officer-complaints.html" class="nav-link-custom d-flex justify-content-between">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-megaphone-fill"></i>
-                Phản ánh
-            </div>
-            <span class="badge bg-danger rounded-pill shadow-sm" style="font-size: 0.7rem;">1</span>
-        </a>
-
         <div class="my-4 border-top mx-4 op-2"></div>
 
         <small class="text-uppercase fw-bold text-muted px-4 mb-2 d-block"
@@ -322,22 +315,7 @@
         </div>
 
         <!-- CRISIS ALERT (Scenario Complaint) -->
-        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center p-3 mb-4 rounded-3 alert-pulse"
-             role="alert" style="background: linear-gradient(to right, #fff5f5, #fff);">
-            <div class="bg-danger text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px;">
-                <i class="bi bi-exclamation-triangle-fill fs-4"></i>
-            </div>
-            <div class="flex-grow-1">
-                <h5 class="alert-heading fw-bold mb-1 text-danger">CẢNH BÁO NÓNG!</h5>
-                <div class="text-dark opacity-75">Có <strong>1 đánh giá 1 sao</strong> về thái độ phục vụ chưa được
-                    xử lý. Cần giải trình gấp.
-                </div>
-            </div>
-            <a href="officer-complaints.html"
-               class="btn btn-danger btn-sm px-4 py-2 rounded-pill fw-bold shadow-sm">Xử lý ngay <i
-                    class="bi bi-arrow-right ms-1"></i></a>
-        </div>
+
 
         <!-- KPI STATS -->
         <div class="row g-4 mb-4">
@@ -531,8 +509,6 @@
 </div>
 
 <!-- JS Logic -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/websocket.js}"></script>
 <script>
     // Init tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -540,6 +516,44 @@
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 </script>
+<script>
+    $(document).ready(function () {
+        // WebSocket Connection
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/dossiers/new', function (message) {
+                console.log("Received update: " + message.body);
+                // Show toast notification
+                showToast('Thông báo', 'Có hồ sơ mới vừa được nộp! Đang cập nhật danh sách...', 'info');
+
+                // Reload page after a short delay
+                setTimeout(function () {
+                    window.location.reload();
+                }, 0);
+            });
+        }, function (error) {
+            console.error('WebSocket connection error: ', error);
+        });
+
+        // Helper to show toast (assuming toastContainer exists)
+        function showToast(title, message, type) {
+            // Check if we have a toast container, if not create one or use alert
+            if ($('#toastContainer').length === 0) {
+                return;
+            }
+
+            // Construct toast HTML (simplified)
+            // You might want to trigger the existing toast component logic if available
+            // For now, let's just use the page reload as the main indicator
+        }
+    });
+</script>
+
+<!-- Toast Notification Component -->
+<th:block th:replace="~{components/toast/toast-notification :: toastContainer}"></th:block>
 </body>
 
 </html>
