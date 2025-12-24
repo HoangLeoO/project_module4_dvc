@@ -10,7 +10,28 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../../static/assets/css/style.css">
     <link rel="stylesheet" href="../../../static/assets/css/internal.css">
-</head>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gov: #003366;
+            --accent-gov: #d4af37;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .text-warning {
+            color: var(--accent-gov) !important;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body class="bg-light">
 
@@ -79,7 +100,8 @@
                                 <i class="bi bi-plus-circle-fill me-2"></i>Thiết lập Ủy quyền Mới
                             </div>
                             <div class="card-body">
-                                <form th:action="@{/leader/delegation/create}" method="post">
+                                <form id="delegationForm" th:action="@{/leader/delegation/create}" method="post"
+                                    onsubmit="return validateDelegationForm(event)">
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Người nhận ủy quyền</label>
                                         <select class="form-select" name="delegateeId" required>
@@ -152,6 +174,37 @@
 
                     // Set default FromDate to today
                     document.querySelector('input[name="fromDate"]').valueAsDate = new Date();
+
+                    function validateDelegationForm(event) {
+                        const fromDateInput = document.querySelector('input[name="fromDate"]');
+                        const toDateInput = document.querySelector('input[name="toDate"]');
+                        const checkAll = document.getElementById('checkAll');
+                        const scopes = document.querySelectorAll('input[name="selectedScopes"]:checked');
+
+                        // 1. Validate Required Dates
+                        if (!fromDateInput.value || !toDateInput.value) {
+                            showToast('Vui lòng nhập đầy đủ thời gian ủy quyền!', 'error');
+                            return false;
+                        }
+
+                        const fromDate = new Date(fromDateInput.value);
+                        const toDate = new Date(toDateInput.value);
+
+                        // 2. Validate Date Range
+                        if (fromDate > toDate) {
+                            showToast('Ngày bắt đầu không được lớn hơn ngày kết thúc!', 'error');
+                            return false;
+                        }
+
+                        // 3. Validate Scope
+                        if (!checkAll.checked && scopes.length === 0) {
+                            showToast('Vui lòng chọn ít nhất một lĩnh vực ủy quyền hoặc chọn "Toàn quyền quản lý"!', 'error');
+                            return false;
+                        }
+
+                        // Confirm action
+                        return confirm('Bạn có chắc chắn muốn thiết lập ủy quyền này?');
+                    }
                 </script>
 
             </main>

@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DelegationConfigDTO {
     private List<SysUser> potentialDelegatees;
     private List<SysUserDelegation> currentDelegations;

@@ -196,7 +196,7 @@ VALUES
  'Phường An Khê, TP Đà Nẵng',
  95.00, 'Sử dụng riêng', 'Đất ở đô thị', 'Lâu dài',
  80.00, 160.00, 'Nhà 2 tầng',
- 6, 'Đang thế chấp'),
+ 6, 'Không hợp pháp'),
 
 -- Đất ở đô thị – trung niên
 ('GCN-DN-0005', '2000-01-12', 'UBND TP Đà Nẵng',
@@ -614,3 +614,29 @@ UNION ALL
 SELECT s.id, 'Phê duyệt đăng ký', 3, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'KD01_HKD' AND r.role_name = 'PHO_CHU_TICH_UBND'
 UNION ALL
 SELECT s.id, 'Cấp Giấy chứng nhận HKD', 4, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'KD01_HKD' AND r.role_name = 'CANBO_MOTCUA';
+
+
+
+-- Thêm dữ liệu mẫu cho mối quan hệ gia đình
+INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+VALUES
+-- 1. Gia đình ông An (1) - bà Bình (2) và con Lan (8)
+(1, 2, 'VO'),    -- An có vợ là Bình
+(2, 1, 'CHONG'), -- Bình có chồng là An
+(1, 8, 'CON'),   -- An có con là Lan
+(8, 1, 'CHA'),   -- Lan có cha là An
+(2, 8, 'CON'),   -- Bình có con là Lan
+(8, 2, 'ME'),    -- Lan có mẹ là Bình
+
+-- 2. Gia đình bà Hạnh (6) - ông Khôi (7)
+(7, 6, 'VO'),    -- Khôi có vợ là Hạnh
+(6, 7, 'CHONG'), -- Hạnh có chồng là Khôi
+
+-- 3. Gia đình bà Ngọc (10) và con Long (13)
+(10, 13, 'CON'), -- Ngọc có con là Long
+(13, 10, 'ME'),  -- Long có mẹ là Ngọc
+
+-- 4. Gia đình ông Long (13) - bà Mai (14)
+(13, 14, 'VO'),   -- Long có vợ là Mai
+(14, 13, 'CHONG');-- Mai có chồng là Long
+
