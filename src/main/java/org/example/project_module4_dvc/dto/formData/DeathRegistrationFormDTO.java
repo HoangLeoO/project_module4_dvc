@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,11 +20,13 @@ public class DeathRegistrationFormDTO {
     private LocalDate dateOfBirth;
     private String gender;
     private String ethnicity;
-    private LocalDate dateOfDeath;
+    private LocalDateTime dateOfDeath;
     private String placeOfDeath;
-    private String deathReason;
-    private String deathNoticeNumber;
+    private String deceasedIdNumber;
     private String lastResidence;
+    // timeOfDeath removed
+
+    private Boolean isOnTime;
 
 
     private String relativeFullName;

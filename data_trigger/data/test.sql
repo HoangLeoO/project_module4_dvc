@@ -1,4 +1,7 @@
 use egov_db;
+
+
+
 -- Thêm cấp 1: Thành phố
 INSERT INTO sys_departments (dept_code, dept_name, level)
 VALUES ('CITY-001', 'Thành phố Đà Nẵng', 1);

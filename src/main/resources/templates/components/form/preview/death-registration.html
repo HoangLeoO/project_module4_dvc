@@ -52,12 +52,25 @@
         </div>
 
         <div class="row mb-2">
-            <div class="col-6">
-                Đã chết vào lúc: <span class="fw-bold" style="border-bottom: 1px dotted #000; padding: 0 10px;">... giờ
+            <div class="col-12">
+                Đã chết vào lúc: <span class="fw-bold" style="border-bottom: 1px dotted #000; padding: 0 10px;"
+                    th:text="${(formData['dateOfDeath'] != null && #strings.contains(formData['dateOfDeath'], 'T')) ? #strings.substring(formData['dateOfDeath'], 11, 13) + ' giờ ' + #strings.substring(formData['dateOfDeath'], 14, 16) + ' phút' : '... giờ ... phút'}">...
+                    giờ
                     ... phút</span>
             </div>
-            <div class="col-6">
-                Ngày, tháng, năm chết: <span class="fw-bold" th:text="${formData.dateOfDeath}"></span>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                Ngày, tháng, năm chết: <span class="fw-bold"
+                    th:text="${(formData['dateOfDeath'] != null && #strings.length(formData['dateOfDeath']) >= 10) ? #strings.substring(formData['dateOfDeath'], 8, 10) + '/' + #strings.substring(formData['dateOfDeath'], 5, 7) + '/' + #strings.substring(formData['dateOfDeath'], 0, 4) : '...'}"></span>
+
+                <!-- Status Badge -->
+                <span th:if="${formData['isOnTime'] == true || formData['isOnTime'] == 'true'}"
+                    class="badge border border-success text-success ms-2 text-uppercase" style="font-size: 0.8em;">Đúng
+                    hạn</span>
+                <span th:if="${formData['isOnTime'] == false || formData['isOnTime'] == 'false'}"
+                    class="badge border border-warning text-warning ms-2 text-uppercase" style="font-size: 0.8em;">Quá
+                    hạn</span>
             </div>
         </div>
 
