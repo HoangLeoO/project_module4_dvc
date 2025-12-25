@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/internal.css">
 </head>
+
 <body class="bg-light">
 
     <!-- WRAPPER -->
@@ -34,42 +35,18 @@
                 <a href="/admin/feedbacks"
                     class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
                         class="bi bi-chat-square-quote me-2"></i>Phản ánh & KN</a>
-                <a href="admin-audit-logs.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-activity me-2"></i>Audit Logs</a>
-                <a href="admin-payment-history.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-currency-exchange me-2"></i>Thanh toán</a>
 
                 <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Quản trị Dữ
                     liệu</small>
                 <a href="/admin/users"
                     class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
                         class="bi bi-people-fill me-2"></i>Người dùng</a>
-                <a href="admin-depts.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-diagram-3 me-2"></i>Cơ cấu tổ chức</a>
-                <a href="admin-kb-mgmt.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-book me-2"></i>Kho tri thức</a>
-                <a href="admin-mock-console.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-database-fill-gear me-2"></i>Mock Console</a>
 
                 <small class="text-uppercase fw-bold text-muted px-2 mt-3 mb-1" style="font-size: 0.75rem;">Cấu hình Hệ
                     thống</small>
                 <a href="/admin/services"
                     class="list-group-item list-group-item-action active bg-secondary bg-opacity-25 text-white border-0 fw-bold"><i
                         class="bi bi-list-check me-2"></i>Dịch vụ công</a>
-                <a href="admin-workflow.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-diagram-2 me-2"></i>Quy trình (Workflow)</a>
-                <a href="admin-templates.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-file-earmark-word me-2"></i>Biểu mẫu & Phôi</a>
-                <a href="admin-system-settings.html"
-                    class="list-group-item list-group-item-action bg-transparent text-white-50 border-0"><i
-                        class="bi bi-sliders me-2"></i>Tham số hệ thống</a>
 
                 <div class="mt-4 px-2">
                     <a href="/logout/official" class="btn btn-outline-danger w-100 btn-sm"><i
@@ -100,8 +77,7 @@
                             <div
                                 class="card-header bg-white py-3 fw-bold d-flex justify-content-between align-items-center">
                                 <span>Danh mục Thủ tục hành chính</span>
-                                <a th:href="@{/admin/services?new=true}"
-                                   class="btn btn-primary btn-sm">
+                                <a th:href="@{/admin/services?new=true}" class="btn btn-primary btn-sm">
                                     <i class="bi bi-plus-lg me-1"></i>Thêm
                                 </a>
                             </div>
@@ -118,26 +94,27 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="svc : ${services}"
-                                        th:classappend="${selectedService != null and svc.id == selectedService.id} ? 'table-active'">
-                                        <td class="font-monospace" th:text="${svc.serviceCode}"></td>
-                                        <td th:text="${svc.serviceName}"></td>
-                                        <td th:text="${svc.domain}"></td>
-                                        <td th:text="${#numbers.formatDecimal(svc.feeAmount,0,'COMMA',0,'POINT')} + ' đ'"></td>
-                                        <td th:text="${svc.slaHours + 'h'}"></td>
-                                        <td>
-                                            <a th:href="@{/admin/services(id=${svc.id})}"
-                                               class="btn btn-sm btn-outline-secondary">
-                                                Sửa
-                                            </a>
-                                            <form th:action="@{/admin/services/delete/{id}(id=${svc.id})}"
-                                                  method="post"
-                                                  style="display:inline"
-                                                  onsubmit="return confirm('Xóa dịch vụ này?');">
-                                                <button class="btn btn-sm btn-outline-danger">Xóa</button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                        <tr th:each="svc : ${services}"
+                                            th:classappend="${selectedService != null and svc.id == selectedService.id} ? 'table-active'">
+                                            <td class="font-monospace" th:text="${svc.serviceCode}"></td>
+                                            <td th:text="${svc.serviceName}"></td>
+                                            <td th:text="${svc.domain}"></td>
+                                            <td
+                                                th:text="${#numbers.formatDecimal(svc.feeAmount,0,'COMMA',0,'POINT')} + ' đ'">
+                                            </td>
+                                            <td th:text="${svc.slaHours + 'h'}"></td>
+                                            <td>
+                                                <a th:href="@{/admin/services(id=${svc.id})}"
+                                                    class="btn btn-sm btn-outline-secondary">
+                                                    Sửa
+                                                </a>
+                                                <form th:action="@{/admin/services/delete/{id}(id=${svc.id})}"
+                                                    method="post" style="display:inline"
+                                                    onsubmit="return confirm('Xóa dịch vụ này?');">
+                                                    <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                                                </form>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -146,11 +123,9 @@
 
                     <!-- CONFIG -->
                     <div class="col-lg-4">
-                        <form th:action="@{/admin/services/save}"
-                              method="post"
-                              th:object="${selectedService}">
+                        <form th:action="@{/admin/services/save}" method="post" th:object="${selectedService}">
 
-                            <input type="hidden" th:field="*{id}"/>
+                            <input type="hidden" th:field="*{id}" />
 
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Mã dịch vụ</label>
@@ -199,6 +174,6 @@
     <!--            .then(r => r.text())-->
     <!--            .then(html => document.body.insertAdjacentHTML('beforeend', html));-->
     <!--    </script>-->
-    </body>
+</body>
 
 </html>
