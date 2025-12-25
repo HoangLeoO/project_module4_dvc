@@ -149,7 +149,7 @@ public class DashboardController {
         reason, RedirectAttributes redirectAttributes){
             officerService.updateDossierRejectStatus(id, "SUPPLEMENT_REQUIRED", reason);
             redirectAttributes.addFlashAttribute("toastType", "success");
-            messagingTemplate.convertAndSend("/topic/dossiers/supplement", "supplemt");
+            messagingTemplate.convertAndSend("/topic/dossiers/supplement", "supplement");
             redirectAttributes.addFlashAttribute("toastMessage", "Đã yêu cầu bổ sung hồ sơ thành công!");
             return "redirect:/officer/dashboard";
         }
