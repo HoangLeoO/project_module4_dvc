@@ -53,7 +53,6 @@ public class PortalController {
     @Autowired
     private SysDepartmentService sysDepartmentService;
 
-
     @GetMapping("services/death/{serviceCode}")
     public String death(Model mode, @PathVariable String serviceCode) {
         OpsDossier opsDossier = new OpsDossier();
@@ -73,20 +72,20 @@ public class PortalController {
                         formData.put("relativeDateOfBirth",
                                 DateTimeFormatter.ofPattern("dd/MM/yyyy").format(citizen.getDob()));
                     }
-                    formData.put("relativePhoneNumber","123456789"); // citizen.getPhoneNumber() does not exist in MockCitizen
+                    formData.put("relativePhoneNumber", "123456789"); // citizen.getPhoneNumber() does not exist in
+                                                                      // MockCitizen
                     formData.put("relativeAddress", citizen.getPermanentAddress());
-                    
+
                     opsDossier.setFormData(formData);
                 }
             }
         }
-        
+
         mode.addAttribute("opsDossier", opsDossier);
         mode.addAttribute("serviceCode", serviceCode);
-        mode.addAttribute("sysDepartment",sysDepartmentService.getAllByLevel(2));
+        mode.addAttribute("sysDepartment", sysDepartmentService.getAllByLevel(2));
         return "pages/portal/portal-submit-death";
     }
-
 
     @GetMapping("services/land/{serviceCode}")
     public String landHL(Model mode, @PathVariable String serviceCode) {
@@ -137,9 +136,10 @@ public class PortalController {
             }
 
             if (service == null) {
-                return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Không tìm thấy thông tin Dịch vụ (serviceId hoặc serviceCode)"));
+                return ResponseEntity.badRequest().body(Map.of("status", "error", "message",
+                        "Không tìm thấy thông tin Dịch vụ (serviceId hoặc serviceCode)"));
             }
-            
+
             NewDossierDTO dto = new NewDossierDTO();
             dto.setServiceId(BigInteger.valueOf(service.getId()));
 
@@ -165,6 +165,9 @@ public class PortalController {
             } else if (service.getServiceCode().contains("HS-KS") || service.getServiceName().contains("Khai sinh")) {
                 formDto = objectMapper.convertValue(rawData,
                         org.example.project_module4_dvc.dto.formData.BirthRegistrationFormDTO.class);
+            } else if (service.getServiceCode().equals("KD01_HKD")) {
+                formDto = objectMapper.convertValue(rawData,
+                        org.example.project_module4_dvc.dto.formData.HouseholdBusinessRegistrationFormDTO.class);
             } else {
                 formDto = rawData;
             }

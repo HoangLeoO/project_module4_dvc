@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="business_household(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${d.serviceCode == 'KD01_HKD' && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-success ps-3">Thông tin Đăng ký Hộ kinh doanh
+        </h5>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-shop me-2"></i>Thông tin Hộ kinh doanh</h6>
+                <div class="row g-3">
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Tên Hộ kinh doanh</label>
+                        <span class="fw-bold text-uppercase fs-5" th:text="${d.formData['businessName']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Địa chỉ trụ sở</label>
+                        <span class="fw-bold" th:text="${d.formData['businessAddress']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Ngành nghề kinh doanh</label>
+                        <span class="fw-bold" th:text="${d.formData['businessLine']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Vốn đăng ký</label>
+                        <span class="fw-bold text-danger" th:if="${d.formData['registeredCapital'] != null}"
+                            th:text="${#numbers.formatDecimal(d.formData['registeredCapital'], 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Số lượng lao động</label>
+                        <span class="fw-bold" th:text="${d.formData['numberOfEmployees']}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 border-top pt-3">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>Thông tin Chủ hộ</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block">Họ và tên</label>
+                        <span class="fw-bold" th:text="${d.formData['businessOwner']}">---</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block">Số CCCD/CMND</label>
+                        <span class="fw-bold" th:text="${d.formData['ownerIdNumber']}">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

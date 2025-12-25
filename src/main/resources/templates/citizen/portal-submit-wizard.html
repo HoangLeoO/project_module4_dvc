@@ -360,6 +360,88 @@
                             </div>
                         </div>
 
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Bản sao CCCD/Hộ chiếu của Cha <span
+                                                    class="father-req text-danger d-none">*</span></h6>
+                                            <p class="small text-muted mb-0">Bản quét hoặc ảnh chụp mặt trước và mặt sau
+                                                CCCD của người cha.</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="fatherIdFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'fatherId')">
+                                        </div>
+                                    </div>
+                                    <div id="fatherIdFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Bản sao CCCD/Hộ chiếu của Mẹ <span
+                                                    class="mother-req text-danger d-none">*</span></h6>
+                                            <p class="small text-muted mb-0">Bản quét hoặc ảnh chụp mặt trước và mặt sau
+                                                CCCD của người mẹ.</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="motherIdFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'motherId')">
+                                        </div>
+                                    </div>
+                                    <div id="motherIdFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12" id="marriageUploadItem">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Giấy chứng nhận kết hôn</h6>
+                                            <p class="small text-muted mb-0">Đính kèm nếu cha mẹ đã đăng ký kết hôn để
+                                                xác định quan hệ cha con tự động.</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="marriageFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'marriage')">
+                                        </div>
+                                    </div>
+                                    <div id="marriageFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card border shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <h6 class="fw-bold mb-1">Giấy tờ chứng minh nơi cư trú</h6>
+                                            <p class="small text-muted mb-0">Giấy xác nhận thông tin về cư trú hoặc các
+                                                giấy tờ hợp lệ khác.</p>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="residenceFiles" class="form-control form-control-sm"
+                                                multiple accept="image/*,.pdf"
+                                                onchange="handleFileSelect(event, 'residence')">
+                                        </div>
+                                    </div>
+                                    <div id="residenceFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12 d-none" id="paternityUploadItem">
                             <div class="card border-warning shadow-sm">
                                 <div class="card-body">
@@ -888,21 +970,24 @@
 
             // 4. Files
             let fileListHtml = '';
-            if (selectedBirthFiles.length > 0) {
-                fileListHtml += `<p class="small fw-bold mb-1 text-primary">Giấy chứng sinh:</p><div class="d-flex flex-wrap gap-1 mb-2">`;
-                selectedBirthFiles.forEach(f => {
-                    fileListHtml += `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">${f.name}</span>`;
-                });
-                fileListHtml += `</div>`;
-            }
-            if (selectedPaternityFiles.length > 0) {
-                fileListHtml += `<p class="small fw-bold mb-1 mt-2 text-warning">Hồ sơ nhận con:</p><div class="d-flex flex-wrap gap-1">`;
-                selectedPaternityFiles.forEach(f => {
-                    fileListHtml += `<span class="badge bg-warning-subtle text-warning border border-warning-subtle">${f.name}</span>`;
-                });
-                fileListHtml += `</div>`;
-            }
-            if (selectedBirthFiles.length === 0 && selectedPaternityFiles.length === 0) {
+            const addFilesToReview = (list, label, color) => {
+                if (list.length > 0) {
+                    fileListHtml += `<p class="small fw-bold mb-1 text-${color}">${label}:</p><div class="d-flex flex-wrap gap-1 mb-2">`;
+                    list.forEach(f => {
+                        fileListHtml += `<span class="badge bg-${color}-subtle text-${color} border border-${color}-subtle">${f.name}</span>`;
+                    });
+                    fileListHtml += `</div>`;
+                }
+            };
+
+            addFilesToReview(selectedBirthFiles, 'Giấy chứng sinh', 'primary');
+            addFilesToReview(selectedFatherIdFiles, 'CCCD Cha', 'secondary');
+            addFilesToReview(selectedMotherIdFiles, 'CCCD Mẹ', 'secondary');
+            addFilesToReview(selectedMarriageFiles, 'Giấy kết hôn', 'info');
+            addFilesToReview(selectedResidenceFiles, 'Giấy tờ cư trú', 'info');
+            addFilesToReview(selectedPaternityFiles, 'Hồ sơ nhận con', 'warning');
+
+            if (fileListHtml === '') {
                 fileListHtml = '<span class="text-muted small">Không có tệp tải lên</span>';
             }
             document.getElementById('reviewFilesList').innerHTML = fileListHtml;
@@ -1091,23 +1176,34 @@
         }
 
         let selectedBirthFiles = [];
+        let selectedFatherIdFiles = [];
+        let selectedMotherIdFiles = [];
+        let selectedMarriageFiles = [];
+        let selectedResidenceFiles = [];
         let selectedPaternityFiles = [];
 
         function handleFileSelect(event, type) {
             const files = Array.from(event.target.files);
-            if (type === 'birth') {
-                selectedBirthFiles = [...selectedBirthFiles, ...files];
-                renderFileList('birth');
-            } else {
-                selectedPaternityFiles = [...selectedPaternityFiles, ...files];
-                renderFileList('paternity');
-            }
-            // Reset input so same file can be selected again if removed
+            if (type === 'birth') selectedBirthFiles = [...selectedBirthFiles, ...files];
+            else if (type === 'fatherId') selectedFatherIdFiles = [...selectedFatherIdFiles, ...files];
+            else if (type === 'motherId') selectedMotherIdFiles = [...selectedMotherIdFiles, ...files];
+            else if (type === 'marriage') selectedMarriageFiles = [...selectedMarriageFiles, ...files];
+            else if (type === 'residence') selectedResidenceFiles = [...selectedResidenceFiles, ...files];
+            else if (type === 'paternity') selectedPaternityFiles = [...selectedPaternityFiles, ...files];
+
+            renderFileList(type);
             event.target.value = '';
         }
 
         function renderFileList(type) {
-            const files = type === 'birth' ? selectedBirthFiles : selectedPaternityFiles;
+            let files = [];
+            if (type === 'birth') files = selectedBirthFiles;
+            else if (type === 'fatherId') files = selectedFatherIdFiles;
+            else if (type === 'motherId') files = selectedMotherIdFiles;
+            else if (type === 'marriage') files = selectedMarriageFiles;
+            else if (type === 'residence') files = selectedResidenceFiles;
+            else if (type === 'paternity') files = selectedPaternityFiles;
+
             const listEl = document.getElementById(type + 'FilesList');
             listEl.innerHTML = '';
 
@@ -1124,13 +1220,14 @@
         }
 
         function removeFile(type, index) {
-            if (type === 'birth') {
-                selectedBirthFiles.splice(index, 1);
-                renderFileList('birth');
-            } else {
-                selectedPaternityFiles.splice(index, 1);
-                renderFileList('paternity');
-            }
+            if (type === 'birth') selectedBirthFiles.splice(index, 1);
+            else if (type === 'fatherId') selectedFatherIdFiles.splice(index, 1);
+            else if (type === 'motherId') selectedMotherIdFiles.splice(index, 1);
+            else if (type === 'marriage') selectedMarriageFiles.splice(index, 1);
+            else if (type === 'residence') selectedResidenceFiles.splice(index, 1);
+            else if (type === 'paternity') selectedPaternityFiles.splice(index, 1);
+
+            renderFileList(type);
         }
 
         async function submitForm() {
@@ -1195,6 +1292,10 @@
 
                 // Add all files from arrays
                 selectedBirthFiles.forEach(file => formData.append('files', file));
+                selectedFatherIdFiles.forEach(file => formData.append('files', file));
+                selectedMotherIdFiles.forEach(file => formData.append('files', file));
+                selectedMarriageFiles.forEach(file => formData.append('files', file));
+                selectedResidenceFiles.forEach(file => formData.append('files', file));
                 selectedPaternityFiles.forEach(file => formData.append('files', file));
 
                 const response = await fetch('/citizen/submit', {

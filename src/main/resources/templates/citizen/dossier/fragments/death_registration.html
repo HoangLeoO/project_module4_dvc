@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="death_registration(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${(d.serviceCode != null and (d.serviceCode.contains('HS-HK') or d.serviceCode.contains('DEATH'))) or (d.serviceName != null and (d.serviceName.toLowerCase().contains('khai tử') or d.serviceName.toLowerCase().contains('tử'))) && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-secondary ps-3">Thông tin Đăng ký Khai tử</h5>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <h6 class="text-secondary fw-bold mb-3"><i class="bi bi-person-x me-2"></i>Thông tin Người mất</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Họ và tên</label>
+                        <span class="fw-bold text-uppercase" th:text="${d.formData['deceasedFullName']}">---</span>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="small text-muted d-block">Ngày sinh</label>
+                        <span class="fw-bold" th:text="${d.formData['dateOfBirth']}">---</span>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="small text-muted d-block">Ngày mất</label>
+                        <span class="fw-bold text-danger" th:text="${d.formData['dateOfDeath']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Nơi mất</label>
+                        <span class="fw-bold" th:text="${d.formData['placeOfDeath']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Nguyên nhân mất</label>
+                        <span class="fw-bold" th:text="${d.formData['deathReason']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Số Giấy báo tử</label>
+                        <span class="fw-bold" th:text="${d.formData['deathNoticeNumber']}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 border-top pt-3">
+                <h6 class="text-secondary fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>Thông tin Người đi khai
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block">Họ và tên</label>
+                        <span class="fw-bold" th:text="${d.formData['relativeFullName']}">---</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block">Quan hệ với người mất</label>
+                        <span class="fw-bold" th:text="${d.formData['relativeRelationship']}">---</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block">Số CCCD/CMND</label>
+                        <span class="fw-bold" th:text="${d.formData['relativeIdNumber']}">---</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block">Địa chỉ</label>
+                        <span class="fw-bold" th:text="${d.formData['relativeAddress']}">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
