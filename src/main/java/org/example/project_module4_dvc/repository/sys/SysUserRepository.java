@@ -57,4 +57,19 @@ public interface SysUserRepository extends JpaRepository<SysUser, Long> {
         """)
     List<SpecialistAvailableDTO> findAvailableSpecialistsForDossier(@Param("dossierId") Long dossierId);
 
+    // Raw query để xuất báo cáo danh sách cán bộ
+    @Query("""
+    SELECT u.id,
+           u.username,
+           u.fullName,
+           d.deptName,
+           r.roleName
+    FROM SysUser u
+    LEFT JOIN u.department d
+    LEFT JOIN SysUserRole ur ON ur.user = u
+    LEFT JOIN ur.role r
+    WHERE u.userType = 'OFFICIAL'
+""")
+    List<Object[]> findOfficialsRaw();
+
 }

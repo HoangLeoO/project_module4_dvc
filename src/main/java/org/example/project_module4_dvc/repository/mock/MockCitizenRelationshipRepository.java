@@ -13,9 +13,9 @@ public interface MockCitizenRelationshipRepository extends JpaRepository<MockCit
 
     /**
      * Tìm tất cả các mối quan hệ của một công dân (chỉ chiều citizen -> relative)
-     * VD: Nếu A là cha của B, query với A sẽ trả về relationship 
+     * VD: Nếu A là cha của B, query với A sẽ trả về relationship
      * CON" (A có con là B)
-     * 
+     *
      * @param citizenId ID của công dân
      * @return Danh sách các mối quan hệ
      */
@@ -27,7 +27,7 @@ public interface MockCitizenRelationshipRepository extends JpaRepository<MockCit
 
     /**
      * Tìm tất cả các mối quan hệ ngược (relative -> citizen)
-     * 
+     *
      * VD: Nếu B có cha        là A (B, A, 'CHA'), query với A sẽ trả về relationship này
      * @param relativeId ID của người thân
      * @return Danh sách các mối quan hệ ngược

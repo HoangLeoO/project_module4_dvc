@@ -184,61 +184,81 @@
                 <div id="step2" class="d-none">
                     <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Hồ sơ đính kèm</h5>
 
-                    <div class="row g-3">
-                        <!-- Application Form -->
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Giấy đề nghị đăng ký hộ kinh doanh <span
-                                                    class="text-danger">*</span></h6>
-                                            <p class="small text-muted mb-0">Đính kèm bản quét hoặc ảnh chụp Đơn đề nghị
-                                                đã ký.</p>
-                                        </div>
-                                        <input type="file" id="applicationFiles"
-                                            class="form-control form-control-sm w-auto" multiple accept="image/*,.pdf"
+                    <!-- REQUIRED DOCUMENTS SECTION -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-danger mb-3">
+                            <i class="bi bi-file-earmark-check-fill me-2"></i>Giấy tờ bắt buộc
+                        </h6>
+                        <div class="row g-3">
+                            <!-- Application Form -->
+                            <div class="col-md-6">
+                                <div class="card border border-danger shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">
+                                            <span class="text-danger me-1">*</span>
+                                            Giấy đề nghị đăng ký hộ kinh doanh
+                                        </h6>
+                                        <p class="small text-muted mb-3">Đính kèm bản quét hoặc ảnh chụp Đơn đề nghị đã
+                                            ký.</p>
+                                        <input type="file" id="applicationFiles" class="form-control form-control-sm"
+                                            multiple accept="image/*,.pdf"
                                             onchange="handleFileSelect(event, 'application')">
+                                        <div id="applicationFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                     </div>
-                                    <div id="applicationFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- ID Copies -->
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Bản sao CCCD của các cá nhân tham gia <span
-                                                    class="text-danger">*</span></h6>
-                                            <p class="small text-muted mb-0">Bản sao CCCD/Hộ chiếu của chủ hộ kinh doanh
-                                                và các thành viên góp vốn.</p>
-                                        </div>
-                                        <input type="file" id="idCopyFiles" class="form-control form-control-sm w-auto"
+                            <!-- ID Copies -->
+                            <div class="col-md-6">
+                                <div class="card border border-danger shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">
+                                            <span class="text-danger me-1">*</span>
+                                            Bản sao CCCD của các cá nhân tham gia
+                                        </h6>
+                                        <p class="small text-muted mb-3">Bản sao CCCD/Hộ chiếu của chủ hộ kinh doanh và
+                                            các thành viên góp vốn.</p>
+                                        <input type="file" id="idCopyFiles" class="form-control form-control-sm"
                                             multiple accept="image/*,.pdf" onchange="handleFileSelect(event, 'idCopy')">
+                                        <div id="idCopyFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                     </div>
-                                    <div id="idCopyFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Optional: Meeting Minutes -->
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Biên bản họp nhóm cá nhân (nếu có)</h6>
-                                            <p class="small text-muted mb-0">Đối với trường hợp hộ kinh doanh do một
-                                                nhóm cá nhân thành lập.</p>
-                                        </div>
-                                        <input type="file" id="meetingFiles" class="form-control form-control-sm w-auto"
+                    <!-- OPTIONAL DOCUMENTS SECTION -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary mb-3">
+                            <i class="bi bi-file-earmark-plus-fill me-2"></i>Giấy tờ khác (nếu có)
+                        </h6>
+                        <div class="row g-3">
+                            <!-- Meeting Minutes -->
+                            <div class="col-md-6">
+                                <div class="card border border-secondary shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">Biên bản họp nhóm cá nhân</h6>
+                                        <p class="small text-muted mb-3">Đối với trường hợp hộ kinh doanh do một nhóm cá
+                                            nhân thành lập.</p>
+                                        <input type="file" id="meetingFiles" class="form-control form-control-sm"
                                             multiple accept="image/*,.pdf"
                                             onchange="handleFileSelect(event, 'meeting')">
+                                        <div id="meetingFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                     </div>
-                                    <div id="meetingFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Other Related Documents (NEW) -->
+                            <div class="col-md-6">
+                                <div class="card border border-secondary shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">Giấy tờ liên quan khác</h6>
+                                        <p class="small text-muted mb-3">Các giấy tờ bổ sung khác có liên quan đến hồ sơ
+                                            (nếu có).</p>
+                                        <input type="file" id="otherFiles" class="form-control form-control-sm" multiple
+                                            accept="image/*,.pdf" onchange="handleFileSelect(event, 'other')">
+                                        <div id="otherFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -355,7 +375,8 @@
         let selectedFiles = {
             application: [],
             idCopy: [],
-            meeting: []
+            meeting: [],
+            other: []
         };
 
         function showModal(message, type = 'info') {
@@ -467,10 +488,17 @@
                 btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
                 btnNext.className = 'btn btn-success px-4 fw-bold';
                 btnNext.onclick = submitForm;
+
+                // Disable submit button if checkbox is not checked
+                const confirmCheckbox = document.getElementById('confirmDataCorrect');
+                if (confirmCheckbox) {
+                    btnNext.disabled = !confirmCheckbox.checked;
+                }
             } else {
                 btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
                 btnNext.className = 'btn btn-primary px-4 fw-bold';
                 btnNext.onclick = () => changeStep(1);
+                btnNext.disabled = false;
             }
         }
 
@@ -514,7 +542,13 @@
             let fileListHtml = '';
             Object.keys(selectedFiles).forEach(key => {
                 if (selectedFiles[key].length > 0) {
-                    fileListHtml += `<div class="mb-2"><small class="fw-bold d-block">${key === 'application' ? 'Giấy đề nghị' : (key === 'idCopy' ? 'Bản sao CCCD' : 'Biên bản họp')}:</small>`;
+                    const labels = {
+                        application: 'Giấy đề nghị',
+                        idCopy: 'Bản sao CCCD',
+                        meeting: 'Biên bản họp',
+                        other: 'Giấy tờ khác'
+                    };
+                    fileListHtml += `<div class="mb-2"><small class="fw-bold d-block">${labels[key]}:</small>`;
                     selectedFiles[key].forEach(f => {
                         fileListHtml += `<span class="badge bg-primary-subtle text-primary border me-1">${f.name}</span>`;
                     });
@@ -573,6 +607,19 @@
                 btn.disabled = false;
             }
         }
+
+        // Add event listener for confirmation checkbox
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmCheckbox = document.getElementById('confirmDataCorrect');
+            if (confirmCheckbox) {
+                confirmCheckbox.addEventListener('change', function () {
+                    const btnNext = document.getElementById('btnNext');
+                    if (btnNext && currentStep === 3) {
+                        btnNext.disabled = !this.checked;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 

@@ -6,6 +6,8 @@ import org.example.project_module4_dvc.service.cat.ICatServiceService;
 import org.example.project_module4_dvc.service.iml.IDashboardAlertService;
 import org.example.project_module4_dvc.service.mod.IModFeedbackService;
 import org.example.project_module4_dvc.service.iml.ISysDepartmentService;
+import org.example.project_module4_dvc.service.sys.ISysUserRoleService;
+import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.data.domain.PageRequest;
 import org.example.project_module4_dvc.service.ops.IOpsDossierService;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,9 @@ public class AdminController {
     private final ISysDepartmentService sysDepartmentService;
     private final ICatServiceService catServiceService;
     private final IDashboardAlertService dashboardAlertService;
+    private final ISysUserService sysUserService;
+    private final ISysUserRoleService sysUserRoleService;
+
 
     @GetMapping("/")
     public String showDashboard(
@@ -125,5 +130,15 @@ public class AdminController {
     public String deleteService(@PathVariable("id") Long id) {
         catServiceService.deleteById(id);
         return "redirect:/admin/services";
+    }
+
+    @GetMapping("/users")
+    public String list(Model model) {
+
+        model.addAttribute("users", sysUserService.getOfficials());
+        model.addAttribute("departments", sysDepartmentService.getAll());
+        model.addAttribute("roles", sysUserRoleService.findAll());
+
+        return "pages/admin/admin-users";
     }
 }

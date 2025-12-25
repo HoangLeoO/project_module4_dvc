@@ -3,6 +3,7 @@ package org.example.project_module4_dvc.controller;
 import org.example.project_module4_dvc.config.CustomUserDetails;
 import org.example.project_module4_dvc.dto.RelationshipResult;
 import org.example.project_module4_dvc.entity.mock.MockCitizen;
+import org.example.project_module4_dvc.entity.mock.MockLand;
 import org.example.project_module4_dvc.service.autoFill.AutoFillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class AutoFillController {
 
     @GetMapping("/land/{cccd}")
     public ResponseEntity<?> getLandsByOwnerCccd(@PathVariable String cccd) {
-        java.util.List<org.example.project_module4_dvc.entity.mock.MockLand> lands = autoFillService.getLandsByOwnerCccd(cccd);
+        java.util.List<MockLand> lands = autoFillService.getLandsByOwnerCccd(cccd);
         if (lands != null && !lands.isEmpty()) {
             return ResponseEntity.ok(lands);
         } else {

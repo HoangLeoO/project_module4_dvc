@@ -7,14 +7,25 @@
                 <input type="text" class="form-control fw-bold" th:value="${formData.deceasedFullName ?: ''}" readonly>
             </div>
             <div class="col-md-3">
+                <label class="form-label small">Số CCCD/Định danh</label>
+                <input type="text" class="form-control" th:value="${formData.deceasedIdNumber ?: ''}" readonly>
+            </div>
+            <div class="col-md-3">
                 <label class="form-label small">Ngày sinh</label>
                 <input type="date" class="form-control" th:value="${formData.dateOfBirth ?: ''}" readonly>
             </div>
-            <div class="col-md-3">
-                <label class="form-label small">Ngày mất</label>
-                <input type="date" class="form-control" th:value="${formData.dateOfDeath ?: ''}" readonly>
+
+            <div class="col-md-4">
+                <label class="form-label small">Ngày & Giờ mất</label>
+                <input type="datetime-local" class="form-control" th:value="${formData.dateOfDeath ?: ''}" readonly>
+                <div class="mt-1">
+                    <span th:if="${formData['isOnTime'] == true || formData['isOnTime'] == 'true'}"
+                        class="badge bg-success">Đúng hạn</span>
+                    <span th:if="${formData['isOnTime'] == false || formData['isOnTime'] == 'false'}"
+                        class="badge bg-warning text-dark">Quá hạn</span>
+                </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <label class="form-label small">Nơi mất</label>
                 <input type="text" class="form-control" th:value="${formData.placeOfDeath ?: ''}" readonly>
             </div>
