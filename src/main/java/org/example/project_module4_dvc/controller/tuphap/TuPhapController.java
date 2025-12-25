@@ -226,7 +226,7 @@ public class TuPhapController {
         model.addAttribute("sysDepartments", sysDepartmentService.getAll());
         model.addAttribute("activePage", "services");
 
-        return "pages/portal/tuphap/mariage-registration-submit";
+        return "pages/portal/tuphap/marriage-registration-submit";
     }
 
     /**
