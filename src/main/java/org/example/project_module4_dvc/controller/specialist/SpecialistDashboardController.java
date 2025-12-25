@@ -161,6 +161,10 @@ public class SpecialistDashboardController {
     public String updateDossierStatus(@RequestParam("dossierId") Long id, RedirectAttributes redirectAttributes) {
         NewDossierDTO newDossierDTO = officerService.findById(id);
         specialistService.updateDossierStatus(id, "VERIFIED", Long.valueOf(2), newDossierDTO.getDueDate(), "");
+
+        // Notify leader about new dossier for approval
+        messagingTemplate.convertAndSend("/topic/dossiers/leader", "forwarded_to_leader");
+
         redirectAttributes.addFlashAttribute("toastType", "success");
         redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
         return "redirect:/specialist/dashboard";

@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import org.example.project_module4_dvc.repository.ops.OpsDossierRepository;
 import org.example.project_module4_dvc.service.payment.PaymentService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -18,10 +18,13 @@ public class PaymentController {
 
     private final PaymentService paymentService;
     private final OpsDossierRepository opsDossierRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public PaymentController(PaymentService paymentService, OpsDossierRepository opsDossierRepository) {
+    public PaymentController(PaymentService paymentService, OpsDossierRepository opsDossierRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.paymentService = paymentService;
         this.opsDossierRepository = opsDossierRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("/payment/vnpay-return")
@@ -59,15 +62,20 @@ public class PaymentController {
                     dossier.setPaymentDate(LocalDateTime.now());
                     dossier.setTransactionCode(transactionCode);
                     dossier.setPaymentAmount(Long.parseLong(vnp_Params.get("vnp_Amount")) / 100);
+                    opsDossierRepository.save(dossier);
+
+                    // Send WebSocket notification to officers about new dossier
+                    messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier_paid");
+
                     model.addAttribute("message", "Thanh toán thành công!");
                     model.addAttribute("status", "success");
                 } else {
                     // Failed
                     dossier.setPaymentStatus("FAILED");
+                    opsDossierRepository.save(dossier);
                     model.addAttribute("message", "Thanh toán thất bại. Mã lỗi: " + responseCode);
                     model.addAttribute("status", "error");
                 }
-                opsDossierRepository.save(dossier);
                 model.addAttribute("dossierCode", dossierCode);
             } else {
                 model.addAttribute("message", "Không tìm thấy hồ sơ tương ứng.");

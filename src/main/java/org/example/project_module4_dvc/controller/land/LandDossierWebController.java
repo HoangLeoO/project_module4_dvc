@@ -225,8 +225,7 @@ public class LandDossierWebController {
             result.setPaymentAmount(amount);
             dossierRepository.save(result);
 
-            // Send WebSocket notification
-            messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
+            // WebSocket notification moved to PaymentController after payment success
 
             return ResponseEntity.ok(Map.of(
                     "status", "success",

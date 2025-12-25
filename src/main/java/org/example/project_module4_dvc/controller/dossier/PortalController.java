@@ -207,8 +207,7 @@ public class PortalController {
             response.put("dossierId", dto.getId());
             response.put("paymentUrl", paymentUrl);
 
-            // Send WebSocket notification
-            messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
+            // WebSocket notification moved to PaymentController after payment success
 
             return ResponseEntity.ok(response);
 

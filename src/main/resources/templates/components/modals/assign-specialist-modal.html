@@ -14,7 +14,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
-        <form th:action="@{/officer/dashboard/reception/update}" method="get">
+        <form th:action="@{/officer/dashboard/reception/update}" method="get"
+          onsubmit="return validateAssignForm(this);">
           <div class="modal-body p-4">
 
             <input type="hidden" name="dossierId" th:value="${dossier.id}">
@@ -123,7 +124,10 @@
                 <i class="bi bi-calendar-event me-1"></i> Ngày hẹn trả <span class="text-danger">*</span>
               </label>
               <input type="datetime-local" class="form-control bg-light border-0 rounded-3 px-3 py-3" name="dueDate"
-                required>
+                id="dueDateInput" required>
+              <div id="dueDateError" class="text-danger small mt-1" style="display: none;">
+                <i class="bi bi-exclamation-circle me-1"></i>Ngày hẹn trả không được là ngày trong quá khứ
+              </div>
             </div>
 
             <div class="mb-3">
@@ -145,6 +149,82 @@
       </div>
     </div>
   </div>
+
+  <script th:inline="javascript">
+    (function () {
+      // Initialize when DOM is ready
+      function initValidation() {
+        const dueDateInput = document.getElementById('dueDateInput');
+        const dueDateError = document.getElementById('dueDateError');
+        const form = dueDateInput?.closest('form');
+
+        if (!dueDateInput) return;
+
+        // Set min date
+        updateMinDate(dueDateInput);
+
+        // Real-time validation on change
+        dueDateInput.addEventListener('change', function () {
+          validateDate(dueDateInput, dueDateError);
+        });
+
+        // Validation on form submit
+        if (form) {
+          form.addEventListener('submit', function (e) {
+            if (!validateDate(dueDateInput, dueDateError)) {
+              e.preventDefault();
+              e.stopPropagation();
+              alert('Ngày hẹn trả không được là ngày trong quá khứ!');
+              dueDateInput.focus();
+              return false;
+            }
+          });
+        }
+      }
+
+      function updateMinDate(input) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        input.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      function validateDate(input, errorDiv) {
+        if (!input.value) return true;
+
+        updateMinDate(input);
+        const selectedDate = new Date(input.value);
+        const currentDate = new Date();
+
+        if (selectedDate < currentDate) {
+          if (errorDiv) errorDiv.style.display = 'block';
+          input.classList.add('is-invalid');
+          return false;
+        }
+
+        if (errorDiv) errorDiv.style.display = 'none';
+        input.classList.remove('is-invalid');
+        return true;
+      }
+
+      // Run on DOMContentLoaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initValidation);
+      } else {
+        initValidation();
+      }
+
+      // Also run when modal is shown (Bootstrap event)
+      document.addEventListener('shown.bs.modal', function (e) {
+        if (e.target.id === 'assignModal') {
+          initValidation();
+        }
+      });
+    })();
+  </script>
 
 </body>
 

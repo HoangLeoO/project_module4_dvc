@@ -188,11 +188,7 @@ public class TuPhapController {
                     }
                 }
             }
-            try {
-                messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
-            } catch (Exception websocketException) {
-                websocketException.printStackTrace();
-            }
+            // WebSocket notification moved to PaymentController after payment success
 
             // 8. Tạo URL thanh toán
             String paymentUrl = "";
@@ -351,9 +347,7 @@ public class TuPhapController {
                     org.example.project_module4_dvc.config.VnPayConfig.getIpAddress(request));
 
             // 9. Trả về kết quả thành công kèm URL thanh toán
-            // 8. Trả về kết quả thành công
-            // Gửi thông báo WebSocket
-            messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
+            // WebSocket notification moved to PaymentController after payment success
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
