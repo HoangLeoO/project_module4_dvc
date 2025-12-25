@@ -58,9 +58,9 @@ public class SpecialistDashboardController {
     private final MockCitizenRepository mockCitizenRepository;
 
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
-                                         ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-                                         SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository,
-                                         SimpMessagingTemplate messagingTemplate) {
+            ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
+            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
@@ -79,7 +79,7 @@ public class SpecialistDashboardController {
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         System.out.println(userDetails.getDepartmentName());
         Page<NewDossierDTO> page = specialistService.findAll("PENDING", userDetails.getDepartmentName(),
-                userDetails.getUserId(), "PAID",pageable);
+                userDetails.getUserId(), "PAID", pageable);
         List<NewDossierDTO> nearDueList = specialistService.findNearlyDue(userDetails.getDepartmentName(),
                 userDetails.getUserId());
         model.addAttribute("nearDueCount", nearDueList.size());
@@ -152,6 +152,7 @@ public class SpecialistDashboardController {
         model.addAttribute("formData", formDataDTO);
         model.addAttribute("specialists", specialists);
         model.addAttribute("formFragment", fragmentPath);
+        model.addAttribute("showVerifyButton", true); // Show verification button on specialist page
 
         return "pages/specialist/specialist-reception";
     }
@@ -164,14 +165,15 @@ public class SpecialistDashboardController {
         redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
         return "redirect:/specialist/dashboard";
     }
+
     @PostMapping("reception/reject")
-    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason, RedirectAttributes redirectAttributes) {
+    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason,
+            RedirectAttributes redirectAttributes) {
         officerService.updateDossierRejectStatus(id, "REJECTED", reason);
         redirectAttributes.addFlashAttribute("toastType", "success");
         redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
         return "redirect:/specialist/dashboard";
     }
-
 
     @GetMapping("/view-file/{id}")
     public ResponseEntity<Resource> viewFile(@PathVariable("id") Long id) {

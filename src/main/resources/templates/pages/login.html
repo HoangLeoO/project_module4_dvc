@@ -316,40 +316,42 @@
                 <ul class="navbar-nav ms-auto align-items-center gap-lg-4">
                     <li class="nav-item"><a class="nav-link active fw-bold text-warning" th:href="@{/}">Trang chủ</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/services}">Dịch vụ công</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="#">Tra cứu hồ sơ</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/feedback}">Góp ý</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/citizen/hoso}">Hồ sơ của tôi</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/citizen/services}">Dịch vụ công</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="#">Hướng dẫn</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link fw-medium" th:href="@{/citizen/feedback}">Phản ánh kiến
+                            nghị</a>
+                    </li>
                 </ul>
 
-                <!-- Auth Buttons -->
-                <div class="ms-lg-4 d-flex gap-3 mt-3 mt-lg-0" sec:authorize="!isAuthenticated()">
-                    <button class="btn btn-outline-light rounded-pill px-4 fw-bold border-2" data-bs-toggle="modal"
-                        data-bs-target="#registerModal">
-                        Đăng ký
-                    </button>
-                    <button class="btn btn-light rounded-pill px-4 fw-bold text-primary shadow-sm"
+                <!-- Auth Buttons - Show when NOT logged in -->
+                <div class="ms-lg-4" sec:authorize="!isAuthenticated()">
+                    <button class="btn btn-outline-light rounded-pill px-4 fw-bold border-2 shadow-sm"
                         data-bs-toggle="modal" data-bs-target="#loginModal">
-                        <i class="bi bi-person-fill me-2"></i>Đăng nhập
+                        <i class="bi bi-person-circle me-2"></i>Đăng nhập
                     </button>
                 </div>
 
-                <!-- Logged In User -->
+                <!-- Logged In User - Show when ALREADY logged in -->
                 <div class="ms-lg-4" sec:authorize="isAuthenticated()">
                     <div class="dropdown">
                         <button
                             class="btn btn-outline-light rounded-pill pe-4 ps-2 py-1 dropdown-toggle d-flex align-items-center border-2 border-white border-opacity-25 bg-white bg-opacity-10"
                             type="button" data-bs-toggle="dropdown">
-                            <div class="bg-warning text-dark rounded-circle me-2 d-flex align-items-center justify-content-center border border-2 border-white"
-                                style="width: 36px; height: 36px;">
-                                <i class="bi bi-person-fill fs-5"></i>
-                            </div>
-                            <span class="fw-bold" sec:authentication="principal.fullName">Công Dân</span>
+                            <img th:src="${'https://ui-avatars.com/api/?name=' + #strings.replace(#authentication.principal.fullName, ' ', '+') + '&size=64&background=random&color=fff'}"
+                                class="rounded-circle me-2" style="width: 32px; height: 32px;" alt="Avatar">
+                            <span class="fw-bold text-white" sec:authentication="principal.fullName">Công Dân</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2">
-                            <li><a class="dropdown-item rounded-3 py-2" href="#"><i
+                            <li><a class="dropdown-item rounded-3 py-2" th:href="@{/citizen/profile}"><i
                                         class="bi bi-person-vcard me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
-                            <li><a class="dropdown-item rounded-3 py-2" href="#"><i
+                            <li><a class="dropdown-item rounded-3 py-2" th:href="@{/citizen/hoso}"><i
                                         class="bi bi-file-earmark-text me-2 text-primary"></i>Hồ sơ của tôi</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2" th:href="@{/citizen/vault}"><i
+                                        class="bi bi-safe2 me-2 text-primary"></i>Kho dữ liệu số</a></li>
                             <li>
                                 <hr class="dropdown-divider opacity-10">
                             </li>
@@ -406,9 +408,12 @@
                 </div>
                 <div class="mt-3 text-start ps-3 small text-muted">
                     <span class="fw-bold me-2"><i class="bi bi-lightning-charge-fill text-warning"></i>Phổ biến:</span>
-                    <a href="#" class="text-secondary text-decoration-none me-3 hover-link">Cấp lại BHYT</a>
-                    <a href="#" class="text-secondary text-decoration-none me-3 hover-link">Đăng ký kết hôn</a>
-                    <a href="#" class="text-secondary text-decoration-none hover-link">Lý lịch tư pháp</a>
+                    <a th:href="@{/citizen/tuphap/marital-status-certificate}"
+                        class="text-secondary text-decoration-none me-3 hover-link">Xác nhận tình trạng hôn nhân</a>
+                    <a th:href="@{/citizen/tuphap/marriage-registration}"
+                        class="text-secondary text-decoration-none me-3 hover-link">Đăng ký kết hôn</a>
+                    <a th:href="@{/citizen/submit-wizard}" class="text-secondary text-decoration-none hover-link">Đăng
+                        ký khai sinh</a>
                 </div>
             </div>
         </div>

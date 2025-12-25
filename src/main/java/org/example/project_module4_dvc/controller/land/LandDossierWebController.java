@@ -19,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,10 @@ public class LandDossierWebController {
     private org.example.project_module4_dvc.service.FileStorageService fileStorageService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private org.example.project_module4_dvc.service.payment.PaymentService paymentService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     // ==================== BƯỚC 1: NỘP HỒ SƠ (CITIZEN) ====================
     /**
@@ -126,7 +132,8 @@ public class LandDossierWebController {
             @RequestParam("changeReason") String changeReason,
             @RequestParam("commitment") String commitment,
             @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
-            Principal principal) {
+            Principal principal,
+            HttpServletRequest request) {
 
         try {
             SysUser currentUser = userRepository.findByUsername(principal.getName());
@@ -203,11 +210,30 @@ public class LandDossierWebController {
             // Gọi service
             OpsDossier result = landConversionService.submitDossier(dto);
 
+            // Generate VNPay URL
+            String paymentUrl = "";
+            long amount = 30000; // Default fee
+            if (service.getFeeAmount() != null && service.getFeeAmount().longValue() > 0) {
+                amount = service.getFeeAmount().longValue();
+            }
+            String orderInfo = "Thanh toan le phi ho so " + result.getDossierCode();
+            paymentUrl = paymentService.createPaymentUrl(amount, orderInfo, result.getDossierCode(),
+                    org.example.project_module4_dvc.config.VnPayConfig.getIpAddress(request));
+
+            // Update payment status
+            result.setPaymentStatus("UNPAID");
+            result.setPaymentAmount(amount);
+            dossierRepository.save(result);
+
+            // Send WebSocket notification
+            messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
+
             return ResponseEntity.ok(Map.of(
                     "status", "success",
                     "message", "Nộp hồ sơ thành công",
                     "dossierId", result.getId(),
-                    "dossierCode", result.getDossierCode()));
+                    "dossierCode", result.getDossierCode(),
+                    "paymentUrl", paymentUrl));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "status", "error",
@@ -413,6 +439,9 @@ public class LandDossierWebController {
 
             landConversionService.submitToLeader(
                     dossierId, currentUser.getId(), chairmanId, comments);
+
+            // Send WebSocket notification to leader
+            messagingTemplate.convertAndSend("/topic/dossiers/leader", "forwarded_to_leader");
 
             redirectAttributes.addFlashAttribute("message", "Trình lãnh đạo thành công");
         } catch (Exception e) {

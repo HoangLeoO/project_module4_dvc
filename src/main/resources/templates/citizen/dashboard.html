@@ -8,7 +8,7 @@
     <nav th:replace="~{citizen/layout/fragments :: header('hoso')}"></nav>
 
     <!-- MAIN CONTENT -->
-    <main class="container mt-5 mb-5">
+    <main class="container pt-5 mt-5 mb-5">
 
         <!-- 2. WELCOME BANNER -->
         <div
@@ -125,6 +125,7 @@
                                         <th class="border-0 small ps-4">Mã hồ sơ / Dịch vụ</th>
                                         <th class="border-0 small">Ngày nộp</th>
                                         <th class="border-0 small">Trạng thái</th>
+                                        <th class="border-0 small">Thanh toán</th>
                                         <th class="border-0 small pe-4 text-end">Thao tác</th>
                                     </tr>
                                 </thead>
@@ -162,13 +163,24 @@
                                                 class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-1 rounded-pill small">Từ
                                                 chối</span>
                                         </td>
+                                        <td>
+                                            <!-- Payment Status -->
+                                            <span th:if="${d.paymentStatus == 'PAID'}"
+                                                class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1 rounded-pill small">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Đã TT
+                                            </span>
+                                            <span th:if="${d.paymentStatus == 'UNPAID' or d.paymentStatus == null}"
+                                                class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 rounded-pill small">
+                                                <i class="bi bi-clock-fill me-1"></i>Chưa TT
+                                            </span>
+                                        </td>
                                         <td class="pe-4 text-end">
                                             <a th:href="@{/citizen/hoso/{id}(id=${d.dossierId})}"
                                                 class="btn btn-sm btn-outline-primary fw-bold">Chi tiết</a>
                                         </td>
                                     </tr>
                                     <tr th:if="${dossiers == null or dossiers.isEmpty()}">
-                                        <td colspan="4" class="text-center py-5 text-muted">
+                                        <td colspan="5" class="text-center py-5 text-muted">
                                             Bạn chưa có hồ sơ nào. <a th:href="@{/citizen/services}"
                                                 class="text-primary fw-bold">Nộp ngay!</a>
                                         </td>

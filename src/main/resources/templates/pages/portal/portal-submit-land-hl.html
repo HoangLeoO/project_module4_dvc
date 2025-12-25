@@ -764,16 +764,23 @@
 
                 const result = await response.json();
 
-                if (response.ok && result.status === 'success') {
-                    window.location.href = '/citizen/hoso';
+                if (response.ok) {
+                    showToast('Nộp hồ sơ thành công! Đang chuyển đến cổng thanh toán...', 'success');
+                    if (result.paymentUrl) {
+                        setTimeout(() => {
+                            window.location.href = result.paymentUrl;
+                        }, 1500);
+                    } else {
+                        setTimeout(() => {
+                            window.location.href = '/citizen/hoso';
+                        }, 2000);
+                    }
                 } else {
-                    showToast("Lỗi nộp hồ sơ: " + (result.message || 'Không rõ nguyên nhân'), 'error');
-                    btnNext.disabled = false;
-                    btnNext.innerHTML = originalText;
+                    throw new Error(result.message || 'Có lỗi xảy ra khi nộp hồ sơ');
                 }
             } catch (error) {
                 console.error('Submission error:', error);
-                showToast("Đã xảy ra lỗi khi gửi hồ sơ. Vui lòng thử lại sau.", 'error');
+                showToast('Lỗi: ' + error.message, 'error');
                 btnNext.disabled = false;
                 btnNext.innerHTML = originalText;
             }

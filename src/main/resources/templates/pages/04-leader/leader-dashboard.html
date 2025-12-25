@@ -196,6 +196,9 @@
 
     <!-- JS Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- WebSocket Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
         // Init Chart
         const ctx = document.getElementById('paretoChart').getContext('2d');
@@ -233,6 +236,73 @@
                 }
             }
         });
+
+        // WebSocket Connection
+        function connectWebSocket() {
+            const socket = new SockJS('/ws');
+            const stompClient = Stomp.over(socket);
+            stompClient.debug = null; // Disable debug logging
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected to WebSocket');
+
+                // Subscribe to leader notifications
+                stompClient.subscribe('/topic/dossiers/leader', function (message) {
+                    console.log('Received leader notification:', message.body);
+                    showToast('Có hồ sơ mới được trình ký duyệt!', 'info');
+                    // Reload page after 3 seconds
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                });
+
+                // Also subscribe to new dossiers (for general awareness)
+                stompClient.subscribe('/topic/dossiers/new', function (message) {
+                    console.log('New dossier submitted:', message.body);
+                });
+            }, function (error) {
+                console.error('WebSocket Error:', error);
+                // Retry connection after 5 seconds
+                setTimeout(connectWebSocket, 5000);
+            });
+        }
+
+        // Toast notification helper
+        function showToast(message, type = 'info') {
+            // Create toast container if not exists
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '1055';
+                document.body.appendChild(container);
+            }
+
+            const toastId = 'toast-' + Date.now();
+            const bgClass = type === 'success' ? 'bg-success' : (type === 'error' ? 'bg-danger' : 'bg-primary');
+            const icon = type === 'success' ? 'bi-check-circle-fill' : (type === 'error' ? 'bi-x-circle-fill' : 'bi-bell-fill');
+
+            const html = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            <i class="bi ${icon} fs-5 me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+            const toastEl = document.getElementById(toastId);
+            const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            bsToast.show();
+            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+        }
+
+        // Connect when page loads
+        document.addEventListener('DOMContentLoaded', connectWebSocket);
     </script>
 </body>
 
