@@ -17,14 +17,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigInteger;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,12 @@ public class DashboardController {
     private final FileStorageService fileStorageService;
 
     private final IOpsDossierFileService opsDossierFileService;
+    private SimpMessagingTemplate messagingTemplate;
 
-    public DashboardController(IOfficerService officerService, FileStorageService fileStorageService,
+    public DashboardController(IOfficerService officerService, SimpMessagingTemplate messagingTemplate, FileStorageService fileStorageService,
                                IOpsDossierFileService opsDossierFileService) {
         this.officerService = officerService;
+        this.messagingTemplate = messagingTemplate;
         this.fileStorageService = fileStorageService;
         this.opsDossierFileService = opsDossierFileService;
     }
@@ -133,57 +136,75 @@ public class DashboardController {
     @GetMapping("reception/update")
     public String updateDossierStatus(@RequestParam("dossierId") Long id,
                                       @RequestParam("specialistId") Long specialistId,
-                                      @RequestParam("dueDate") LocalDateTime dueDate) {
-        officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate, "");
-        return "redirect:/officer/dashboard";
-    }
-
-    @PostMapping("reception/reject")
-    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
-        officerService.updateDossierRejectStatus(id, "REJECTED", reason);
-        return "redirect:/officer/dashboard";
-    }
-
-    /**
-     * Convert Map<String, Object> to appropriate DTO class
-     */
-    private <T> T convertMapToDTO(Map<String, Object> dataMap, Class<T> dtoClass) {
-        if (dataMap == null) {
-            return null;
+                                      @RequestParam("dueDate") LocalDateTime dueDate, RedirectAttributes redirectAttributes) {
+            officerService.updateDossierStatus(id, "PENDING", specialistId, dueDate, "");
+            messagingTemplate.convertAndSend("/topic/dossiers/pending", "pending");
+            redirectAttributes.addFlashAttribute("toastType", "success");
+            redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
+            return "redirect:/officer/dashboard";
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
-        try {
-            T dto = mapper.convertValue(dataMap, dtoClass);
-            System.out.println("Successfully converted Map to " + dtoClass.getSimpleName());
-            return dto;
-        } catch (Exception e) {
-            System.err.println("Error converting Map to " + dtoClass.getSimpleName() + ": " + e.getMessage());
-            return null;
+        @PostMapping("reception/supplement")
+        public String supplementDossierStatus (@RequestParam("id") Long id, @RequestParam("reason") String
+        reason, RedirectAttributes redirectAttributes){
+            officerService.updateDossierRejectStatus(id, "SUPPLEMENT_REQUIRED", reason);
+            redirectAttributes.addFlashAttribute("toastType", "success");
+            messagingTemplate.convertAndSend("/topic/dossiers/supplement", "supplement");
+            redirectAttributes.addFlashAttribute("toastMessage", "Đã yêu cầu bổ sung hồ sơ thành công!");
+            return "redirect:/officer/dashboard";
         }
-    }
 
-    @GetMapping("/view-file/{id}")
-    public ResponseEntity<Resource> viewFile(@PathVariable("id") Long id) {
-        String filePath = opsDossierFileService.getById(id).getFileUrl();
-        try {
-            Resource resource = fileStorageService.loadFileAsResource(filePath);
+        @PostMapping("reception/reject")
+        public String rejectDossierStatus (@RequestParam("id") Long id, @RequestParam("reason") String
+        reason, RedirectAttributes redirectAttributes){
+            officerService.updateDossierRejectStatus(id, "REJECTED", reason);
+            redirectAttributes.addFlashAttribute("toastType", "success");
+            messagingTemplate.convertAndSend("/topic/dossiers/reject", "reject");
+            redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
+            return "redirect:/officer/dashboard";
+        }
 
-            // Determine content type
-            String contentType = "application/octet-stream";
-            try {
-                contentType = Files.probeContentType(resource.getFile().toPath());
-            } catch (Exception e) {
-                // ignore
+        /**
+         * Convert Map<String, Object> to appropriate DTO class
+         */
+        private <T > T convertMapToDTO(Map < String, Object > dataMap, Class < T > dtoClass) {
+            if (dataMap == null) {
+                return null;
             }
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, contentType)
-                    .body(resource);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+
+            try {
+                T dto = mapper.convertValue(dataMap, dtoClass);
+                System.out.println("Successfully converted Map to " + dtoClass.getSimpleName());
+                return dto;
+            } catch (Exception e) {
+                System.err.println("Error converting Map to " + dtoClass.getSimpleName() + ": " + e.getMessage());
+                return null;
+            }
+        }
+
+        @GetMapping("/view-file/{id}")
+        public ResponseEntity<Resource> viewFile (@PathVariable("id") Long id){
+            String filePath = opsDossierFileService.getById(id).getFileUrl();
+            try {
+                Resource resource = fileStorageService.loadFileAsResource(filePath);
+
+                // Determine content type
+                String contentType = "application/octet-stream";
+                try {
+                    contentType = Files.probeContentType(resource.getFile().toPath());
+                } catch (Exception e) {
+                    // ignore
+                }
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, contentType)
+                        .body(resource);
+            } catch (Exception e) {
+                return ResponseEntity.notFound().build();
+            }
         }
     }
-}
+

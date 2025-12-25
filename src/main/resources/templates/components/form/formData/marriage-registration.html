@@ -14,6 +14,10 @@
                 <label class="form-label small">Số CCCD/CMND</label>
                 <input type="text" class="form-control" th:value="${formData.husbandIdNumber ?: ''}" readonly>
             </div>
+            <div class="col-md-3">
+                <label class="form-label small">Giới tính</label>
+                <input type="text" class="form-control" th:value="${formData.husbandGender == 'MALE'? 'Nam': 'Nữ'}" readonly>
+            </div>
         </div>
 
         <h6 class="text-uppercase small fw-bold text-muted mb-3 border-bottom pb-2">2. Thông tin Vợ</h6>
@@ -29,6 +33,10 @@
             <div class="col-md-3">
                 <label class="form-label small">Số CCCD/CMND</label>
                 <input type="text" class="form-control" th:value="${formData.wifeIdNumber ?: ''}" readonly>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Giới tính</label>
+                <input type="text" class="form-control" th:value="${formData.wifeGender == 'MALE'? 'Nam': 'Nữ'}" readonly>
             </div>
         </div>
 

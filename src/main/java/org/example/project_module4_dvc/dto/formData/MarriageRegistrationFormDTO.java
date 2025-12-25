@@ -17,10 +17,12 @@ public class MarriageRegistrationFormDTO {
     private String husbandFullName;
     private LocalDate husbandDob;
     private String husbandIdNumber;
+    private String husbandGender;
 
     private String wifeFullName;
     private LocalDate wifeDob;
     private String wifeIdNumber;
+    private String wifeGender;
 
     private LocalDate intendedMarriageDate;
     private String registeredPlace;
