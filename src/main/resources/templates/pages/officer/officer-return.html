@@ -9,6 +9,7 @@
     <!-- SockJS và STOMP (Dùng CDN cho nhanh) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -242,14 +243,6 @@
                 Trả kết quả
             </a>
 
-            <a href="officer-complaints.html" th:href="@{/officer/dashboard/complaints}"
-                class="nav-link-custom d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-megaphone-fill"></i>
-                    Phản ánh
-                </div>
-                <span class="badge bg-danger rounded-pill shadow-sm" style="font-size: 0.7rem;">1</span>
-            </a>
 
             <div class="my-4 border-top mx-4 op-2"></div>
 
@@ -516,25 +509,44 @@
 
 
     <!-- JS Logic -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Init modal
-        const handoverModal = new bootstrap.Modal(document.getElementById('handoverModal'));
+        $(document).ready(function () {
+            // WebSocket Connection
+            var socket = new SockJS('/ws');
+            var stompClient = Stomp.over(socket);
 
-        // Simple script to handle selection
-        function selectDossier(code, name) {
-            document.getElementById('handoverCode').value = code;
-            document.getElementById('receiverName').value = name;
-            // Show modal
-            handoverModal.show();
-        }
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/dossiers/returned', function (message) {
+                    console.log("Received update: " + message.body);
+                    // Show toast notification
+                    showToast('Thông báo', 'Có hồ sơ mới vừa được nộp! Đang cập nhật danh sách...', 'info');
 
-        // Init tooltips if any
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+                    // Reload page after a short delay
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1500);
+                });
+            }, function (error) {
+                console.error('WebSocket connection error: ', error);
+            });
+
+            // Helper to show toast (assuming toastContainer exists)
+            function showToast(title, message, type) {
+                // Check if we have a toast container, if not create one or use alert
+                if ($('#toastContainer').length === 0) {
+                    // Fallback if toast component is not ready
+                    // alert(message);
+                    return;
+                }
+
+                // Construct toast HTML (simplified)
+                // You might want to trigger the existing toast component logic if available
+                // For now, let's just use the page reload as the main indicator
+            }
+        });
     </script>
+    <th:block th:replace="~{components/toast/toast-notification :: toastContainer}"></th:block>
 </body>
 
 </html>

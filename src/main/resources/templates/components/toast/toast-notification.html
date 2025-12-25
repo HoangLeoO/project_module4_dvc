@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+
+    <!-- Toast Container Fragment - Include this once per page -->
+    <th:block th:fragment="toastContainer">
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+        <script th:inline="javascript">
+            // Global toast function - can be called from anywhere
+            function showToast(type, message, duration = 5000) {
+                const bgClass = type === 'success' ? 'bg-success' :
+                    type === 'danger' ? 'bg-danger' :
+                        type === 'warning' ? 'bg-warning text-dark' : 'bg-primary';
+
+                const icon = type === 'success' ? 'check-circle-fill' :
+                    type === 'danger' ? 'x-circle-fill' :
+                        type === 'warning' ? 'exclamation-triangle-fill' : 'info-circle-fill';
+
+                const btnCloseClass = type === 'warning' ? 'btn-close' : 'btn-close btn-close-white';
+
+                const toastId = 'toast-' + Date.now();
+                const html = `
+                <div id="${toastId}" class="toast align-items-center ${bgClass} border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            <i class="bi bi-${icon} me-2 fs-5"></i>
+                            <span>${message}</span>
+                        </div>
+                        <button type="button" class="${btnCloseClass} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+                const container = document.querySelector('.toast-container');
+                if (container) {
+                    container.insertAdjacentHTML('beforeend', html);
+                    const toastEl = document.getElementById(toastId);
+                    const bsToast = new bootstrap.Toast(toastEl, { delay: duration });
+                    bsToast.show();
+                    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+                }
+            }
+
+            // Auto-show toast from flash attributes (server-side)
+            $(document).ready(function () {
+                const toastType = /*[[${toastType}]]*/ null;
+                const toastMessage = /*[[${toastMessage}]]*/ null;
+
+                if (toastMessage) {
+                    showToast(toastType || 'primary', toastMessage);
+                }
+            });
+        </script>
+    </th:block>
+
+</body>
+
+</html>
