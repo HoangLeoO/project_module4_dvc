@@ -87,6 +87,17 @@
                 <div th:replace="~{citizen/dossier/fragments/birth_registration :: birth_registration(${d})}"></div>
                 <div th:replace="~{citizen/dossier/fragments/business_household :: business_household(${d})}"></div>
                 <div th:replace="~{citizen/dossier/fragments/death_registration :: death_registration(${d})}"></div>
+                <div
+                    th:replace="~{citizen/dossier/fragments/land_change_registration :: land_change_registration(${d})}">
+                </div>
+                <div th:replace="~{citizen/dossier/fragments/land_purpose_change :: land_purpose_change(${d})}"></div>
+                <div th:replace="~{citizen/dossier/fragments/land_split_merge :: land_split_merge(${d})}"></div>
+                <div
+                    th:replace="~{citizen/dossier/fragments/marital_status_certificate :: marital_status_certificate(${d})}">
+                </div>
+                <div th:replace="~{citizen/dossier/fragments/marriage_registration :: marriage_registration(${d})}">
+                </div>
+
 
 
                 <!-- Uploaded Files -->

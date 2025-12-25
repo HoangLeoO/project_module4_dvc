@@ -151,6 +151,7 @@
 
                 <form id="submissionForm" enctype="multipart/form-data">
                     <input type="hidden" name="serviceCode" th:value="${serviceCode}">
+                    <input type="hidden" name="isOnTime" id="isOnTime" value="true">
                     <!-- STEP 1: APPLICANT INFO -->
                     <div id="step1">
                         <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 1: Thông tin Người đi khai</h5>
@@ -291,11 +292,18 @@
 
                             <h6 class="fw-bold text-uppercase mt-4 mb-3 text-secondary">B. Thông tin về Cái chết</h6>
                             <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Ngày chết <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="dateOfDeath" required>
+                                <div class="col-md-8">
+                                    <label class="form-label">Ngày & Giờ chết <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" name="dateOfDeath" required
+                                        onchange="checkOverdue()">
+                                    <div id="overdueWarning" class="alert alert-warning mt-2 d-none small">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <strong>Đăng ký quá hạn (trên 15 ngày)!</strong><br>
+                                        Thủ tục sẽ chuyển sang quy trình thẩm tra chặt chẽ hơn. Vui lòng cung cấp thêm
+                                        giấy tờ chứng minh ở Bước 3.
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label">Nơi chết <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="placeOfDeath"
                                         placeholder="Tại nhà / Bệnh viện / Khác..." required>
@@ -313,38 +321,51 @@
                     <div id="step3" class="d-none">
                         <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 3: Thành phần Hồ sơ</h5>
 
-                        <div class="alert alert-warning border-0 shadow-sm-soft mb-4">
-                            <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2"></i>Danh mục tài liệu bắt buộc:
-                            </h6>
-                            <ul class="mb-0 small ps-3">
-                                <li id="reqDeathNotice">Giấy báo tử hoặc giấy tờ thay thế (Bản chính/Bản chụp hơp lệ)
-                                    <span class="text-danger">*</span>
-                                </li>
-                            </ul>
+                        <div class="alert alert-info border-0 shadow-sm-soft mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Vui lòng đính kèm bản scan hoặc ảnh chụp rõ nét của các giấy tờ sau.
                         </div>
 
-                        <div class="border border-2 border-dashed p-5 text-center bg-light rounded-3 mb-4 transition-all"
-                            id="dropZone" style="border-color: #dee2e6 !important;">
-                            <i class="bi bi-cloud-arrow-up text-secondary" style="font-size: 3rem;"></i>
-                            <h6 class="mt-3 fw-bold">Kéo thả file vào đây hoặc Chọn file từ máy</h6>
-                            <p class="small text-muted">Hỗ trợ PDF, JPG, PNG. Tối đa 10MB/file.</p>
-
-                            <div class="d-flex justify-content-center gap-2 mt-3">
-                                <input type="file" id="fileInput" name="files" multiple style="display: none;"
-                                    onchange="handleFileSelect(this)">
-                                <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" type="button"
-                                    onclick="document.getElementById('fileInput').click()">
-                                    <i class="bi bi-folder2-open me-1"></i>Chọn file
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm">
-                                    <i class="bi bi-safe me-1"></i>Kho dữ liệu (Vault)
-                                </button>
+                        <!-- 1. GIAY BAO TU -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">1. Giấy báo tử hoặc giấy tờ thay thế <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="file_giay_bao_tu"
+                                    accept=".pdf,.jpg,.jpeg,.png" required onchange="validateFileSize(this)">
                             </div>
+                            <div class="form-text">Bản chính hoặc bản sao điện tử có giá trị pháp lý.</div>
                         </div>
 
-                        <!-- File List -->
-                        <div class="list-group shadow-sm-soft rounded-3" id="fileList">
-                            <!-- Files will be added here dynamically -->
+                        <!-- 2. GIAY TO KHAC -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">2. Giấy tờ khác (CMND/CCCD người mất, Sổ hộ
+                                khẩu...)</label>
+                            <input type="file" class="form-control" name="file_khac" multiple
+                                accept=".pdf,.jpg,.jpeg,.png" onchange="validateFileSize(this)">
+                            <div class="form-text">Có thể chọn nhiều file.</div>
+                        </div>
+
+                        <!-- 3. BANG CHUNG KHAC (FOR OVERDUE) -->
+                        <div id="overdueEvidenceSection" class="mb-4 d-none">
+                            <label class="form-label fw-bold text-warning">3. Bằng chứng chứng minh sự kiện chết (Do
+                                đăng ký quá hạn) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="file_bang_chung_chet" multiple
+                                    accept=".pdf,.jpg,.jpeg,.png" onchange="validateFileSize(this)">
+                            </div>
+                            <div class="form-text">Bắt buộc: Biên bản xác nhận của người làm chứng, xác nhận của UBND
+                                hoặc cơ quan công an...</div>
+                        </div>
+
+                        <!-- COMMITMENT -->
+                        <div class="form-check mt-4 p-3 rounded-3 bg-light border">
+                            <input class="form-check-input" type="checkbox" id="commitmentCheck" required
+                                style="transform: scale(1.2); margin-top: 0.25rem;">
+                            <label class="form-check-label ms-2 fw-bold text-primary" for="commitmentCheck">
+                                Tôi cam kết thông tin kê khai và tài liệu đính kèm là đúng sự thật. Tôi chịu hoàn toàn
+                                trách nhiệm trước pháp luật về tính chính xác, trung thực của hồ sơ.
+                            </label>
                         </div>
                     </div>
 
@@ -360,8 +381,8 @@
 
                         <div class="bg-white p-3 border rounded mb-4">
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Lệ phí thủ tục:</span>
-                                <span class="fw-bold">0 VNĐ (Miễn phí đăng ký đúng hạn)</span>
+                                <span class="fw-bold">Lệ phí thủ tục:</span>
+                                <span>0 VNĐ <span class="badge bg-success">Miễn phí</span></span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Phí cấp bản sao (2 bản):</span>
@@ -536,6 +557,20 @@
             updateWizardUI();
         }
 
+        // Helper to validate file size
+        function validateFileSize(input) {
+            if (input.files && input.files.length > 0) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                for (let i = 0; i < input.files.length; i++) {
+                    if (input.files[i].size > maxSize) {
+                        showToast(`File ${input.files[i].name} vượt quá 10MB!`, 'warning');
+                        input.value = ''; // Clear input
+                        return false;
+                    }
+                }
+            }
+        }
+
         function validateStep(step) {
             const stepEl = document.getElementById(`step${step}`);
             if (!stepEl) return true;
@@ -556,10 +591,45 @@
                 } else if (isValidRelation === "false") {
                     isValid = false;
                     // Requirement: "phải có mối quan hệ" -> Strict
-                    showToast("Bắt buộc: Người đi khai phải có mối quan hệ (Cùng hộ khẩu) với Người mất", 'error');
+                    showToast("Bắt buộc: Người đi khai phải có mối quan hệ (Cùng hộ khẩu hoặc trong phạm vi 3 đời) với Người mất", 'error');
                 }
             }
             // --- End new relationship check ---
+
+            // --- Validation for Step 3: Specific Files ---
+            if (step === 3) {
+                const fileGiayBaoTu = document.querySelector('input[name="file_giay_bao_tu"]');
+                if (fileGiayBaoTu && fileGiayBaoTu.files.length === 0) {
+                    fileGiayBaoTu.classList.add('is-invalid');
+                    showToast("Vui lòng đính kèm Giấy báo tử!", 'warning');
+                    isValid = false;
+                } else {
+                    if (fileGiayBaoTu) fileGiayBaoTu.classList.remove('is-invalid');
+                }
+
+                const commitment = document.getElementById('commitmentCheck');
+                if (!commitment.checked) {
+                    commitment.classList.add('is-invalid');
+                    showToast("Bạn chưa cam kết thông tin!", 'warning');
+                    isValid = false;
+                } else {
+                    commitment.classList.remove('is-invalid');
+                }
+
+                // Validate Overdue Evidence
+                const isOnTime = document.getElementById('isOnTime').value === "true";
+                if (!isOnTime) {
+                    const evidenceInput = document.querySelector('input[name="file_bang_chung_chet"]');
+                    if (evidenceInput && evidenceInput.files.length === 0) {
+                        evidenceInput.classList.add('is-invalid');
+                        showToast("Đăng ký quá hạn: Vui lòng cung cấp bằng chứng chứng minh sự kiện chết!", 'warning');
+                        isValid = false;
+                    } else {
+                        if (evidenceInput) evidenceInput.classList.remove('is-invalid');
+                    }
+                }
+            }
+
 
             const inputs = stepEl.querySelectorAll('input[required], select[required], textarea[required]');
             for (let input of inputs) {
@@ -576,13 +646,11 @@
                 }
             }
 
-
-
             // Step 2 Logic Validation: Dates
             if (step === 2) {
                 const dobInput = document.querySelector('input[name="dateOfBirth"]');
                 const dodInput = document.querySelector('input[name="dateOfDeath"]');
-                const dob = new Date(dobInput.value);
+                const dob = new Date(dobInput.value + 'T00:00');
                 const dod = new Date(dodInput.value);
                 const today = new Date();
 
@@ -603,19 +671,8 @@
                     showToast("Ngày chết phải sau ngày sinh!", 'warning');
                     isValid = false;
                 }
-            }
 
-            // --- Validation for Step 3: Files ---
-            if (step === 3) {
-                const fileCount = fileStore.files.length;
-
-                if (fileCount === 0) {
-                    showToast("Vui lòng tải lên tài liệu bắt buộc (Giấy báo tử)!", 'warning');
-                    document.getElementById('dropZone').style.borderColor = '#dc3545';
-                    isValid = false;
-                } else {
-                    document.getElementById('dropZone').style.borderColor = '#dee2e6';
-                }
+                checkOverdue(); // Double check logic
             }
 
             return isValid;
@@ -799,24 +856,30 @@
             }
         }
 
-
-
         // CONFIRMATION MODAL LOGIC
         function showConfirmModal() {
             // 1. Get Values
             const applicantName = document.querySelector('input[name="relativeFullName"]').value || '---';
             const applicantId = document.querySelector('input[name="relativeIdNumber"]').value || '---';
             const deceasedName = document.querySelector('input[name="deceasedFullName"]').value || '---';
-            const deathDate = document.querySelector('input[name="dateOfDeath"]').value || '---';
+            const deathDateTimeValue = document.querySelector('input[name="dateOfDeath"]').value;
 
-            // 2. Get Files
+            // 2. Get Files from Inputs
             let fileListHtml = '<ul class="ps-3 mb-0">';
-            if (fileStore.files.length === 0) {
+            let hasFiles = false;
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+
+            fileInputs.forEach(input => {
+                if (input.files.length > 0) {
+                    hasFiles = true;
+                    Array.from(input.files).forEach(f => {
+                        fileListHtml += `<li>${f.name} <span class="text-muted">(${(f.size / 1024 / 1024).toFixed(2)} MB)</span></li>`;
+                    });
+                }
+            });
+
+            if (!hasFiles) {
                 fileListHtml += '<li class="text-danger fst-italic">Chưa có tệp đính kèm</li>';
-            } else {
-                Array.from(fileStore.files).forEach(f => {
-                    fileListHtml += `<li>${f.name} <span class="text-muted">(${(f.size / 1024 / 1024).toFixed(2)} MB)</span></li>`;
-                });
             }
             fileListHtml += '</ul>';
 
@@ -832,8 +895,8 @@
                         <td class="text-uppercase text-danger fw-bold">${deceasedName}</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold text-nowrap">Ngày mất:</td>
-                        <td>${deathDate.split('-').reverse().join('/')}</td>
+                        <td class="fw-bold text-nowrap">Thời gian mất:</td>
+                        <td>${deathDateTimeValue ? new Date(deathDateTimeValue).toLocaleString('vi-VN') : '---'}</td>
                     </tr>
                     <tr>
                         <td class="fw-bold text-nowrap align-top">Tài liệu:</td>
@@ -866,16 +929,18 @@
                 const form = document.getElementById('submissionForm');
                 const formData = new FormData(form);
 
-                // IMPORTANT: Overwrite 'files' from our staging area
-                // First delete any files automatically picked up by FormData from the input tag
-                formData.delete('files');
-
-                // Append files from fileStore
-                if (fileStore.files.length > 0) {
-                    for (let i = 0; i < fileStore.files.length; i++) {
-                        formData.append('files', fileStore.files[i]);
+                // IMPORTANT: Append all files to 'files' key
+                const fileInputs = form.querySelectorAll('input[type="file"]');
+                fileInputs.forEach(input => {
+                    if (input.files.length > 0) {
+                        for (let i = 0; i < input.files.length; i++) {
+                            formData.append('files', input.files[i]);
+                        }
                     }
-                }
+                });
+
+                // Ensure boolean isOnTime is sent correctly (if form logic doesn't cover)
+                // formData already includes inputs, so isOnTime hidden input is included.
 
                 const response = await fetch('/citizen/submit', {
                     method: 'POST',
@@ -899,71 +964,37 @@
             }
         }
 
+        function checkOverdue() {
+            const dodInput = document.querySelector('input[name="dateOfDeath"]');
+            if (!dodInput.value) return;
 
+            const dod = new Date(dodInput.value);
+            const today = new Date();
 
-        // --- FILE HANDLING LOGIC ---
-        // Global array to store selected files
-        const fileStore = new DataTransfer();
+            // Calculate difference in days
+            const diffTime = Math.abs(today - dod);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        function handleFileSelect(input) {
-            if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => {
-                    // Check for duplicates (optional but good UX)
-                    let exists = false;
-                    for (let i = 0; i < fileStore.files.length; i++) {
-                        if (fileStore.files[i].name === file.name && fileStore.files[i].size === file.size) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    if (!exists) {
-                        fileStore.items.add(file);
-                    }
-                });
-                // Reset input so same file can be selected again if needed (though we handle dups)
-                input.value = '';
+            // Note: If death is today, diffDays might be 0 or small. 
+            // If death was 20 days ago, diffDays ~ 20.
 
-                renderFileList();
+            const warningEl = document.getElementById('overdueWarning');
+            const isOnTimeInput = document.getElementById('isOnTime');
+            const evidenceSection = document.getElementById('overdueEvidenceSection');
+
+            if (diffDays > 15 && dod < today) {
+                // Overdue
+                warningEl.classList.remove('d-none');
+                evidenceSection.classList.remove('d-none');
+                isOnTimeInput.value = "false";
+
+                // Add required attribute to logic check
+            } else {
+                // On time
+                warningEl.classList.add('d-none');
+                evidenceSection.classList.add('d-none');
+                isOnTimeInput.value = "true";
             }
-        }
-
-        function renderFileList() {
-            const fileList = document.getElementById('fileList');
-            // Clear current list items
-            fileList.innerHTML = '';
-
-            // Re-render from fileStore
-            Array.from(fileStore.files).forEach((file, index) => {
-                const item = document.createElement('div');
-                item.className = 'list-group-item d-flex justify-content-between align-items-center animate-fade-in';
-                item.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-text-fill text-primary fs-4 me-3"></i>
-                        <div>
-                            <h6 class="mb-0 small fw-bold">${file.name}</h6>
-                            <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
-                        </div>
-                    </div>
-                    <button class="btn btn-sm btn-link text-danger" type="button" onclick="removeFile(${index})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                 `;
-
-                fileList.appendChild(item);
-            });
-        }
-
-        function removeFile(index) {
-            const newDt = new DataTransfer();
-            Array.from(fileStore.files).forEach((file, i) => {
-                if (i !== index) newDt.items.add(file);
-            });
-
-            // Clear and reload fileStore
-            fileStore.items.clear();
-            Array.from(newDt.files).forEach(f => fileStore.items.add(f));
-
-            renderFileList();
         }
     </script>
 </body>

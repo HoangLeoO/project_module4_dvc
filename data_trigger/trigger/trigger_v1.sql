@@ -10,13 +10,16 @@ CREATE TRIGGER trg_ops_dossiers_status_log
 BEGIN
     DECLARE v_service_code VARCHAR(50);
     DECLARE v_comment TEXT;
+
     -- Chỉ log khi trạng thái thay đổi
     IF OLD.dossier_status <> NEW.dossier_status THEN
+
         -- Lấy service_code của hồ sơ
         SELECT s.service_code
         INTO v_service_code
         FROM cat_services s
         WHERE s.id = NEW.service_id;
+
         -- Sinh comment theo dịch vụ + trạng thái
         SET v_comment = CASE
             /* ================= PHÊ DUYỆT ================= */
@@ -32,6 +35,7 @@ BEGIN
                                     WHEN 'KD01_HKD' THEN 'Phê duyệt hồ sơ đăng ký thành lập hộ kinh doanh'
                                     ELSE 'Phê duyệt hồ sơ'
                                     END
+
             /* ================= TRẢ KẾT QUẢ ================= */
                             WHEN NEW.dossier_status = 'RESULT_RETURNED' THEN
                                 CASE v_service_code
@@ -45,21 +49,27 @@ BEGIN
                                     WHEN 'KD01_HKD' THEN 'Đã trả Giấy chứng nhận đăng ký hộ kinh doanh'
                                     ELSE 'Đã trả kết quả hồ sơ'
                                     END
+
             /* ================= THẨM ĐỊNH ================= */
                             WHEN NEW.dossier_status = 'VERIFIED' THEN
                                 'Đã hoàn thành thẩm định hồ sơ'
+
             /* ================= CHUYỂN BƯỚC ================= */
                             WHEN NEW.dossier_status = 'PENDING' THEN
                                 'Chuyển hồ sơ sang bước xử lý tiếp theo'
+
             /* ================= TỪ CHỐI ================= */
                             WHEN NEW.dossier_status = 'REJECTED' THEN
                                 COALESCE(NEW.rejection_reason, 'Từ chối giải quyết hồ sơ')
+
             /* ================= YÊU CẦU BỔ SUNG ================= */
                             WHEN NEW.dossier_status = 'SUPPLEMENT_REQUIRED' THEN
                                 'Yêu cầu bổ sung hồ sơ'
+
                             ELSE
                                 'Cập nhật trạng thái hồ sơ'
             END;
+
         -- Ghi log
         -- Lưu ý: actor_id lấy từ current_handler_id của bản ghi c (người vừa nhận xử lý hoặc người vừa thực hiện)
         -- Tùy logic nghiệp vụ:
@@ -67,6 +77,7 @@ BEGIN
         -- Tuy nhiên, trong ngữ cảnh trigger đơn giản này, ta tạm dùng NEW.current_handler_id hoặc cần logic phức tạp hơn để xác định "Who did this".
         -- Ở đây ta giả định người thực hiện hành động chính là người được gán trong câu UPDATE (nếu hệ thống truyền vào)
         -- HOẶC tốt nhất là ứng dụng nên insert log. Trigger chỉ là giải pháp backup.
+
         INSERT INTO ops_dossier_logs
         (
             dossier_id,
@@ -98,6 +109,7 @@ BEGIN
                 NEW.dossier_status,
                 v_comment
             );
+
     END IF;
 END$$
 DELIMITER ;
