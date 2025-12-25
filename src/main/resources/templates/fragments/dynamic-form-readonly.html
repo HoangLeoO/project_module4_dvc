@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<!-- 
+    DYNAMIC FORM READONLY FRAGMENT
+    Dùng để hiển thị thông tin hồ sơ dựa trên Form Schema và Data JSON map.
+    
+    Parameters:
+    - schema: Đối tượng Map chứa cấu trúc form (sections, fields).
+    - data: Đối tượng Map chứa dữ liệu đã nhập (key=field_name, value=value).
+-->
+<div th:fragment="render" class="dynamic-form-container">
+
+    <!-- Loop qua từng Section -->
+    <div th:each="section : ${schema.get('sections')}" class="card border-0 shadow-sm bg-white mb-3">
+        <div class="card-header bg-white border-bottom py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="bi bi-file-text me-2"></i>
+                <span th:text="${section.get('title')}">Tiêu đề Section</span>
+            </h6>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <!-- Loop qua từng Field trong Section -->
+                <div th:each="field : ${section.get('fields')}" class="col-12"
+                    th:classappend="${field.get('type') == 'textarea' ? 'col-12' : 'col-md-6'}">
+
+                    <label class="form-label small text-muted fw-bold text-uppercase"
+                        th:text="${field.get('label')}">Label</label>
+
+                    <!-- Xử lý hiển thị giá trị -->
+                    <div class="input-group">
+                        <!-- Icon based on type -->
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi"
+                                th:classappend="${field.get('type') == 'date' ? 'bi-calendar-date' : 
+                                                (field.get('type') == 'number' ? 'bi-123' : 
+                                                (field.get('type') == 'select' ? 'bi-list-ul' : 
+                                                (field.get('type') == 'checkbox' ? 'bi-check-square' : 'bi-type')))}"></i>
+                        </span>
+
+                        <!-- 1. TEXT / NUMBER / DATE -->
+                        <input
+                            th:if="${field.get('type') != 'select' and field.get('type') != 'checkbox' and field.get('type') != 'textarea'}"
+                            type="text" class="form-control border-start-0 ps-0 fw-medium text-dark" readonly
+                            style="background-color: #f8fafc;"
+                            th:value="${data != null ? data.get(field.get('name')) : ''}">
+
+                        <!-- 2. TEXTAREA -->
+                        <div th:if="${field.get('type') == 'textarea'}"
+                            class="form-control border-start-0 ps-0 fw-medium text-dark bg-light"
+                            style="background-color: #f8fafc; min-height: 80px; white-space: pre-wrap;"
+                            th:text="${data != null ? data.get(field.get('name')) : ''}">
+                        </div>
+
+                        <!-- 3. SELECT: Find Label from Options -->
+                        <div th:if="${field.get('type') == 'select'}"
+                            class="form-control border-start-0 ps-0 fw-medium text-dark d-flex align-items-center"
+                            style="background-color: #f8fafc;">
+
+                            <!-- Loop options to find match -->
+                            <th:block th:each="opt : ${field.get('options')}">
+                                <span
+                                    th:if="${data != null && #strings.toString(data.get(field.get('name'))) == #strings.toString(opt.get('value'))}"
+                                    th:text="${opt.get('label')}"></span>
+                            </th:block>
+                            <!-- Fallback if no match found (show raw value) -->
+                            <!-- Note: Simulating 'else' in loop is hard, so we just show raw value if we can't match? 
+                                 Or just relying on the fact that if it matches it shows. for now, simple loop is safer. -->
+                        </div>
+
+                        <!-- 4. CHECKBOX -->
+                        <div th:if="${field.get('type') == 'checkbox'}"
+                            class="form-control border-start-0 ps-0 fw-medium d-flex align-items-center"
+                            style="background-color: #f8fafc;">
+                            <span
+                                th:if="${data != null && (#strings.toString(data.get(field.get('name'))) == 'true' || data.get(field.get('name')) == true)}"
+                                class="text-success">
+                                <i class="bi bi-check-circle-fill me-1"></i> Đã chọn
+                            </span>
+                            <span
+                                th:unless="${data != null && (#strings.toString(data.get(field.get('name'))) == 'true' || data.get(field.get('name')) == true)}"
+                                class="text-muted">
+                                <i class="bi bi-circle me-1"></i> Không
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

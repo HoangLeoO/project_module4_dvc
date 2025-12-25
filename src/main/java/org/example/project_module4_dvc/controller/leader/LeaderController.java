@@ -57,7 +57,8 @@ public class LeaderController {
 
     @ModelAttribute("pendingCount")
     public long getPendingCount(Principal principal) {
-        if (principal == null) return 0;
+        if (principal == null)
+            return 0;
         try {
             SysUser sysUser = userService.findByUsername(principal.getName());
             return leaderService.countByCurrentHandler_IdAndDossierStatus(sysUser.getId(), "VERIFIED");
@@ -67,10 +68,10 @@ public class LeaderController {
     }
 
     @GetMapping("dashboard")
-    public String showDashboard(Model model, Principal principal){
+    public String showDashboard(Model model, Principal principal) {
         try {
             SysUser sysUser = userService.findByUsername(principal.getName());
-            
+
             // 1. Delegated Count
             long delegatedCount = leaderService.countDelegatedDossiers(sysUser.getId(), "VERIFIED");
             model.addAttribute("delegatedCount", delegatedCount);
@@ -84,7 +85,7 @@ public class LeaderController {
             if (sysUser.getDepartment() != null) {
                 Long deptId = sysUser.getDepartment().getId();
                 onTimeRate = leaderService.getOnTimeRateByDeptId(deptId);
-                
+
                 // 4. Overdue Count
                 long overdueCount = leaderService.countOverdueDossiersByDept(deptId);
                 model.addAttribute("overdueCount", overdueCount);
@@ -95,11 +96,12 @@ public class LeaderController {
                 satisfactionScore = Math.round(satisfactionScore * 10.0) / 10.0;
                 model.addAttribute("satisfactionScore", satisfactionScore);
             } else {
-                 model.addAttribute("overdueCount", 0);
-                 model.addAttribute("satisfactionScore", 0.0);
+                model.addAttribute("overdueCount", 0);
+                model.addAttribute("satisfactionScore", 0.0);
             }
             // Handle null if no data
-            if (onTimeRate == null) onTimeRate = 100.0; 
+            if (onTimeRate == null)
+                onTimeRate = 100.0;
             model.addAttribute("onTimeRate", onTimeRate);
 
         } catch (Exception e) {
@@ -116,25 +118,25 @@ public class LeaderController {
             @RequestParam(name = "year", required = false) Integer year,
             @RequestParam(name = "periodValue", required = false) Integer periodValue,
             Model model,
-            Principal principal
-    ) {
+            Principal principal) {
         SysUser sysUser = userService.findByUsername(principal.getName());
         Long deptId = (sysUser.getDepartment() != null) ? sysUser.getDepartment().getId() : 0L; // Fallback if no dept
 
         // Defaults
-        if (year == null) year = java.time.LocalDate.now().getYear();
+        if (year == null)
+            year = java.time.LocalDate.now().getYear();
         if (periodValue == null && "MONTH".equalsIgnoreCase(periodType)) {
             periodValue = java.time.LocalDate.now().getMonthValue();
         }
 
         // 1. Get Summary Stats (Top Cards)
-        org.example.project_module4_dvc.dto.leader.report.ReportSummaryDTO summary = 
-                leaderService.getReportSummary(deptId, periodType, year, periodValue);
+        org.example.project_module4_dvc.dto.leader.report.ReportSummaryDTO summary = leaderService
+                .getReportSummary(deptId, periodType, year, periodValue);
         model.addAttribute("summary", summary);
 
         // 2. Get Domain Stats (Table)
-        java.util.List<org.example.project_module4_dvc.dto.leader.report.ReportDomainStatDTO> domainStats = 
-                leaderService.getDomainStats(deptId, periodType, year, periodValue);
+        java.util.List<org.example.project_module4_dvc.dto.leader.report.ReportDomainStatDTO> domainStats = leaderService
+                .getDomainStats(deptId, periodType, year, periodValue);
         model.addAttribute("domainStats", domainStats);
 
         // 3. Pass Filter Params back to view
@@ -145,16 +147,15 @@ public class LeaderController {
         return "pages/04-leader/leader-reports";
     }
 
-
     @GetMapping("profile")
-    public String showProfile(Model model, Principal principal){
+    public String showProfile(Model model, Principal principal) {
         SysUser sysUser = userService.findByUsername(principal.getName());
         model.addAttribute("user", sysUser);
         return "pages/04-leader/leader-profile";
     }
 
     @GetMapping("delegation")
-    public String showDelegation(Model model, Principal principal){
+    public String showDelegation(Model model, Principal principal) {
         SysUser sysUser = userService.findByUsername(principal.getName());
         Long leaderId = sysUser.getId();
 
@@ -162,7 +163,7 @@ public class LeaderController {
         DelegationConfigDTO config = leaderService.getDelegationConfigData(leaderId);
         model.addAttribute("delegatees", config.getPotentialDelegatees());
         model.addAttribute("delegations", config.getCurrentDelegations());
-        
+
         // 2. Get Services/Domains for Scope Selection
         // model.addAttribute("catServices", catServiceService.findAll());
         java.util.List<String> domains = catServiceService.findAll().stream()
@@ -175,9 +176,9 @@ public class LeaderController {
     }
 
     @PostMapping("delegation/create")
-    public String createDelegation(org.example.project_module4_dvc.dto.leader.DelegationRequestDTO request, 
-                                   RedirectAttributes redirectAttributes, 
-                                   Principal principal) {
+    public String createDelegation(org.example.project_module4_dvc.dto.leader.DelegationRequestDTO request,
+            RedirectAttributes redirectAttributes,
+            Principal principal) {
         SysUser sysUser = userService.findByUsername(principal.getName());
         try {
             leaderService.createDelegation(sysUser.getId(), request);
@@ -200,25 +201,26 @@ public class LeaderController {
         return "redirect:/leader/delegation";
     }
 
-
     @GetMapping("my-dossiers")
     public String showListMyDossier(
-            @RequestParam(name = "size",required = false,defaultValue = "3") int size,
-            @RequestParam(name = "page",required = false,defaultValue = "0") int page,
-            @RequestParam(name = "domain",required = false) String domain,
-            @RequestParam(name = "applicantName",required = false) String applicantName,
+            @RequestParam(name = "size", required = false, defaultValue = "3") int size,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "domain", required = false) String domain,
+            @RequestParam(name = "applicantName", required = false) String applicantName,
             Model model,
-            Principal principal
-    ){
+            Principal principal) {
         // Xử lý chuỗi rỗng thành null để query hoạt động đúng
-        if (domain != null && domain.trim().isEmpty()) domain = null;
-        if (applicantName != null && applicantName.trim().isEmpty()) applicantName = null;
+        if (domain != null && domain.trim().isEmpty())
+            domain = null;
+        if (applicantName != null && applicantName.trim().isEmpty())
+            applicantName = null;
 
-        Pageable pageable = PageRequest.of(page,size);
+        Pageable pageable = PageRequest.of(page, size);
         SysUser sysUser = userService.findByUsername(principal.getName());
         Long idLeader = sysUser.getId();
-        Page<DossierApprovalSummaryDTO> dossiers = leaderService.getMyDossiers(idLeader,applicantName,domain,pageable);
-        
+        Page<DossierApprovalSummaryDTO> dossiers = leaderService.getMyDossiers(idLeader, applicantName, domain,
+                pageable);
+
         model.addAttribute("dossiers", dossiers);
         // Lấy danh sách domain không trùng lặp
         List<String> domains = catServiceService.findAll().stream()
@@ -232,23 +234,25 @@ public class LeaderController {
 
     @GetMapping("delegated-dossiers")
     public String showDelegatedDossiers(
-            @RequestParam(name = "size",required = false,defaultValue = "3") int size,
-            @RequestParam(name = "page",required = false,defaultValue = "0") int page,
-            @RequestParam(name = "domain",required = false) String domain,
-            @RequestParam(name = "applicantName",required = false) String applicantName,
+            @RequestParam(name = "size", required = false, defaultValue = "3") int size,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "domain", required = false) String domain,
+            @RequestParam(name = "applicantName", required = false) String applicantName,
             Model model,
-            Principal principal
-    ){
+            Principal principal) {
         // Xử lý chuỗi rỗng thành null
-        if (domain != null && domain.trim().isEmpty()) domain = null;
-        if (applicantName != null && applicantName.trim().isEmpty()) applicantName = null;
+        if (domain != null && domain.trim().isEmpty())
+            domain = null;
+        if (applicantName != null && applicantName.trim().isEmpty())
+            applicantName = null;
 
-        Pageable pageable = PageRequest.of(page,size);
+        Pageable pageable = PageRequest.of(page, size);
         SysUser sysUser = userService.findByUsername(principal.getName());
         Long leaderId = sysUser.getId();
 
-        Page<DossierApprovalSummaryDTO> dossiers = leaderService.getDelegatedDossiers(leaderId, applicantName, domain, pageable);
-        
+        Page<DossierApprovalSummaryDTO> dossiers = leaderService.getDelegatedDossiers(leaderId, applicantName, domain,
+                pageable);
+
         model.addAttribute("dossiers", dossiers);
         model.addAttribute("dossiers", dossiers);
         // Lấy danh sách domain không trùng lặp
@@ -263,23 +267,25 @@ public class LeaderController {
 
     @GetMapping("history")
     public String showHistory(
-            @RequestParam(name = "size",required = false,defaultValue = "3") int size,
-            @RequestParam(name = "page",required = false,defaultValue = "0") int page,
-            @RequestParam(name = "domain",required = false) String domain,
-            @RequestParam(name = "applicantName",required = false) String applicantName,
+            @RequestParam(name = "size", required = false, defaultValue = "3") int size,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "domain", required = false) String domain,
+            @RequestParam(name = "applicantName", required = false) String applicantName,
             Model model,
-            Principal principal
-    ){
+            Principal principal) {
         // Xử lý chuỗi rỗng thành null
-        if (domain != null && domain.trim().isEmpty()) domain = null;
-        if (applicantName != null && applicantName.trim().isEmpty()) applicantName = null;
+        if (domain != null && domain.trim().isEmpty())
+            domain = null;
+        if (applicantName != null && applicantName.trim().isEmpty())
+            applicantName = null;
 
-        Pageable pageable = PageRequest.of(page,size);
+        Pageable pageable = PageRequest.of(page, size);
         SysUser sysUser = userService.findByUsername(principal.getName());
         Long leaderId = sysUser.getId();
 
         // Gọi service tìm lịch sử
-        Page<DossierApprovalSummaryDTO> dossiers = leaderService.findApprovedHistory(leaderId, applicantName, domain, pageable);
+        Page<DossierApprovalSummaryDTO> dossiers = leaderService.findApprovedHistory(leaderId, applicantName, domain,
+                pageable);
 
         model.addAttribute("dossiers", dossiers);
         model.addAttribute("dossiers", dossiers);
@@ -293,13 +299,12 @@ public class LeaderController {
         return "pages/04-leader/leader-approval";
     }
 
-
-
     @PostMapping("approval/{dossiersId}")
-    public String approval(@PathVariable(name = "dossiersId",required = false) Long dossiersId, RedirectAttributes redirectAttributes,Principal principal){
+    public String approval(@PathVariable(name = "dossiersId", required = false) Long dossiersId,
+            RedirectAttributes redirectAttributes, Principal principal) {
         SysUser sysUser = userService.findByUsername(principal.getName());
         System.out.println(sysUser.getId());
-        leaderService.approvedByLeader(sysUser.getId(),dossiersId);
+        leaderService.approvedByLeader(sysUser.getId(), dossiersId);
 
         // Generate PDF
         try {
@@ -365,16 +370,16 @@ public class LeaderController {
                 break;
             default:
                 // Default fallback if unknown service
-                 return "components/common/no-data";
+                return "components/common/no-data";
         }
 
         try {
             if (dossier.getFormData() != null) {
                 Object rawForm = dossier.getFormData();
                 if (rawForm instanceof String) {
-                     model.addAttribute("formData", objectMapper.readValue((String) rawForm, Map.class));
+                    model.addAttribute("formData", objectMapper.readValue((String) rawForm, Map.class));
                 } else {
-                     model.addAttribute("formData", rawForm);
+                    model.addAttribute("formData", rawForm);
                 }
             }
         } catch (Exception e) {

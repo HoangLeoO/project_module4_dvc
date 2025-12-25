@@ -69,8 +69,9 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                         """)
         long countThisMonth();
 
-        // Đếm theo trạng thái
-        long countByDossierStatus(String dossierStatus);
+    // Đếm theo trạng thái
+    long countByDossierStatus(String dossierStatus);
+
 
         // Đếm hồ sơ quá hạn
         @Query("""
@@ -348,40 +349,49 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                         """)
         long countCompletedOnTime();
 
-        // đếm tổng số hồ sơ
-        @Query("""
-                            SELECT COUNT(d)
-                            FROM OpsDossier d
-                            WHERE d.dossierStatus <> 'REJECTED'
-                        """)
-        long countTotalForKpi();
+    // tìm hồ sơ theo trạng thái
+    List<OpsDossier> findByDossierStatus(String status);
 
-        // đếm số hồ sơ hoàn thành đúng hạn
-        @Query("""
-                            SELECT COUNT(d)
-                            FROM OpsDossier d
-                            WHERE
-                                (
-                                    d.dossierStatus = 'COMPLETED'
-                                    AND d.finishDate IS NOT NULL
-                                    AND d.dueDate IS NOT NULL
-                                    AND d.finishDate <= d.dueDate
-                                )
-                                OR
-                                (
-                                    d.dossierStatus <> 'COMPLETED'
-                                    AND d.dueDate IS NOT NULL
-                                    AND d.dueDate >= CURRENT_TIMESTAMP
-                                )
-                        """)
-        long countOnTimeForKpi();
+    // tìm hồ sơ theo người nộp
+    List<OpsDossier> findByApplicantId(Long applicantId);
 
-        @Query(value = """
-                            SELECT d.dossier_code
-                            FROM ops_dossiers d
-                            WHERE d.dossier_code LIKE CONCAT(:prefix, '%')
-                            ORDER BY d.dossier_code DESC
-                            LIMIT 1
-                        """, nativeQuery = true)
-        Optional<String> findLatestDossierCode(@Param("prefix") String prefix);
+    // tìm hồ sơ theo cán bộ thụ lý hiện tại
+    List<OpsDossier> findByCurrentHandlerId(Long handlerId);
+
+    // tìm hồ sơ mới theo phòng ban nhận
+    @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus = 'NEW' AND d.receivingDept.id = ?1")
+    List<OpsDossier> findNewDossiersByDept(Long deptId);
+
+    @Query(value = """
+                SELECT d.dossier_code
+                FROM ops_dossiers d
+                WHERE d.dossier_code LIKE CONCAT(:prefix, '%')
+                ORDER BY d.dossier_code DESC
+                LIMIT 1
+            """, nativeQuery = true)
+    Optional<String> findLatestDossierCode(@Param("prefix") String prefix);
+
+    // tìm hồ sơ theo trạng thái và mã dịch vụ bắt đầu với
+    List<OpsDossier> findByDossierStatusAndServiceServiceCodeStartingWith(
+            String status, String serviceCodePrefix);
+
+    // [NEW] Optimized Query (Eager Fetch)
+    @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service WHERE d.dossierStatus = :status AND d.service.serviceCode LIKE CONCAT(:serviceCodePrefix, '%')")
+    List<OpsDossier> findWithRelationsByDossierStatusAndServiceServiceCodeStartingWith(
+            @Param("status") String status, @Param("serviceCodePrefix") String serviceCodePrefix);
+
+    // tìm hồ sơ theo cán bộ thụ lý hiện tại, trạng thái và mã dịch vụ bắt đầu với
+    List<OpsDossier> findByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
+            Long handlerId, String status, String serviceCodePrefix);
+
+    // [NEW] Optimized Query with Handler (Eager Fetch)
+    @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service WHERE d.currentHandler.id = :handlerId AND d.dossierStatus = :status AND d.service.serviceCode LIKE CONCAT(:serviceCodePrefix, '%')")
+    List<OpsDossier> findWithRelationsByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
+            @Param("handlerId") Long handlerId, @Param("status") String status,
+            @Param("serviceCodePrefix") String serviceCodePrefix);
+
+    // Helper to fetch with relations for detail view
+    @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service LEFT JOIN FETCH d.currentHandler WHERE d.id = :id")
+    Optional<OpsDossier> findWithRelationsById(@Param("id") Long id);
+
 }
