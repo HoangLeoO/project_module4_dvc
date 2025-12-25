@@ -179,7 +179,11 @@ public class TuPhapController {
                     }
                 }
             }
-            messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
+            try {
+                messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
+            } catch (Exception websocketException) {
+                websocketException.printStackTrace();
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
