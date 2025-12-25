@@ -130,19 +130,6 @@ public class SysUserService implements ISysUserService {
             userRole.setRole(role);
             userRoleRepository.save(userRole);
         }
-
-        // 5. Assign Roles
-        if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
-            for (Long roleId : dto.getRoleIds()) {
-                org.example.project_module4_dvc.entity.sys.SysRole role = roleRepository.findById(roleId)
-                        .orElseThrow(() -> new RuntimeException("Role không tồn tại: " + roleId));
-
-                org.example.project_module4_dvc.entity.sys.SysUserRole userRole = new org.example.project_module4_dvc.entity.sys.SysUserRole();
-                userRole.setUser(user);
-                userRole.setRole(role);
-                userRoleRepository.save(userRole);
-            }
-        }
     }
 
     @Override

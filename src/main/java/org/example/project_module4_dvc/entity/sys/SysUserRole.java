@@ -12,22 +12,17 @@ import lombok.*;
 @AllArgsConstructor
 public class SysUserRole {
 
-    // Nhúng Composite Key vào đây
-    @EmbeddedId
-    private SysUserRoleId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // --- Mối quan hệ với User ---
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId") // Map field này vào thuộc tính 'userId' của class SysUserRoleId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private SysUser user;
 
     // --- Mối quan hệ với Role ---
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId") // Map field này vào thuộc tính 'roleId' của class SysUserRoleId
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     private SysRole role;
-
-    // Lưu ý: SQL hiện tại của bạn không có cột created_at,
-    // nếu sau này thêm cột 'granted_date' thì khai báo thêm ở dưới đây dễ dàng.
 }
