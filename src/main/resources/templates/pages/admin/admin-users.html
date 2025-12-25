@@ -69,13 +69,23 @@
 
             <main class="flex-grow-1 p-4">
 
+                <!-- ALERTS -->
+                <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><span th:text="${message}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
                 <div class="card border-0 shadow-sm">
                     <div
                         class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold">Danh sách Cán bộ</h5>
-                        <button class="btn btn-primary btn-sm fw-bold" disabled
-                            style="opacity: 0.5; cursor: not-allowed;"><i class="bi bi-person-plus-fill me-2"></i>Thêm
-                            mới
+                        <button class="btn btn-primary btn-sm fw-bold" data-bs-toggle="modal"
+                            data-bs-target="#addUserModal">
+                            <i class="bi bi-person-plus-fill me-2"></i>Thêm mới
                         </button>
                     </div>
                     <div class="card-body">
@@ -154,13 +164,20 @@
                                         </td>
 
                                         <td class="text-center">
-                                            <button class="btn btn-sm btn-outline-secondary" disabled
-                                                style="opacity: 0.5; cursor: not-allowed;">
+                                            <button class="btn btn-sm btn-outline-secondary" th:data-id="${u.id}"
+                                                th:data-username="${u.username}" th:data-dept-id="${u.deptId}"
+                                                th:data-role-ids="${#strings.listJoin(u.roleIds, ',')}"
+                                                onclick="openEditModal(this)">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" disabled
-                                                style="opacity: 0.5; cursor: not-allowed;">
-                                                <i class="bi bi-key"></i>
+
+                                            <!-- Lock/Unlock -->
+                                            <button class="btn btn-sm"
+                                                th:classappend="${u.isActive} ? 'btn-outline-danger' : 'btn-outline-success'"
+                                                th:onclick="'confirmToggle(' + ${u.id} + ', ' + ${u.isActive} + ')'"
+                                                th:title="${u.isActive} ? 'Khóa tài khoản' : 'Mở khóa'">
+                                                <i class="bi"
+                                                    th:classappend="${u.isActive} ? 'bi-lock' : 'bi-unlock'"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -175,8 +192,217 @@
         </div>
     </div>
 
+    <!-- MODAL ADD USER -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form action="/admin/users/create" method="post" id="createUserForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Thêm cán bộ mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Error Alert -->
+                        <div id="modalErrorAlert" class="alert alert-danger d-none">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i><span id="modalErrorText"></span>
+                        </div>
+
+                        <!-- 1. Search Citizen -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tìm kiếm Công dân (Dữ liệu gốc) <span
+                                    class="text-danger">*</span></label>
+                            <div class="position-relative">
+                                <input type="text" class="form-control" id="citizenSearch"
+                                    placeholder="Nhập CCCD hoặc Họ tên để tìm kiếm..." autocomplete="off">
+                                <input type="hidden" name="citizenId" id="selectedCitizenId" required>
+
+                                <div id="searchResults" class="list-group position-absolute w-100 shadow mt-1"
+                                    style="z-index: 1050; display: none;"></div>
+                            </div>
+                            <small class="text-danger d-none" id="citizenError">Vui lòng tìm và chọn một công
+                                dân.</small>
+                            <div id="selectedCitizenInfo" class="mt-2 alert alert-info d-none">
+                                <strong>Đã chọn:</strong> <span id="selectedName"></span> (<span
+                                    id="selectedCccd"></span>)
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- 2. Account Info -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                                <input type="text" name="username" class="form-control" required minlength="4">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" name="password" class="form-control" required minlength="6">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Họ và tên hiển thị (Để trống sẽ lấy từ Công dân)</label>
+                                <input type="text" name="fullName" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- 3. Roles & Dept -->
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Đơn vị hành chính <span class="text-danger">*</span></label>
+                                <select name="deptId" class="form-select" required>
+                                    <option value="">-- Chọn Đơn vị --</option>
+                                    <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.deptName}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Vai trò (Roles) <span class="text-danger">*</span></label>
+                                <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <div class="form-check" th:each="r : ${roles}">
+                                        <input class="form-check-input role-checkbox-create" type="checkbox"
+                                            name="roleIds" th:value="${r.id}" th:id="'role_' + ${r.id}">
+                                        <label class="form-check-label" th:for="'role_' + ${r.id}"
+                                            th:text="${r.description} + ' (' + ${r.roleName} + ')'"></label>
+                                    </div>
+                                </div>
+                                <small class="text-danger d-none" id="roleError">Vui lòng chọn ít nhất 1 vai
+                                    trò.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- JS Logic -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script>
+        // Create User Validation & AJAX Submit
+        document.getElementById('createUserForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Always prevent default for AJAX
+
+            let isValid = true;
+
+            // 1. Check Citizen ID
+            const citizenId = document.getElementById('selectedCitizenId').value;
+            const citizenError = document.getElementById('citizenError');
+            if (!citizenId) {
+                citizenError.classList.remove('d-none');
+                isValid = false;
+            } else {
+                citizenError.classList.add('d-none');
+            }
+
+            // 2. Check Roles
+            const roleCheckboxes = document.querySelectorAll('.role-checkbox-create:checked');
+            const roleError = document.getElementById('roleError');
+            if (roleCheckboxes.length === 0) {
+                roleError.classList.remove('d-none');
+                isValid = false;
+            } else {
+                roleError.classList.add('d-none');
+            }
+
+            if (!isValid) return;
+
+            // AJAX Submit
+            const form = e.target;
+            const formData = new FormData(form);
+            const modalError = document.getElementById('modalErrorAlert');
+            const modalErrorText = document.getElementById('modalErrorText');
+
+            // Hide previous error if any
+            modalError.classList.add('d-none');
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        // Show error in modal
+                        modalErrorText.textContent = data.error;
+                        modalError.classList.remove('d-none');
+                    } else {
+                        // Success -> Reload
+                        alert(data.message); // Simple alert or just reload
+                        location.reload();
+                    }
+                })
+                .catch(err => {
+                    modalErrorText.textContent = "Lỗi kết nối server";
+                    modalError.classList.remove('d-none');
+                });
+        });
+
+        // Search Logic
+        const searchInput = document.getElementById('citizenSearch');
+        const resultsDiv = document.getElementById('searchResults');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/admin/api/citizens/search?term=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsDiv.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(citizen => {
+                                const item = document.createElement('a');
+                                item.className = 'list-group-item list-group-item-action';
+                                item.href = '#';
+                                item.innerHTML = `<div><strong>${citizen.fullName}</strong></div><small>CCCD: ${citizen.cccd}</small>`;
+                                item.onclick = (e) => {
+                                    e.preventDefault();
+                                    selectCitizen(citizen);
+                                };
+                                resultsDiv.appendChild(item);
+                            });
+                            resultsDiv.style.display = 'block';
+                        } else {
+                            resultsDiv.style.display = 'none';
+                        }
+                    });
+            }, 300);
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+                resultsDiv.style.display = 'none';
+            }
+        });
+
+        function selectCitizen(citizen) {
+            document.getElementById('selectedCitizenId').value = citizen.id;
+            document.getElementById('selectedName').textContent = citizen.fullName;
+            document.getElementById('selectedCccd').textContent = citizen.cccd;
+            document.getElementById('selectedCitizenInfo').classList.remove('d-none');
+            document.getElementById('citizenError').classList.add('d-none'); // Clear error
+
+            // Auto-fill Full Name
+            const fullNameInput = document.querySelector("input[name='fullName']");
+            if (fullNameInput) {
+                fullNameInput.value = citizen.fullName;
+            }
+
+            resultsDiv.style.display = 'none';
+            searchInput.value = ''; // Clear search input
+        }
+    </script>
 
 </html>

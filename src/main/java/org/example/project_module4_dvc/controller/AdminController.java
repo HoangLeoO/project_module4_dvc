@@ -7,13 +7,14 @@ import org.example.project_module4_dvc.service.iml.IDashboardAlertService;
 import org.example.project_module4_dvc.service.mod.IModFeedbackService;
 import org.example.project_module4_dvc.service.iml.ISysDepartmentService;
 import org.example.project_module4_dvc.service.sys.ISysUserRoleService;
+import org.example.project_module4_dvc.service.sys.ISysUserRoleService;
 import org.example.project_module4_dvc.service.sys.ISysUserService;
+import org.example.project_module4_dvc.repository.sys.SysRoleRepository;
 import org.springframework.data.domain.PageRequest;
 import org.example.project_module4_dvc.service.ops.IOpsDossierService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 
 @Controller
 @RequestMapping("/admin")
@@ -27,12 +28,14 @@ public class AdminController {
     private final ISysUserService sysUserService;
     private final ISysUserRoleService sysUserRoleService;
 
+    private final SysRoleRepository sysRoleRepository;
+
+    private final org.example.project_module4_dvc.repository.mock.MockCitizenRepository mockCitizenRepository;
 
     @GetMapping("/")
     public String showDashboard(
             @RequestParam(defaultValue = "0") int page,
-            Model model
-    ) {
+            Model model) {
         model.addAttribute("summary", opsDossierService.getSummary());
         model.addAttribute("chartData", opsDossierService.getChartData());
 
@@ -51,29 +54,23 @@ public class AdminController {
     public String showRecords(
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
-            Model model
-    ) {
+            Model model) {
         // 1. Danh sách hồ sơ (phân trang)
         model.addAttribute(
                 "dossiers",
                 opsDossierService.getAdminDossierPage(
-                        PageRequest.of(page, 10)
-                )
-        );
+                        PageRequest.of(page, 10)));
 
         // 2. Alert tổng
         model.addAttribute(
                 "overdueCount",
-                opsDossierService.getOverdueDossiers().size()
-        );
+                opsDossierService.getOverdueDossiers().size());
 
         model.addAttribute(
                 "nearlyDueCount",
                 opsDossierService
                         .getNearlyDueAlerts(PageRequest.of(0, 1))
-                        .getTotalElements()
-        );
-
+                        .getTotalElements());
 
         // 3. Trạng thái đang chọn (để giữ filter)
         model.addAttribute("currentStatus", status);
@@ -84,8 +81,7 @@ public class AdminController {
     @GetMapping("/feedbacks")
     public String showFeedbacks(
             @RequestParam(defaultValue = "0") int page,
-            Model model
-    ) {
+            Model model) {
 
         model.addAttribute("feedbacks", modFeedbackService.getAllFeedbacks(
                 PageRequest.of(page, 10)));
@@ -98,8 +94,7 @@ public class AdminController {
     public String listServices(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false, name = "new") Boolean isNew,
-            Model model
-    ) {
+            Model model) {
         model.addAttribute("services", catServiceService.findAll());
 
         if (Boolean.TRUE.equals(isNew)) {
@@ -108,7 +103,7 @@ public class AdminController {
             model.addAttribute("selectedService",
                     catServiceService.findById(id).orElse(new CatService()));
         } else {
-            model.addAttribute("selectedService", new CatService());
+            model.addAttribute("selectedService", null);
         }
 
         return "pages/admin/admin-services";
@@ -118,9 +113,9 @@ public class AdminController {
      * Lưu (thêm / sửa)
      */
     @PostMapping("/services/save")
-    public String saveService(@ModelAttribute CatService service) {
-        catServiceService.save(service);
-        return "redirect:/admin/services?id=" + service.getId();
+    public String saveService(@ModelAttribute CatService catService) {
+        catServiceService.save(catService);
+        return "redirect:/admin/services";
     }
 
     /**
@@ -137,8 +132,60 @@ public class AdminController {
 
         model.addAttribute("users", sysUserService.getOfficials());
         model.addAttribute("departments", sysDepartmentService.getAll());
-        model.addAttribute("roles", sysUserRoleService.findAll());
+        model.addAttribute("roles", sysRoleRepository.findAll());
 
         return "pages/admin/admin-users";
+    }
+
+    // API Search Citizens (Autocomplete)
+    @GetMapping("/api/citizens/search")
+    @ResponseBody
+    public java.util.List<org.example.project_module4_dvc.entity.mock.MockCitizen> searchCitizens(
+            @RequestParam String term) {
+        return mockCitizenRepository.findByCccdContainingOrFullNameContainingIgnoreCase(term, term);
+    }
+
+    // Create User
+    // Create User
+    @PostMapping("/users/create")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> createUser(
+            @ModelAttribute org.example.project_module4_dvc.dto.admin.AdminCreateUserDTO dto) {
+        try {
+            sysUserService.createOfficial(dto);
+            return org.springframework.http.ResponseEntity.ok()
+                    .body(java.util.Collections.singletonMap("message", "Tạo cán bộ thành công"));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.badRequest()
+                    .body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
+    // Update User
+    @PostMapping("/users/update")
+    public String updateUser(
+            @ModelAttribute org.example.project_module4_dvc.dto.admin.AdminUpdateUserDTO dto,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            sysUserService.updateOfficial(dto);
+            redirectAttributes.addFlashAttribute("message", "Cập nhật cán bộ thành công");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    // Toggle Status
+    @PostMapping("/users/toggle-status/{id}")
+    public String toggleStatus(
+            @PathVariable Long id,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            sysUserService.toggleStatus(id);
+            redirectAttributes.addFlashAttribute("message", "Thay đổi trạng thái thành công");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+        }
+        return "redirect:/admin/users";
     }
 }
