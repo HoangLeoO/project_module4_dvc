@@ -6,6 +6,7 @@ import org.example.project_module4_dvc.service.learder.LandConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.Map;
 
 @RestController
@@ -13,6 +14,8 @@ import java.util.Map;
 public class LandConversionController {
     @Autowired
     private LandConversionService landConversionService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     /**
      * Bước 1: Nộp hồ sơ
@@ -85,6 +88,9 @@ public class LandConversionController {
             String comments = (String) request.get("comments");
             OpsDossier result = landConversionService.submitToLeader(
                     dossierId, officerId, chairmanId, comments);
+
+            // Send WebSocket notification to leader
+            messagingTemplate.convertAndSend("/topic/dossiers/leader", "forwarded_to_leader");
 
             return ResponseEntity.ok(Map.of(
                     "status", "success",

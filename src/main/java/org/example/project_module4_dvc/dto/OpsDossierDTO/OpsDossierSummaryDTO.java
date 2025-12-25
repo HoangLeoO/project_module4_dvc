@@ -31,6 +31,9 @@ public class OpsDossierSummaryDTO {
 
     private boolean hasResult;
 
+    // Trạng thái thanh toán
+    private String paymentStatus;
+
     // /**
     // * Constructor cho JPQL Query
     // */
@@ -42,7 +45,8 @@ public class OpsDossierSummaryDTO {
             String applicantFullName,
             String serviceName,
             String handlerFullName,
-            Long resultId) {
+            Long resultId,
+            String paymentStatus) {
         this.dossierId = dossierId;
         this.dossierCode = dossierCode;
         this.dossierStatus = dossierStatus;
@@ -51,5 +55,6 @@ public class OpsDossierSummaryDTO {
         this.serviceName = serviceName;
         this.handlerFullName = handlerFullName;
         this.hasResult = resultId != null;
+        this.paymentStatus = paymentStatus;
     }
 }

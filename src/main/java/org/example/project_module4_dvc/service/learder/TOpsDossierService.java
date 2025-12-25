@@ -102,6 +102,10 @@ public class TOpsDossierService implements ITOpsDossierService {
         // Lưu vào DB (Lúc này JPA tự động thực hiện LAST_INSERT_ID để lấy ID)
         dossier = dossierRepository.save(dossier);
 
+        // Set dossierCode and id back to request DTO (for VNPay payment URL generation)
+        request.setDossierCode(dossierCode);
+        request.setId(dossier.getId());
+
         // ================================================================
         // BƯỚC 2: LƯU FILE (ops_dossier_files)
         // ================================================================

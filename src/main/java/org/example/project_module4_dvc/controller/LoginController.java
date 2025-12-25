@@ -1,6 +1,5 @@
 package org.example.project_module4_dvc.controller;
 
-
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,12 +13,12 @@ public class LoginController {
     @Autowired
     private ISysUserService userService;
 
-//    @RequestMapping(value = "", method = RequestMethod.GET)
-//    public String landingPage() {
-//        return "citizen/home";
-//    }
+    // @RequestMapping(value = "", method = RequestMethod.GET)
+    // public String landingPage() {
+    // return "citizen/home";
+    // }
 
-    @RequestMapping(value = "login/citizen", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public String loginPageCitizen() {
         return "pages/login";
     }

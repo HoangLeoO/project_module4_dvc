@@ -2,6 +2,7 @@ package org.example.project_module4_dvc.controller.dossier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.project_module4_dvc.config.CustomUserDetails;
 import org.example.project_module4_dvc.dto.dossier.NewDossierDTO;
 import org.example.project_module4_dvc.dto.formData.DeathRegistrationFormDTO;
@@ -13,6 +14,7 @@ import org.example.project_module4_dvc.entity.sys.SysUser;
 import org.example.project_module4_dvc.repository.cat.CatServiceRepository;
 import org.example.project_module4_dvc.service.autoFill.AutoFillService;
 import org.example.project_module4_dvc.service.learder.ITOpsDossierService;
+import org.example.project_module4_dvc.service.payment.PaymentService;
 import org.example.project_module4_dvc.service.sys.ISysUserService;
 import org.example.project_module4_dvc.service.sys.SysDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.math.BigInteger;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +55,10 @@ public class PortalController {
 
     @Autowired
     private SysDepartmentService sysDepartmentService;
+    @Autowired
+    private PaymentService paymentService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("services/death/{serviceCode}")
     public String death(Model mode, @PathVariable String serviceCode) {
@@ -119,7 +126,7 @@ public class PortalController {
     public ResponseEntity<?> submitDossier(
             @RequestParam Map<String, String> allParams,
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest request) {
         try {
             if (userDetails == null) {
                 return ResponseEntity.status(401).body(Map.of("status", "error", "message", "Vui lòng đăng nhập"));
@@ -175,18 +182,40 @@ public class PortalController {
             Map<String, Object> cleanFormData = objectMapper.convertValue(formDto, Map.class);
             dto.setFormData(cleanFormData);
 
+            dto.setPaymentStatus("UNPAID");
+
             SysUser currentUser = sysUserService.findById(userDetails.getUserId());
 
             dossierService.submitDossier(dto, files, currentUser);
 
-            return ResponseEntity.ok(Map.of(
-                    "message", "Nộp hồ sơ thành công",
-                    "status", "success",
-                    "serviceCode", service.getServiceCode()));
+            // 8. Tạo URL thanh toán
+            String paymentUrl = "";
+            long amount = 30000; // Default fee
+            if (service.getFeeAmount() != null && service.getFeeAmount().longValue() > 0) {
+                amount = service.getFeeAmount().longValue();
+            }
+
+            // Generate VNPay URL
+            String orderInfo = "Thanh toan le phi ho so " + dto.getDossierCode();
+            paymentUrl = paymentService.createPaymentUrl(amount, orderInfo, dto.getDossierCode(),
+                    org.example.project_module4_dvc.config.VnPayConfig.getIpAddress(request));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Nộp hồ sơ thành công! Đang chuyển hướng thanh toán...");
+            response.put("dossierCode", dto.getDossierCode());
+            response.put("dossierId", dto.getId());
+            response.put("paymentUrl", paymentUrl);
+
+            // WebSocket notification moved to PaymentController after payment success
+
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of("message", "Lỗi: " + e.getMessage()));
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 }

@@ -27,7 +27,7 @@
                 <label class="form-label small">Thời gian xác nhận</label>
                 <input type="text" class="form-control" th:value="${formData.confirmationPeriod ?: ''}" readonly>
             </div>
-            <div class="col-md-2 d-flex align-items-end">
+            <div class="col-md-2 d-flex align-items-end" th:if="${showVerifyButton != null and showVerifyButton}">
                 <button type="button" class="btn btn-outline-primary w-100" id="btnVerifyMaritalStatus"
                     th:data-id-number="${formData.idNumber ?: ''}"
                     th:data-declared-status="${formData.currentMaritalStatus ?: ''}">
@@ -36,7 +36,8 @@
             </div>
         </div>
         <!-- Kết quả kiểm tra tình trạng hôn nhân -->
-        <div id="maritalVerificationResult" class="mb-4" style="display: none;">
+        <div id="maritalVerificationResult" class="mb-4" style="display: none;"
+            th:if="${showVerifyButton != null and showVerifyButton}">
             <div class="alert mb-0" id="maritalVerificationAlert">
                 <div class="d-flex align-items-center">
                     <i class="bi fs-4 me-3" id="maritalVerificationIcon"></i>
@@ -52,7 +53,7 @@
         <div class="row g-3">
             <div class="col-md-12">
                 <label class="form-label small">Mục đích sử dụng giấy chứng nhận</label>
-                <textarea class="form-control" th:value="${formData.purposeOfUse ?: ''}" readonly></textarea>
+                <textarea class="form-control" th:text="${formData.purposeOfUse ?: ''}" readonly></textarea>
             </div>
         </div>
     </form>

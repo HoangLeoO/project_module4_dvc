@@ -80,4 +80,17 @@ public class OpsDossier {
 
     @OneToOne(mappedBy = "dossier", fetch = FetchType.LAZY)
     private OpsDossierResult result;
+
+    // --- Thông tin thanh toán VNPay ---
+    @Column(name = "payment_status", length = 20)
+    private String paymentStatus; // UNPAID, PAID, FAILED
+
+    @Column(name = "payment_amount")
+    private Long paymentAmount;
+
+    @Column(name = "payment_date")
+    private LocalDateTime paymentDate;
+
+    @Column(name = "transaction_code", length = 50)
+    private String transactionCode;
 }

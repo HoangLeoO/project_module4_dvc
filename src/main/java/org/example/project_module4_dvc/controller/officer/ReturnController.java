@@ -32,7 +32,7 @@ public class ReturnController {
                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
-        Page<NewDossierDTO> page = officerService.findAll("APPROVED", userDetails.getDepartmentName(), pageable);
+        Page<NewDossierDTO> page = officerService.findAll("APPROVED", userDetails.getDepartmentName(), "PAID",pageable);
         model.addAttribute("dossiers", page);
         return "pages/officer/officer-return";
     }

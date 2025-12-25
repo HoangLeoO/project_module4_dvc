@@ -24,6 +24,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -43,6 +48,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SpecialistDashboardController {
 
     private final SpecialistService specialistService_1;
+    private SimpMessagingTemplate messagingTemplate;
     private final IOfficerService officerService;
 
     private final FileStorageService fileStorageService;
@@ -51,12 +57,10 @@ public class SpecialistDashboardController {
     private final IOpsDossierFileService opsDossierFileService;
     private final MockCitizenRepository mockCitizenRepository;
 
-
-    private SimpMessagingTemplate messagingTemplate;
-
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
             ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
+            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
@@ -68,14 +72,14 @@ public class SpecialistDashboardController {
 
     @GetMapping("")
     public String getDossierList(Model model,
-                                 @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
-                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("specialistId", userDetails.getUserId());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         System.out.println(userDetails.getDepartmentName());
         Page<NewDossierDTO> page = specialistService.findAll("PENDING", userDetails.getDepartmentName(),
-                userDetails.getUserId(), pageable);
+                userDetails.getUserId(), "PAID", pageable);
         List<NewDossierDTO> nearDueList = specialistService.findNearlyDue(userDetails.getDepartmentName(),
                 userDetails.getUserId());
         model.addAttribute("nearDueCount", nearDueList.size());
@@ -86,7 +90,7 @@ public class SpecialistDashboardController {
 
     @GetMapping("/reception")
     public String getReceptionForm(Model model, @RequestParam("id") Long id,
-                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         List<OpsDossierFile> opsDossierFile = officerService.findFileByDossierId(id);
@@ -148,6 +152,7 @@ public class SpecialistDashboardController {
         model.addAttribute("formData", formDataDTO);
         model.addAttribute("specialists", specialists);
         model.addAttribute("formFragment", fragmentPath);
+        model.addAttribute("showVerifyButton", true); // Show verification button on specialist page
 
         return "pages/specialist/specialist-reception";
     }
@@ -156,12 +161,18 @@ public class SpecialistDashboardController {
     public String updateDossierStatus(@RequestParam("dossierId") Long id, RedirectAttributes redirectAttributes) {
         NewDossierDTO newDossierDTO = officerService.findById(id);
         specialistService.updateDossierStatus(id, "VERIFIED", Long.valueOf(2), newDossierDTO.getDueDate(), "");
+
+        // Notify leader about new dossier for approval
+        messagingTemplate.convertAndSend("/topic/dossiers/leader", "forwarded_to_leader");
+
         redirectAttributes.addFlashAttribute("toastType", "success");
         redirectAttributes.addFlashAttribute("toastMessage", "Đã chuyển tiếp hồ sơ thành công!");
         return "redirect:/specialist/dashboard";
     }
+
     @PostMapping("reception/reject")
-    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason, RedirectAttributes redirectAttributes) {
+    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason,
+            RedirectAttributes redirectAttributes) {
         officerService.updateDossierRejectStatus(id, "REJECTED", reason);
         redirectAttributes.addFlashAttribute("toastType", "success");
         redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
