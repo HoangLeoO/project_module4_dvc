@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="land_split_merge(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${d.serviceCode == 'DD03_TACHHOP' && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Thông tin đăng ký tách/gộp thửa đất
+        </h5>
+
+        <div class="row g-3">
+            <!-- Land Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Thông tin Thửa đất gốc</h6>
+                <div class="row g-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Số giấy chứng nhận</label>
+                        <span class="fw-bold" th:text="${d.formData['landCertificateNumber']}">---</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Số thửa</label>
+                        <span class="fw-bold" th:text="${d.formData['landPlotNumber']}">---</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Tờ bản đồ</label>
+                        <span class="fw-bold" th:text="${d.formData['mapSheetNumber']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Diện tích gốc (m²)</label>
+                        <span class="fw-bold" th:text="${d.formData['originalAreaM2']}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Split/Merge Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-scissors me-2"></i>Thông tin
+                    Tách/Gộp</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Số lô đất mới</label>
+                        <span class="fw-bold" th:text="${d.formData['numberOfNewPlots']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Đã hoàn thành khảo sát</label>
+                        <span class="fw-bold" th:switch="${d.formData['surveyCompleted']}">
+                            <span th:case="true">Có</span>
+                            <span th:case="false">Chưa</span>
+                            <span th:case="*">---</span>
+                        </span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Lý do tách/gộp</label>
+                        <span class="fw-bold" th:text="${d.formData['splitReason']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3"
+                        th:if="${d.formData['requestedSplitAreas'] != null and !d.formData['requestedSplitAreas'].isEmpty()}">
+                        <label class="small text-muted d-block">Diện tích các lô đất đề nghị (m²)</label>
+                        <div class="bg-light p-3 rounded">
+                            <ul class="mb-0">
+                                <li th:each="area, iterStat : ${d.formData['requestedSplitAreas']}" class="mb-1">
+                                    <span class="fw-bold">Lô <span th:text="${iterStat.index + 1}">1</span>:</span>
+                                    <span th:text="${area}">---</span> m²
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
