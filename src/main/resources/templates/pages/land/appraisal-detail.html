@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thẩm Định Hồ Sơ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/internal.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --primary-gradient: linear-gradient(135deg, #0f4c81 0%, #1e6091 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 76, 129, 0.2);
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.5rem;
+            color: #64748b;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+            margin-bottom: 4px;
+        }
+
+        .nav-link-custom:hover {
+            background-color: #f8fafc;
+            color: var(--bs-primary);
+        }
+
+        .nav-link-custom.active {
+            background-color: #f0f9ff;
+            color: var(--bs-primary);
+            border-right-color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .nav-link-custom i {
+            font-size: 1.25rem;
+            width: 2rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            padding: 0 2rem;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .btn-action {
+            border-radius: 50rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="~{pages/land/fragments/land-layout :: sidebar}" th:with="currentPage='appraisal'"></div>
+    <div class="main-content">
+        <nav th:replace="~{pages/land/fragments/land-layout :: header}"></nav>
+        <main class="p-4 flex-grow-1">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="dashboard-card mb-4 p-4">
+                        <h6 class="fw-bold mb-4 d-flex align-items-center text-success">
+                            <i class="bi bi-clipboard-check-fill me-2 fs-5"></i>
+                            Thẩm định hồ sơ
+                        </h6>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold text-uppercase">Mã hồ sơ</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i
+                                            class="bi bi-file-earmark-text text-muted"></i></span>
+                                    <input th:value="${dossier.dossierCode}" type="text"
+                                        class="form-control border-start-0 ps-0 fw-medium text-dark" readonly
+                                        style="background-color: #f8fafc;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold text-uppercase">Người nộp</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i
+                                            class="bi bi-person text-muted"></i></span>
+                                    <input th:value="${dossier.applicant.fullName}" type="text"
+                                        class="form-control border-start-0 ps-0 fw-medium text-dark" readonly
+                                        style="background-color: #f8fafc;">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted fw-bold text-uppercase">Dịch vụ</label>
+                                <div
+                                    class="p-3 bg-success bg-opacity-10 rounded border border-success border-opacity-25 text-success fw-semibold">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    <span th:text="${dossier.service.serviceName}"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <!-- Dynamic Form Content -->
+                                <th:block th:if="${formFragment != null}">
+                                    <div th:replace="~{__${formFragment}__}"></div>
+                                </th:block>
+                                <th:block th:unless="${formFragment != null}">
+                                    <div class="alert alert-warning">Không có thông tin chi tiết (Template not found)
+                                    </div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="dashboard-card p-4 text-center sticky-top" style="top: 90px;">
+                        <div class="mb-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3 text-success mb-3">
+                                <i class="bi bi-clipboard-check-fill fs-2"></i>
+                            </div>
+                            <h5 class="fw-bold">Kết quả thẩm định</h5>
+                            <p class="text-muted small">Đánh giá hồ sơ và đưa ra kết luận</p>
+                        </div>
+                        <form th:action="@{/specialist/land/appraisal/submit}" method="post">
+                            <input type="hidden" name="dossierId" th:value="${dossier.id}" />
+                            <div class="mb-3 text-start">
+                                <label class="form-label fw-bold">Kết quả:</label>
+                                <select name="result" class="form-select" required>
+                                    <option value="">-- Chọn --</option>
+                                    <option value="PASS">✅ Đạt - Đủ điều kiện</option>
+                                    <option value="FAIL">❌ Không đạt</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 text-start">
+                                <label class="form-label fw-bold">Nhận xét chi tiết:</label>
+                                <textarea name="comments" class="form-control" rows="5" required
+                                    placeholder="Nhập nhận xét về kết quả thẩm định..."></textarea>
+                            </div>
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-success btn-action text-white">
+                                    <i class="bi bi-check2-circle me-2"></i>Gửi kết quả
+                                </button>
+                                <a th:href="@{/specialist/land/submit-leader/{id}(id=${dossier.id})}"
+                                    class="btn btn-primary btn-action">
+                                    <i class="bi bi-arrow-up-circle me-2"></i>Trình lãnh đạo
+                                </a>
+                                <a th:href="@{/specialist/land/appraisal}" class="btn btn-outline-secondary btn-action">
+                                    <i class="bi bi-arrow-left me-2"></i>Quay lại
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

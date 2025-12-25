@@ -27,4 +27,6 @@ public interface CatWorkflowStepRepository extends JpaRepository<CatWorkflowStep
                 ORDER BY ws.stepOrder ASC
             """)
     List<IWorkflowStepProjectionDTO> findByServiceIdOrderByStepOrderAsc(@Param("serviceId") Long serviceId);
+
+    CatWorkflowStep findByServiceIdAndStepOrder(Long serviceId, Integer stepOrder);
 }

@@ -26,4 +26,12 @@ public interface OpsDossierLogRepository extends JpaRepository<OpsDossierLog, Lo
                 ORDER BY l.created_at ASC
             """, nativeQuery = true)
     List<IDossierLogProjectionDTO> findLogsByDossierId(@Param("dossierId") Long dossierId);
+
+    // Dùng để lấy tất cả log của hồ sơ, sắp xếp theo thời gian tạo giảm dần
+    List<OpsDossierLog> findByDossierIdOrderByCreatedAtDesc(Long dossierId);
+
+    // Thêm method mới
+    // Dùng để lấy tất cả log của hồ sơ, sắp xếp theo thời gian tạo tăng dần
+    List<OpsDossierLog> findByDossierIdOrderByCreatedAtAsc(Long dossierId);
+
 }

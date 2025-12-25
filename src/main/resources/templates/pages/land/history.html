@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Xử Lý</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/internal.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --primary-gradient: linear-gradient(135deg, #0f4c81 0%, #1e6091 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 76, 129, 0.2);
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.5rem;
+            color: #64748b;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+            margin-bottom: 4px;
+        }
+
+        .nav-link-custom:hover {
+            background-color: #f8fafc;
+            color: var(--bs-primary);
+        }
+
+        .nav-link-custom.active {
+            background-color: #f0f9ff;
+            color: var(--bs-primary);
+            border-right-color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .nav-link-custom i {
+            font-size: 1.25rem;
+            width: 2rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            padding: 0 2rem;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -2rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #0f4c81;
+        }
+
+        .timeline-dot.success {
+            border-color: #10b981;
+        }
+
+        .timeline-dot.warning {
+            border-color: #f59e0b;
+        }
+
+        .timeline-dot.danger {
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="~{pages/land/fragments/land-layout :: sidebar}" th:with="currentPage=''"></div>
+    <div class="main-content">
+        <nav th:replace="~{pages/land/fragments/land-layout :: header}"></nav>
+        <main class="p-4 flex-grow-1">
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1">Lịch Sử Xử Lý Hồ Sơ 📜</h3>
+                <p class="text-muted">Xem chi tiết quá trình xử lý hồ sơ</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="dashboard-card mb-4 p-4">
+                        <h6 class="fw-bold mb-4 d-flex align-items-center text-primary">
+                            <i class="bi bi-file-earmark-text-fill me-2 fs-5"></i>
+                            Thông tin hồ sơ
+                        </h6>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold text-uppercase">Mã hồ sơ</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i
+                                            class="bi bi-file-earmark-text text-muted"></i></span>
+                                    <input th:value="${dossier.dossierCode}" type="text"
+                                        class="form-control border-start-0 ps-0 fw-medium text-dark" readonly
+                                        style="background-color: #f8fafc;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold text-uppercase">Người nộp</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i
+                                            class="bi bi-person text-muted"></i></span>
+                                    <input th:value="${dossier.applicant.fullName}" type="text"
+                                        class="form-control border-start-0 ps-0 fw-medium text-dark" readonly
+                                        style="background-color: #f8fafc;">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted fw-bold text-uppercase">Dịch vụ</label>
+                                <div
+                                    class="p-3 bg-primary bg-opacity-10 rounded border border-primary border-opacity-25 text-primary fw-semibold">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    <span th:text="${dossier.service.serviceName}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card p-4">
+                        <h6 class="fw-bold mb-4 d-flex align-items-center text-success">
+                            <i class="bi bi-clock-history me-2 fs-5"></i>
+                            Timeline xử lý
+                        </h6>
+                        <div class="timeline">
+                            <div class="timeline-item" th:each="log, iterStat : ${logs}">
+                                <div class="timeline-dot"
+                                    th:classappend="${log.action == 'APPROVE'} ? 'success' : (${log.action == 'REJECT'} ? 'danger' : '')">
+                                </div>
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="fw-bold mb-0">
+                                                <span th:if="${log.action == 'SUBMIT'}">📝 Nộp hồ sơ</span>
+                                                <span th:if="${log.action == 'VERIFY_OK'}">✅ Tiếp nhận</span>
+                                                <span th:if="${log.action == 'APPRAISE'}">🔍 Thẩm định</span>
+                                                <span th:if="${log.action == 'SUBMIT_TO_LEADER'}">📤 Trình lãnh
+                                                    đạo</span>
+                                                <span th:if="${log.action == 'APPROVE'}">✅ Phê duyệt</span>
+                                                <span th:if="${log.action == 'REJECT'}">❌ Từ chối</span>
+                                                <span th:if="${log.action == 'UPDATE_LAND_DB'}">📚 Cập nhật sổ</span>
+                                                <span th:if="${log.action == 'FINISH'}">🎉 Hoàn tất</span>
+                                            </h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                <span
+                                                    th:text="${#temporals.format(log.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                            </small>
+                                        </div>
+                                        <p class="text-muted mb-2" th:text="${log.comments}"></p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border" th:if="${log.prevStatus}">
+                                                <span th:text="${log.prevStatus}"></span>
+                                            </span>
+                                            <span th:if="${log.prevStatus and log.nextStatus}">→</span>
+                                            <span class="badge bg-primary" th:if="${log.nextStatus}">
+                                                <span th:text="${log.nextStatus}"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="dashboard-card p-4 sticky-top" style="top: 90px;">
+                        <h6 class="fw-bold mb-3">Thống kê</h6>
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-1">Tổng số bước:</small>
+                            <strong class="fs-4" th:text="${#lists.size(logs)}">0</strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-1">Trạng thái hiện tại:</small>
+                            <span class="badge bg-primary" th:text="${dossier.dossierStatus}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-1">Ngày nộp:</small>
+                            <strong th:text="${#temporals.format(dossier.submissionDate, 'dd/MM/yyyy HH:mm')}"></strong>
+                        </div>
+                        <div class="mb-3" th:if="${dossier.finishDate}">
+                            <small class="text-muted d-block mb-1">Ngày hoàn tất:</small>
+                            <strong class="text-success"
+                                th:text="${#temporals.format(dossier.finishDate, 'dd/MM/yyyy HH:mm')}"></strong>
+                        </div>
+                        <hr>
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
