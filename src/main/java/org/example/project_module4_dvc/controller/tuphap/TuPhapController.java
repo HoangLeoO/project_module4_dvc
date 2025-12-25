@@ -1,6 +1,7 @@
 package org.example.project_module4_dvc.controller.tuphap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.project_module4_dvc.config.CustomUserDetails;
 import org.example.project_module4_dvc.entity.cat.CatService;
 import org.example.project_module4_dvc.entity.mock.MockCitizen;
@@ -17,8 +18,10 @@ import org.example.project_module4_dvc.repository.sys.SysUserRepository;
 import org.example.project_module4_dvc.service.FileStorageService;
 import org.example.project_module4_dvc.service.cat.ICatServiceService;
 import org.example.project_module4_dvc.service.mock.IMockCitizenService;
+import org.example.project_module4_dvc.service.payment.PaymentService;
 import org.example.project_module4_dvc.service.sys.SysDepartmentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -60,8 +63,8 @@ public class TuPhapController {
             SysUserRepository sysUserRepository, SysDepartmentRepository sysDepartmentRepository,
             OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
             FileStorageService fileStorageService, ObjectMapper objectMapper,
-            MockCitizenRepository mockCitizenRepository, SimpMessagingTemplate messagingTemplate) {
-            MockCitizenRepository mockCitizenRepository, PaymentService paymentService) {
+            MockCitizenRepository mockCitizenRepository, SimpMessagingTemplate messagingTemplate,
+            PaymentService paymentService) {
         this.catServiceService = catServiceService;
         this.mockCitizenService = mockCitizenService;
         this.sysDepartmentService = sysDepartmentService;
@@ -122,7 +125,8 @@ public class TuPhapController {
             @RequestParam("confirmationPeriod") String confirmationPeriod,
             @RequestParam("purposeOfUse") String purposeOfUse,
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            HttpServletRequest request) {
 
         try {
             // 1. Lấy thông tin Service
@@ -190,11 +194,24 @@ public class TuPhapController {
                 websocketException.printStackTrace();
             }
 
+            // 8. Tạo URL thanh toán
+            String paymentUrl = "";
+            long amount = 30000; // Default fee
+            if (service.getFeeAmount() != null && service.getFeeAmount().longValue() > 0) {
+                amount = service.getFeeAmount().longValue();
+            }
+
+            // Generate VNPay URL
+            String orderInfo = "Thanh toan le phi ho so " + dossierCode;
+            paymentUrl = paymentService.createPaymentUrl(amount, orderInfo, dossierCode,
+                    org.example.project_module4_dvc.config.VnPayConfig.getIpAddress(request));
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Nộp hồ sơ thành công!");
+            response.put("message", "Nộp hồ sơ thành công! Đang chuyển hướng thanh toán...");
             response.put("dossierCode", dossierCode);
             response.put("dossierId", dossier.getId());
+            response.put("paymentUrl", paymentUrl);
 
             return ResponseEntity.ok(response);
 
@@ -255,7 +272,8 @@ public class TuPhapController {
             @RequestParam("intendedMarriageDate") String intendedMarriageDate,
             @RequestParam("registeredPlace") String registeredPlace,
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            HttpServletRequest request) {
 
         try {
             // 1. Lấy thông tin Service
@@ -298,6 +316,7 @@ public class TuPhapController {
             formData.put("registeredPlace", registeredPlace);
 
             dossier.setFormData(formData);
+            dossier.setPaymentStatus("UNPAID");
 
             // 6. Lưu hồ sơ
             dossier = opsDossierRepository.save(dossier);
@@ -339,7 +358,6 @@ public class TuPhapController {
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Nộp hồ sơ thành công! Đang chuyển hướng thanh toán...");
-            response.put("message", "Nộp hồ sơ đăng ký kết hôn thành công!");
             response.put("dossierCode", dossierCode);
             response.put("dossierId", dossier.getId());
             response.put("paymentUrl", paymentUrl);

@@ -24,6 +24,8 @@ import java.util.Optional;
 @Repository
 public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
+      boolean existsByDossierCode(String dossierCode);
+
   Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndPaymentStatus(String dossierStatus,
       String departmentName,
       String paymentStatus,

@@ -41,12 +41,14 @@ import java.util.Map;
 import org.example.project_module4_dvc.entity.mock.MockCitizen;
 import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/specialist/dashboard")
 public class SpecialistDashboardController {
 
     private final SpecialistService specialistService_1;
+    private SimpMessagingTemplate messagingTemplate;
     private final IOfficerService officerService;
 
     private final FileStorageService fileStorageService;
@@ -57,7 +59,8 @@ public class SpecialistDashboardController {
 
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
                                          ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-                                         SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
+                                         SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository,
+                                         SimpMessagingTemplate messagingTemplate) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
@@ -169,12 +172,6 @@ public class SpecialistDashboardController {
         return "redirect:/specialist/dashboard";
     }
 
-    @PostMapping("reception/reject")
-    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
-        NewDossierDTO newDossierDTO = officerService.findById(id);
-        specialistService.updateDossierStatus(id, "REJECTED", Long.valueOf(2), newDossierDTO.getDueDate(), reason);
-        return "redirect:/specialist/dashboard";
-    }
 
     @GetMapping("/view-file/{id}")
     public ResponseEntity<Resource> viewFile(@PathVariable("id") Long id) {
