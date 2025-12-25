@@ -15,5 +15,6 @@ public interface OpsDossierResultMapper {
     @Mapping(source = "dossier.applicant.fullName", target = "applicantFullName")
     @Mapping(source = "dossier.service.serviceName", target = "serviceName")
     @Mapping(source = "dossier.applicant.citizen.cccd", target = "cccd")
+    @Mapping(source = "dossier.paymentStatus", target = "paymentStatus")
     ResultDossierDTO toDTO(OpsDossierResult opsDossierResult);
 }

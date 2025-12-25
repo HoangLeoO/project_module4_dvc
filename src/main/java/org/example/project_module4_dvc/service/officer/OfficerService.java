@@ -75,9 +75,9 @@ public class OfficerService implements IOfficerService {
 
         // ho so vua tao
         @Override
-        public Page<NewDossierDTO> findAll(String dossierStatus, String departmentName, Pageable pageable) {
+        public Page<NewDossierDTO> findAll(String dossierStatus, String departmentName, String paymentStatus,Pageable pageable) {
                 return opsDossierRepository
-                                .findOpsDossierByDossierStatusAndReceivingDept_DeptName(dossierStatus, departmentName,
+                                .findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndPaymentStatus(dossierStatus, departmentName,paymentStatus,
                                                 pageable)
                                 .map(opsDossierMapper::toDTO);
         }

@@ -24,6 +24,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -36,7 +41,6 @@ import java.util.Map;
 import org.example.project_module4_dvc.entity.mock.MockCitizen;
 import org.example.project_module4_dvc.repository.mock.MockCitizenRepository;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/specialist/dashboard")
@@ -51,12 +55,9 @@ public class SpecialistDashboardController {
     private final IOpsDossierFileService opsDossierFileService;
     private final MockCitizenRepository mockCitizenRepository;
 
-
-    private SimpMessagingTemplate messagingTemplate;
-
     public SpecialistDashboardController(IOfficerService officerService, FileStorageService fileStorageService,
-            ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
-            SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
+                                         ISpecialistService specialistService, IOpsDossierFileService opsDossierFileService,
+                                         SpecialistService specialistService_1, MockCitizenRepository mockCitizenRepository) {
         this.officerService = officerService;
         this.fileStorageService = fileStorageService;
         this.specialistService = specialistService;
@@ -68,14 +69,14 @@ public class SpecialistDashboardController {
 
     @GetMapping("")
     public String getDossierList(Model model,
-                                 @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
-                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PageableDefault(size = 5, sort = "submissionDate", direction = Sort.Direction.ASC) Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("specialistId", userDetails.getUserId());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         System.out.println(userDetails.getDepartmentName());
         Page<NewDossierDTO> page = specialistService.findAll("PENDING", userDetails.getDepartmentName(),
-                userDetails.getUserId(), pageable);
+                userDetails.getUserId(), "PAID",pageable);
         List<NewDossierDTO> nearDueList = specialistService.findNearlyDue(userDetails.getDepartmentName(),
                 userDetails.getUserId());
         model.addAttribute("nearDueCount", nearDueList.size());
@@ -86,7 +87,7 @@ public class SpecialistDashboardController {
 
     @GetMapping("/reception")
     public String getReceptionForm(Model model, @RequestParam("id") Long id,
-                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         List<OpsDossierFile> opsDossierFile = officerService.findFileByDossierId(id);
@@ -165,6 +166,13 @@ public class SpecialistDashboardController {
         officerService.updateDossierRejectStatus(id, "REJECTED", reason);
         redirectAttributes.addFlashAttribute("toastType", "success");
         redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
+        return "redirect:/specialist/dashboard";
+    }
+
+    @PostMapping("reception/reject")
+    public String rejectDossierStatus(@RequestParam("id") Long id, @RequestParam("reason") String reason) {
+        NewDossierDTO newDossierDTO = officerService.findById(id);
+        specialistService.updateDossierStatus(id, "REJECTED", Long.valueOf(2), newDossierDTO.getDueDate(), reason);
         return "redirect:/specialist/dashboard";
     }
 

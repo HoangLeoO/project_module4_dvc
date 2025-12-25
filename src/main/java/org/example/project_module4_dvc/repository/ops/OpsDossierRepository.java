@@ -24,41 +24,44 @@ import java.util.Optional;
 @Repository
 public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
-        boolean existsByDossierCode(String dossierCode);
+  Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndPaymentStatus(String dossierStatus,
+      String departmentName,
+      String paymentStatus,
+      Pageable pageable);
 
-        Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptName(String dossierStatus,
-                        String departmentName,
-                        Pageable pageable);
+  Optional<OpsDossier> findByDossierCode(String dossierCode);
 
-        Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndCurrentHandler_Id(
-                        String dossierStatus,
-                        String receivingDeptDeptName, Long currentHandlerId, Pageable pageable);
+  Page<OpsDossier> findOpsDossierByDossierStatusAndReceivingDept_DeptNameAndCurrentHandler_IdAndPaymentStatus(
+      String dossierStatus,
+      String receivingDeptDeptName, Long currentHandlerId,String paymentStatus, Pageable pageable);
 
-        @Query("""
-                            select hs
-                            from OpsDossier hs
-                            where hs.dueDate > :now
-                              and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
-                              and hs.receivingDept.deptName = :departmentName
-                        """)
-        List<OpsDossier> findNearlyDue(
-                        @Param("now") LocalDateTime now,
-                        @Param("limit") LocalDateTime limit,
-                        @Param("departmentName") String departmentName);
+  @Query("""
+          select hs
+          from OpsDossier hs
+          where hs.dueDate > :now
+            and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+            and hs.receivingDept.deptName = :departmentName
+           and hs. paymentStatus = 'PAID'
+      """)
+  List<OpsDossier> findNearlyDue(
+      @Param("now") LocalDateTime now,
+      @Param("limit") LocalDateTime limit,
+      @Param("departmentName") String departmentName);
 
-        @Query("""
-                            select hs
-                            from OpsDossier hs
-                            where hs.dueDate > :now
-                              and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
-                              and hs.receivingDept.deptName = :departmentName
-                                           and  hs.currentHandler.id = :specialistId
-                        """)
-        List<OpsDossier> findNearlyDueSpecialist(
-                        @Param("now") LocalDateTime now,
-                        @Param("limit") LocalDateTime limit,
-                        @Param("departmentName") String departmentName,
-                        @Param("specialistId") Long specialistId);
+  @Query("""
+          select hs
+          from OpsDossier hs
+          where hs.dueDate > :now
+            and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
+            and hs.receivingDept.deptName = :departmentName
+                         and  hs.currentHandler.id = :specialistId
+                         and hs. paymentStatus = 'PAID'
+      """)
+  List<OpsDossier> findNearlyDueSpecialist(
+      @Param("now") LocalDateTime now,
+      @Param("limit") LocalDateTime limit,
+      @Param("departmentName") String departmentName,
+      @Param("specialistId") Long specialistId);
 
         // Tổng hồ sơ trong tháng
         @Query("""

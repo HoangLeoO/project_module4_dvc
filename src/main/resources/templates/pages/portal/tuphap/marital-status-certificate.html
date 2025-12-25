@@ -598,10 +598,17 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    showModal('Nộp hồ sơ thành công! Mã hồ sơ: ' + (result.dossierCode || ''), 'success');
-                    setTimeout(() => {
-                        window.location.href = '/citizen/hoso';
-                    }, 2000);
+                    showModal('Nộp hồ sơ thành công! Đang chuyển đến cổng thanh toán...', 'success');
+
+                    if (result.paymentUrl) {
+                        setTimeout(() => {
+                            window.location.href = result.paymentUrl;
+                        }, 1500);
+                    } else {
+                        setTimeout(() => {
+                            window.location.href = '/citizen/hoso';
+                        }, 2000);
+                    }
                 } else {
                     throw new Error(result.message || 'Có lỗi xảy ra khi nộp hồ sơ');
                 }

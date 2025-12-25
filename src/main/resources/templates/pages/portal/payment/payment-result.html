@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{citizen/layout/fragments :: head('Kết quả thanh toán')}">
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{citizen/layout/fragments :: header('services')}"></nav>
+
+    <main class="container mt-5 pt-5 mb-5 flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="card shadow-lg border-0 rounded-4 p-5 text-center" style="max-width: 600px; width: 100%;">
+
+            <div th:if="${status == 'success'}">
+                <div class="mb-4 text-success">
+                    <i class="bi bi-check-circle-fill" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold mb-3 text-success">Thanh toán thành công!</h2>
+                <p class="fs-5 text-muted mb-4">
+                    Hồ sơ <strong th:text="${dossierCode}">HS-XYZ</strong> của bạn đã được thanh toán và gửi đi xử lý.
+                </p>
+                <div class="alert alert-light border">
+                    <small class="text-muted d-block mb-1">Cảm ơn bạn đã sử dụng dịch vụ công trực tuyến.</small>
+                    <small class="text-muted">Bạn có thể theo dõi trạng thái hồ sơ trong mục "Hồ sơ của tôi".</small>
+                </div>
+            </div>
+            <div th:if="${status == 'error'}">
+                <div class="mb-4 text-danger">
+                    <i class="bi bi-x-circle-fill" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold mb-3 text-danger">Thanh toán thất bại</h2>
+                <p class="fs-5 text-muted mb-4" th:text="${message}">Lỗi không xác định</p>
+                <div class="alert alert-warning border">
+                    <small class="d-block">Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.</small>
+                </div>
+            </div>
+            <div class="mt-4 gap-3 d-flex justify-content-center">
+                <a th:href="@{/citizen/hoso}" class="btn btn-outline-primary px-4">
+                    <i class="bi bi-person-lines-fill me-2"></i>Hồ sơ của tôi
+                </a>
+                <a th:href="@{/citizen/home}" class="btn btn-primary px-4 fw-bold">
+                    <i class="bi bi-house-door-fill me-2"></i>Về trang chủ
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{citizen/layout/fragments :: footer}"></footer>
+
+</body>
+
+</html>

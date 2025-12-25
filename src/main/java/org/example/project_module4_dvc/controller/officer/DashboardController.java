@@ -55,7 +55,7 @@ public class DashboardController {
         model.addAttribute("officerName", userDetails.getFullName());
         model.addAttribute("departmentName", userDetails.getDepartmentName());
         System.out.println(userDetails.getDepartmentName());
-        Page<NewDossierDTO> page = officerService.findAll("NEW", userDetails.getDepartmentName(), pageable);
+        Page<NewDossierDTO> page = officerService.findAll("NEW", userDetails.getDepartmentName(), "PAID", pageable);
         List<NewDossierDTO> nearDueList = officerService.findNearlyDue(userDetails.getDepartmentName());
         model.addAttribute("nearDueCount", nearDueList.size());
         model.addAttribute("dossiers", page);

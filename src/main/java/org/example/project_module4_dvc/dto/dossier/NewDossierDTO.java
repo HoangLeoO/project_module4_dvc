@@ -28,6 +28,7 @@ public class NewDossierDTO {
     String rejectionReason;
     private Long receivingDeptId;
     private Map<String, Object> formData;
+    String paymentStatus;
 
     public boolean isOverdue() {
         return dueDate != null && dueDate.isBefore(LocalDateTime.now());

@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -53,6 +52,7 @@ public class TuPhapController {
     private FileStorageService fileStorageService;
     private ObjectMapper objectMapper;
     private MockCitizenRepository mockCitizenRepository;
+    private PaymentService paymentService;
     private SimpMessagingTemplate messagingTemplate;
 
     public TuPhapController(ICatServiceService catServiceService, IMockCitizenService mockCitizenService,
@@ -61,6 +61,7 @@ public class TuPhapController {
             OpsDossierRepository opsDossierRepository, OpsDossierFileRepository opsDossierFileRepository,
             FileStorageService fileStorageService, ObjectMapper objectMapper,
             MockCitizenRepository mockCitizenRepository, SimpMessagingTemplate messagingTemplate) {
+            MockCitizenRepository mockCitizenRepository, PaymentService paymentService) {
         this.catServiceService = catServiceService;
         this.mockCitizenService = mockCitizenService;
         this.sysDepartmentService = sysDepartmentService;
@@ -72,6 +73,7 @@ public class TuPhapController {
         this.fileStorageService = fileStorageService;
         this.objectMapper = objectMapper;
         this.mockCitizenRepository = mockCitizenRepository;
+        this.paymentService = paymentService;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -148,6 +150,9 @@ public class TuPhapController {
             dossier.setSubmissionDate(LocalDateTime.now());
             dossier.setDueDate(LocalDateTime.now().plusHours(service.getSlaHours()));
             dossier.setReceivingDept(receivingDept);
+
+            // Set payment status
+            dossier.setPaymentStatus("UNPAID");
 
             // 5. Tạo formData JSON
             Map<String, Object> formData = new HashMap<>();
@@ -314,15 +319,30 @@ public class TuPhapController {
                 }
             }
 
+            // 8. Tạo URL thanh toán
+            String paymentUrl = "";
+            long amount = 30000; // Default fee, can be taken from service.getFeeAmount()
+            if (service.getFeeAmount() != null && service.getFeeAmount().longValue() > 0) {
+                amount = service.getFeeAmount().longValue();
+            }
+
+            // Generate VNPay URL
+            String orderInfo = "Thanh toan le phi ho so " + dossierCode;
+            paymentUrl = paymentService.createPaymentUrl(amount, orderInfo, dossierCode,
+                    org.example.project_module4_dvc.config.VnPayConfig.getIpAddress(request));
+
+            // 9. Trả về kết quả thành công kèm URL thanh toán
             // 8. Trả về kết quả thành công
             // Gửi thông báo WebSocket
             messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
+            response.put("message", "Nộp hồ sơ thành công! Đang chuyển hướng thanh toán...");
             response.put("message", "Nộp hồ sơ đăng ký kết hôn thành công!");
             response.put("dossierCode", dossierCode);
             response.put("dossierId", dossier.getId());
+            response.put("paymentUrl", paymentUrl);
 
             return ResponseEntity.ok(response);
 

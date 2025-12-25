@@ -15,7 +15,7 @@ public interface IOfficerService {
     public List<SpecialistAvailableDTO> getAvailableSpecialists(Long dossierId);
 
     // lay nhung ho so vua tao tu nguoi dan
-    Page<NewDossierDTO> findAll(String dossierStatus, String departmentName, Pageable pageable);
+    Page<NewDossierDTO> findAll(String dossierStatus, String departmentName, String paymentStatus,Pageable pageable);
 
     Page<ResultDossierDTO> findAllResult(String departmentName, Pageable pageable);
 
