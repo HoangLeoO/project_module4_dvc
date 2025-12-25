@@ -558,7 +558,7 @@
                 const citizen = await response.json();
 
                 // Check marital status
-                if (citizen.maritalStatus && citizen.maritalStatus.toUpperCase() == 'MARRIED') {
+                if (citizen.maritalStatus && citizen.maritalStatus.toUpperCase() === 'MARRIED') {
                     card.classList.remove('verified');
                     card.classList.add('error');
                     statusBadge.className = 'status-badge bg-danger-subtle text-danger';
