@@ -532,7 +532,7 @@
                 // Reload page after a short delay
                 setTimeout(function () {
                     window.location.reload();
-                }, 0);
+                }, 2000); // 2000ms delay to allow users to see the toast notification
             });
         }, function (error) {
             console.error('WebSocket connection error: ', error);
