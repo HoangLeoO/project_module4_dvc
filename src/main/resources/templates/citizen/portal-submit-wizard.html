@@ -336,141 +336,138 @@
                 <div id="step2" class="d-none">
                     <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary">Bước 2: Thành phần Hồ sơ</h5>
 
-                    <div id="uploadList" class="row g-3">
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Giấy chứng sinh / Giấy tờ thay thế <span
-                                                    class="text-danger">*</span>
-                                            </h6>
-                                            <p class="small text-muted mb-0">Đính kèm bản quét hoặc ảnh chụp Giấy chứng
-                                                sinh bản chính. Bạn có thể chọn nhiều ảnh.</p>
-                                        </div>
-                                        <div>
-                                            <input type="file" id="birthFiles" class="form-control form-control-sm"
-                                                multiple accept="image/*,.pdf"
-                                                onchange="handleFileSelect(event, 'birth')">
-                                        </div>
+                    <!-- REQUIRED DOCUMENTS SECTION -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-danger mb-3">
+                            <i class="bi bi-file-earmark-check-fill me-2"></i>Giấy tờ bắt buộc
+                        </h6>
+                        <div id="uploadList" class="row g-3">
+                            <!-- 1. Birth Certificate -->
+                            <div class="col-md-6">
+                                <div class="card border border-danger shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">
+                                            <span class="text-danger me-1">*</span>
+                                            Giấy chứng sinh / Giấy tờ thay thế
+                                        </h6>
+                                        <p class="small text-muted mb-3">Bản quét hoặc ảnh chụp Giấy chứng sinh bản
+                                            chính. Bạn có thể chọn nhiều ảnh.</p>
+                                        <input type="file" id="birthFiles" class="form-control form-control-sm" multiple
+                                            accept="image/*,.pdf" onchange="handleFileSelect(event, 'birth')">
+                                        <div id="birthFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                     </div>
-                                    <!-- File List Display -->
-                                    <div id="birthFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Father ID -->
+                            <div class="col-md-6">
+                                <div class="card border border-danger shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">
+                                            <span class="father-req text-danger me-1 d-none">*</span>
+                                            Bản sao CCCD/Hộ chiếu của Cha
+                                        </h6>
+                                        <p class="small text-muted mb-3">Bản quét hoặc ảnh chụp mặt trước và mặt sau
+                                            CCCD của người cha.</p>
+                                        <input type="file" id="fatherIdFiles" class="form-control form-control-sm"
+                                            multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'fatherId')">
+                                        <div id="fatherIdFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Mother ID -->
+                            <div class="col-md-6">
+                                <div class="card border border-danger shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">
+                                            <span class="mother-req text-danger me-1 d-none">*</span>
+                                            Bản sao CCCD/Hộ chiếu của Mẹ
+                                        </h6>
+                                        <p class="small text-muted mb-3">Bản quét hoặc ảnh chụp mặt trước và mặt sau
+                                            CCCD của người mẹ.</p>
+                                        <input type="file" id="motherIdFiles" class="form-control form-control-sm"
+                                            multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'motherId')">
+                                        <div id="motherIdFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Residence Proof -->
+                            <div class="col-md-6">
+                                <div class="card border border-danger shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">
+                                            <span class="text-danger me-1">*</span>
+                                            Giấy tờ chứng minh nơi cư trú
+                                        </h6>
+                                        <p class="small text-muted mb-3">Giấy xác nhận thông tin về cư trú hoặc các giấy
+                                            tờ hợp lệ khác.</p>
+                                        <input type="file" id="residenceFiles" class="form-control form-control-sm"
+                                            multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'residence')">
+                                        <div id="residenceFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Bản sao CCCD/Hộ chiếu của Cha <span
-                                                    class="father-req text-danger d-none">*</span></h6>
-                                            <p class="small text-muted mb-0">Bản quét hoặc ảnh chụp mặt trước và mặt sau
-                                                CCCD của người cha.</p>
-                                        </div>
-                                        <div>
-                                            <input type="file" id="fatherIdFiles" class="form-control form-control-sm"
-                                                multiple accept="image/*,.pdf"
-                                                onchange="handleFileSelect(event, 'fatherId')">
-                                        </div>
+                    <!-- OPTIONAL DOCUMENTS SECTION -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary mb-3">
+                            <i class="bi bi-file-earmark-plus-fill me-2"></i>Giấy tờ khác (nếu có)
+                        </h6>
+                        <div class="row g-3">
+                            <!-- Marriage Certificate -->
+                            <div class="col-md-6" id="marriageUploadItem">
+                                <div class="card border border-secondary shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">Giấy chứng nhận kết hôn</h6>
+                                        <p class="small text-muted mb-3">Đính kèm nếu cha mẹ đã đăng ký kết hôn để xác
+                                            định quan hệ cha con tự động.</p>
+                                        <input type="file" id="marriageFiles" class="form-control form-control-sm"
+                                            multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'marriage')">
+                                        <div id="marriageFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
                                     </div>
-                                    <div id="fatherIdFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Paternity Documents (conditional) -->
+                            <div class="col-md-6 d-none" id="paternityUploadItem">
+                                <div class="card border border-warning shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2 text-warning">Hồ sơ thủ tục nhận con</h6>
+                                        <p class="small text-muted mb-3">Văn bản chứng minh quan hệ Cha - Con và các
+                                            giấy tờ liên quan.</p>
+                                        <input type="file" id="paternityFiles" class="form-control form-control-sm"
+                                            multiple accept="image/*,.pdf"
+                                            onchange="handleFileSelect(event, 'paternity')">
+                                        <div id="paternityFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Other Related Documents (NEW) -->
+                            <div class="col-md-6">
+                                <div class="card border border-secondary shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-2">Giấy tờ liên quan khác</h6>
+                                        <p class="small text-muted mb-3">Các giấy tờ bổ sung khác có liên quan đến hồ sơ
+                                            (nếu có).</p>
+                                        <input type="file" id="otherFiles" class="form-control form-control-sm" multiple
+                                            accept="image/*,.pdf" onchange="handleFileSelect(event, 'other')">
+                                        <div id="otherFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Bản sao CCCD/Hộ chiếu của Mẹ <span
-                                                    class="mother-req text-danger d-none">*</span></h6>
-                                            <p class="small text-muted mb-0">Bản quét hoặc ảnh chụp mặt trước và mặt sau
-                                                CCCD của người mẹ.</p>
-                                        </div>
-                                        <div>
-                                            <input type="file" id="motherIdFiles" class="form-control form-control-sm"
-                                                multiple accept="image/*,.pdf"
-                                                onchange="handleFileSelect(event, 'motherId')">
-                                        </div>
-                                    </div>
-                                    <div id="motherIdFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12" id="marriageUploadItem">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Giấy chứng nhận kết hôn</h6>
-                                            <p class="small text-muted mb-0">Đính kèm nếu cha mẹ đã đăng ký kết hôn để
-                                                xác định quan hệ cha con tự động.</p>
-                                        </div>
-                                        <div>
-                                            <input type="file" id="marriageFiles" class="form-control form-control-sm"
-                                                multiple accept="image/*,.pdf"
-                                                onchange="handleFileSelect(event, 'marriage')">
-                                        </div>
-                                    </div>
-                                    <div id="marriageFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="card border shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1">Giấy tờ chứng minh nơi cư trú</h6>
-                                            <p class="small text-muted mb-0">Giấy xác nhận thông tin về cư trú hoặc các
-                                                giấy tờ hợp lệ khác.</p>
-                                        </div>
-                                        <div>
-                                            <input type="file" id="residenceFiles" class="form-control form-control-sm"
-                                                multiple accept="image/*,.pdf"
-                                                onchange="handleFileSelect(event, 'residence')">
-                                        </div>
-                                    </div>
-                                    <div id="residenceFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 d-none" id="paternityUploadItem">
-                            <div class="card border-warning shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="flex-grow-1 me-3">
-                                            <h6 class="fw-bold mb-1 text-warning">Hồ sơ thủ tục nhận con / Giấy tờ khác
-                                            </h6>
-                                            <p class="small text-muted mb-0">Văn bản chứng minh quan hệ Cha - Con và các
-                                                giấy tờ liên quan (nếu có).
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <input type="file" id="paternityFiles" class="form-control form-control-sm"
-                                                multiple accept="image/*,.pdf"
-                                                onchange="handleFileSelect(event, 'paternity')">
-                                        </div>
-                                    </div>
-                                    <!-- File List Display -->
-                                    <div id="paternityFilesList" class="mt-3 d-flex flex-wrap gap-2"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add File List for Birth Files -->
-                        <script>
-                            // Move birhFiles input to have list display
-                        </script>
                     </div>
                 </div>
+
 
 
 
@@ -916,10 +913,17 @@
                 btnNext.innerHTML = '<i class="bi bi-send-fill me-2"></i>Nộp hồ sơ';
                 btnNext.className = 'btn btn-success px-4 fw-bold';
                 btnNext.onclick = function () { submitForm(); };
+
+                // Disable submit button if checkbox is not checked
+                const confirmCheckbox = document.getElementById('confirmDataCorrect');
+                if (confirmCheckbox) {
+                    btnNext.disabled = !confirmCheckbox.checked;
+                }
             } else {
                 btnNext.innerHTML = 'Tiếp tục <i class="bi bi-arrow-right ms-2"></i>';
                 btnNext.className = 'btn btn-primary px-4 fw-bold';
                 btnNext.onclick = function () { changeStep(1); };
+                btnNext.disabled = false;
             }
 
             const paternityCheck = document.getElementById('confirmPaternity') ? document.getElementById('confirmPaternity').checked : false;
@@ -986,6 +990,7 @@
             addFilesToReview(selectedMarriageFiles, 'Giấy kết hôn', 'info');
             addFilesToReview(selectedResidenceFiles, 'Giấy tờ cư trú', 'info');
             addFilesToReview(selectedPaternityFiles, 'Hồ sơ nhận con', 'warning');
+            addFilesToReview(selectedOtherFiles, 'Giấy tờ khác', 'secondary');
 
             if (fileListHtml === '') {
                 fileListHtml = '<span class="text-muted small">Không có tệp tải lên</span>';
@@ -1181,6 +1186,7 @@
         let selectedMarriageFiles = [];
         let selectedResidenceFiles = [];
         let selectedPaternityFiles = [];
+        let selectedOtherFiles = [];
 
         function handleFileSelect(event, type) {
             const files = Array.from(event.target.files);
@@ -1190,6 +1196,7 @@
             else if (type === 'marriage') selectedMarriageFiles = [...selectedMarriageFiles, ...files];
             else if (type === 'residence') selectedResidenceFiles = [...selectedResidenceFiles, ...files];
             else if (type === 'paternity') selectedPaternityFiles = [...selectedPaternityFiles, ...files];
+            else if (type === 'other') selectedOtherFiles = [...selectedOtherFiles, ...files];
 
             renderFileList(type);
             event.target.value = '';
@@ -1203,6 +1210,7 @@
             else if (type === 'marriage') files = selectedMarriageFiles;
             else if (type === 'residence') files = selectedResidenceFiles;
             else if (type === 'paternity') files = selectedPaternityFiles;
+            else if (type === 'other') files = selectedOtherFiles;
 
             const listEl = document.getElementById(type + 'FilesList');
             listEl.innerHTML = '';
@@ -1226,6 +1234,7 @@
             else if (type === 'marriage') selectedMarriageFiles.splice(index, 1);
             else if (type === 'residence') selectedResidenceFiles.splice(index, 1);
             else if (type === 'paternity') selectedPaternityFiles.splice(index, 1);
+            else if (type === 'other') selectedOtherFiles.splice(index, 1);
 
             renderFileList(type);
         }
@@ -1297,6 +1306,7 @@
                 selectedMarriageFiles.forEach(file => formData.append('files', file));
                 selectedResidenceFiles.forEach(file => formData.append('files', file));
                 selectedPaternityFiles.forEach(file => formData.append('files', file));
+                selectedOtherFiles.forEach(file => formData.append('files', file));
 
                 const response = await fetch('/citizen/submit', {
                     method: 'POST',
@@ -1329,6 +1339,17 @@
                 deptSelect.addEventListener('change', function () {
                     this.classList.remove('is-invalid');
                     document.getElementById('receivingDeptIdError').style.display = 'none';
+                });
+            }
+
+            // Add event listener for confirmation checkbox
+            const confirmCheckbox = document.getElementById('confirmDataCorrect');
+            if (confirmCheckbox) {
+                confirmCheckbox.addEventListener('change', function () {
+                    const btnNext = document.getElementById('btnNext');
+                    if (btnNext && currentStep === 3) {
+                        btnNext.disabled = !this.checked;
+                    }
                 });
             }
 
