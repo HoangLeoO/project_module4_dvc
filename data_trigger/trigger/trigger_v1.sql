@@ -62,6 +62,10 @@ BEGIN
                             WHEN NEW.dossier_status = 'REJECTED' THEN
                                 COALESCE(NEW.rejection_reason, 'Từ chối giải quyết hồ sơ')
 
+            /* ================= YÊU CẦU BỔ SUNG ================= */
+                            WHEN NEW.dossier_status = 'SUPPLEMENT_REQUIRED' THEN
+                                'Yêu cầu bổ sung hồ sơ'
+
                             ELSE
                                 'Cập nhật trạng thái hồ sơ'
             END;
@@ -98,6 +102,7 @@ BEGIN
                     WHEN NEW.dossier_status = 'APPROVED'        THEN 'PHE_DUYET'
                     WHEN NEW.dossier_status = 'RESULT_RETURNED' THEN 'TRA_KET_QUA'
                     WHEN NEW.dossier_status = 'REJECTED'        THEN 'TU_CHOI'
+                    WHEN NEW.dossier_status = 'SUPPLEMENT_REQUIRED' THEN 'YEU_CAU_BO_SUNG'
                     ELSE 'CAP_NHAT_TRANG_THAI'
                     END,
                 OLD.dossier_status,

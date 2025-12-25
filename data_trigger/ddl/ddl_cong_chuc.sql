@@ -4,9 +4,9 @@ CREATE DATABASE egov_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE egov_db;
 
 /* ==========================================================================
-   MODULE 1: MOCK NATIONAL DATABASE (LÕI DỮ LIỆU GIẢ LẬP)
-   Chứa dữ liệu cơ bản về Công dân, Hộ khẩu, Đất đai và Doanh nghiệp.
-   ========================================================================== */
+   MODULE 1: MOCK NATIONAL DATABASE (LÕI DỮ LIỆU GIẢ LẬP)
+   Chứa dữ liệu cơ bản về Công dân, Hộ khẩu, Đất đai và Doanh nghiệp.
+   ========================================================================== */
 
 -- 1.1. Công dân (Mock Citizens)
 /* Bảng chứa thông tin cơ bản và định danh của tất cả công dân giả lập. */
@@ -35,6 +35,7 @@ CREATE TABLE mock_citizens
     CONSTRAINT uq_mock_citizen_cccd UNIQUE (cccd),
     INDEX idx_mock_citizen_name (full_name)
 ) ENGINE = InnoDB COMMENT ='Thông tin cơ bản của công dân';
+
 -- =============================================
 -- Bảng: mock_citizen_relationships
 -- =============================================
@@ -52,7 +53,7 @@ CREATE TABLE IF NOT EXISTS mock_citizen_relationships
     CONSTRAINT fk_mcr_relative FOREIGN KEY (relative_id) REFERENCES mock_citizens (id) ON DELETE CASCADE,
 
     UNIQUE KEY uq_citizen_relative (citizen_id, relative_id)
-    ) ENGINE = InnoDB COMMENT ='Bảng định nghĩa mối quan hệ gia đình (Cha, Mẹ, Con, Vợ, Chồng...)';
+) ENGINE = InnoDB COMMENT ='Bảng định nghĩa mối quan hệ gia đình (Cha, Mẹ, Con, Vợ, Chồng...)';
 
 -- 2. Sổ Hộ Khẩu (Mock Households)
 /* Bảng chứa thông tin về các Sổ Hộ Khẩu/Địa chỉ cư trú. */
@@ -124,9 +125,9 @@ CREATE TABLE mock_businesses
 ) ENGINE = InnoDB COMMENT ='Thông tin doanh nghiệp';
 
 /* ==========================================================================
-   MODULE 2: HỆ THỐNG (SYSTEM)
-   Quản lý Người dùng, Phân quyền, Phòng ban và Log hệ thống.
-   ========================================================================== */
+   MODULE 2: HỆ THỐNG (SYSTEM)
+   Quản lý Người dùng, Phân quyền, Phòng ban và Log hệ thống.
+   ========================================================================== */
 
 -- 6. Phòng ban (System Departments)
 /* Bảng chứa thông tin và cấu trúc phân cấp của các phòng ban/đơn vị hành chính. */
@@ -226,9 +227,9 @@ CREATE TABLE sys_audit_logs
 
 
 /* ==========================================================================
-   MODULE 3: DANH MỤC (CATALOG)
-   Định nghĩa các Dịch vụ công, Quy trình, Biểu mẫu và Tri thức.
-   ========================================================================== */
+   MODULE 3: DANH MỤC (CATALOG)
+   Định nghĩa các Dịch vụ công, Quy trình, Biểu mẫu và Tri thức.
+   ========================================================================== */
 
 -- 13. Dịch vụ (Catalog Services)
 /* Danh sách các dịch vụ hành chính công mà hệ thống cung cấp. */
@@ -281,36 +282,41 @@ CREATE TABLE cat_knowledge_base
 ) ENGINE = InnoDB COMMENT ='Kho Tri thức/Hướng dẫn';
 
 /* ==========================================================================
-   MODULE 4: VẬN HÀNH (OPERATIONS)
-   Quản lý vòng đời Hồ sơ dịch vụ công: Nộp, Xử lý, Log và Kết quả.
-   ========================================================================== */
+   MODULE 4: VẬN HÀNH (OPERATIONS)
+   Quản lý vòng đời Hồ sơ dịch vụ công: Nộp, Xử lý, Log và Kết quả.
+   ========================================================================== */
 
 -- 17. Hồ sơ (Operations Dossiers)
-/* Bảng chính lưu trữ thông tin về từng hồ sơ dịch vụ công. */
+/* Bảng chính lưu trữ thông tin về từng hồ sơ dịch vụ công.
+   Đã thêm trường receiving_dept_id và các trường thanh toán.
+*/
 CREATE TABLE ops_dossiers
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính của hồ sơ',
     dossier_code       VARCHAR(50) NOT NULL UNIQUE COMMENT 'Mã hồ sơ (Duy nhất)',
     service_id         BIGINT      NOT NULL COMMENT 'Dịch vụ công được áp dụng',
+    receiving_dept_id  BIGINT      NOT NULL COMMENT 'ID cơ quan tiếp nhận hồ sơ ban đầu',
     applicant_id       BIGINT      NOT NULL COMMENT 'ID của người nộp hồ sơ (sys_users.id)',
     current_handler_id BIGINT COMMENT 'ID của cán bộ đang thụ lý hồ sơ hiện tại',
     dossier_status     VARCHAR(20) DEFAULT 'NEW' COMMENT 'Trạng thái xử lý hồ sơ (VD: NEW, PENDING, APPROVED, REJECTED)',
+
+    -- Thông tin thanh toán (VNPay Integration)
+    payment_status     VARCHAR(20) DEFAULT 'UNPAID' COMMENT 'Trạng thái thanh toán (UNPAID, PAID, FAILED)',
+    payment_amount     BIGINT COMMENT 'Số tiền thanh toán',
+    payment_date       TIMESTAMP   NULL COMMENT 'Thời điểm thanh toán',
+    transaction_code   VARCHAR(50) COMMENT 'Mã giao dịch thanh toán',
+
     submission_date    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm nộp hồ sơ',
     due_date           TIMESTAMP   NULL COMMENT 'Thời hạn phải hoàn thành xử lý (dựa trên SLA)',
     finish_date        TIMESTAMP   NULL COMMENT 'Thời điểm hồ sơ được hoàn tất (APPROVED/REJECTED)',
     form_data          JSON COMMENT 'Dữ liệu chi tiết từ biểu mẫu nộp hồ sơ',
     rejection_reason   TEXT COMMENT 'Lý do bị từ chối/trả lại hồ sơ',
+
     CONSTRAINT fk_dos_service FOREIGN KEY (service_id) REFERENCES cat_services (id),
+    CONSTRAINT fk_dos_receiving_dept FOREIGN KEY (receiving_dept_id) REFERENCES sys_departments (id),
     CONSTRAINT fk_dos_applicant FOREIGN KEY (applicant_id) REFERENCES sys_users (id),
     CONSTRAINT fk_dos_handler FOREIGN KEY (current_handler_id) REFERENCES sys_users (id)
-) ENGINE = InnoDB COMMENT ='Thông tin các Hồ sơ dịch vụ công';
-
-ALTER TABLE ops_dossiers
-    ADD COLUMN receiving_dept_id BIGINT NOT NULL COMMENT 'ID cơ quan tiếp nhận hồ sơ ban đầu'
-        AFTER service_id,
-    ADD CONSTRAINT fk_dos_receiving_dept
-        FOREIGN KEY (receiving_dept_id)
-            REFERENCES sys_departments (id);
+) ENGINE = InnoDB COMMENT ='Thông tin các Hồ sơ dịch vụ công (kèm thanh toán)';
 
 -- 18. File đính kèm (Operations Dossier Files)
 /* Danh sách các tệp đính kèm đi kèm hồ sơ. */
@@ -368,9 +374,9 @@ CREATE TABLE ops_dossier_results
 
 
 /* ==========================================================================
-   MODULE 5: MỞ RỘNG (EXTENSIONS)
-   Các chức năng hỗ trợ: Vault cá nhân, Phản ánh, Thông báo, Thanh toán.
-   ========================================================================== */
+   MODULE 5: MỞ RỘNG (EXTENSIONS)
+   Các chức năng hỗ trợ: Vault cá nhân, Phản ánh, Thông báo, Thanh toán.
+   ========================================================================== */
 
 -- 21. Kho cá nhân (Personal Vaults)
 /* Kho lưu trữ các tài liệu cá nhân của người dùng. */
@@ -423,7 +429,7 @@ CREATE TABLE mod_notifications
     CONSTRAINT fk_not_user FOREIGN KEY (user_id) REFERENCES sys_users (id)
 ) ENGINE = InnoDB COMMENT ='Hệ thống Thông báo cho người dùng';
 
--- 25. Thanh toán (Payments)
+-- 25. Thanh toán (Payments) -> Có thể không dùng nếu tích hợp vào ops_dossiers
 /* Bảng quản lý giao dịch thanh toán phí/lệ phí liên quan đến hồ sơ. */
 CREATE TABLE mod_payments
 (
@@ -435,22 +441,3 @@ CREATE TABLE mod_payments
     pay_date       TIMESTAMP COMMENT 'Thời điểm thanh toán thành công',
     CONSTRAINT fk_pay_dossier FOREIGN KEY (dossier_id) REFERENCES ops_dossiers (id)
 ) ENGINE = InnoDB COMMENT ='Thông tin giao dịch Thanh toán phí dịch vụ';
-
--- =============================================
--- Bảng: mock_citizen_relationships
--- =============================================
-CREATE TABLE IF NOT EXISTS mock_citizen_relationships
-(
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'Khóa chính',
-    citizen_id        BIGINT      NOT NULL COMMENT 'ID của công dân chính (Person A)',
-    relative_id       BIGINT      NOT NULL COMMENT 'ID của người thân (Person B)',
-    relationship_type VARCHAR(50) NOT NULL COMMENT 'Mối quan hệ của B đối với A (VD: CHA, ME, CON, VO, CHONG)',
-
-    created_at        TIMESTAMP   DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời điểm tạo mối quan hệ',
-    updated_at        TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Thời điểm cập nhật gần nhất',
-
-    CONSTRAINT fk_mcr_citizen FOREIGN KEY (citizen_id) REFERENCES mock_citizens (id) ON DELETE CASCADE,
-    CONSTRAINT fk_mcr_relative FOREIGN KEY (relative_id) REFERENCES mock_citizens (id) ON DELETE CASCADE,
-
-    UNIQUE KEY uq_citizen_relative (citizen_id, relative_id)
-) ENGINE = InnoDB COMMENT ='Bảng định nghĩa mối quan hệ gia đình (Cha, Mẹ, Con, Vợ, Chồng...)';

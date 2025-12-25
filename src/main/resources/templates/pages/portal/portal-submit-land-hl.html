@@ -157,7 +157,7 @@
                         <div class="card mb-4 border shadow-sm-soft">
                             <div class="card-body">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="authToggle"
+                                    <input class="form-check-input" type="checkbox" id="authToggle" name="isAuthorized"
                                         onchange="toggleAuthorization()" style="cursor: pointer;">
                                     <label class="form-check-label fw-bold " for="authToggle"
                                         style="cursor: pointer;">Tôi
@@ -172,7 +172,7 @@
                                             ủy quyền</label>
                                         <div class="input-group" style="max-width: 450px;">
                                             <input type="text" class="form-control form-control-lg bg-light"
-                                                id="authorizerCccd" placeholder="00123456789">
+                                                id="authorizerCccd" name="authorizerCccd" placeholder="00123456789">
                                             <button class="btn btn-outline-primary px-4" type="button"
                                                 onclick="checkAuthorizer()">
                                                 <i class="bi bi-search me-1"></i> Tra cứu
@@ -188,6 +188,37 @@
                                     <div class="small text-muted fst-italic">
                                         <i class="bi bi-exclamation-circle me-1"></i> Yêu cầu đính kèm Giấy ủy quyền hợp
                                         pháp ở Bước 3.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SUBMITTER INFO SECTION (Visible only when Authorized) -->
+                        <div id="submitterInfoSection" class="d-none mb-4 animate-fade-in">
+                            <h6 class="text-secondary fw-bold text-uppercase border-bottom pb-2 mb-3">
+                                <i class="bi bi-person-badge-fill me-2"></i>Thông tin người nộp thay (Bạn)
+                            </h6>
+                            <div class="card bg-light-info border-info border-opacity-25 shadow-sm-soft">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase fw-bold">Họ và
+                                                tên</label>
+                                            <input type="text" class="form-control bg-white" id="submitterName"
+                                                readonly>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase fw-bold">Số
+                                                CCCD</label>
+                                            <input type="text" class="form-control bg-white" id="submitterCccd"
+                                                readonly>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase fw-bold">Địa
+                                                chỉ</label>
+                                            <input type="text" class="form-control bg-white" id="submitterAddress"
+                                                readonly>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -710,6 +741,12 @@
                 const form = document.getElementById('submissionForm');
                 const formData = new FormData(form);
 
+                // FIX: Explicitly handle boolean checkbox for isAuthorized
+                const authToggle = document.getElementById('authToggle');
+                if (authToggle) {
+                    formData.set('isAuthorized', authToggle.checked ? 'true' : 'false');
+                }
+
                 // IMPORTANT: Aggregate specific named file inputs into the 'files' parameter expected by the Controller
                 const fileInputs = form.querySelectorAll('input[type="file"]');
                 fileInputs.forEach(input => {
@@ -1026,14 +1063,40 @@
 
             if (isChecked) {
                 section.classList.remove('d-none');
+
+                // Show Submitter Info
+                document.getElementById('submitterInfoSection').classList.remove('d-none');
+
+                // Populate Submitter Info with Logged-in User Data (Stored in initial variables)
+                // We use the initial values which represent the logged-in user
+                document.getElementById('submitterName').value = '[[${opsDossier.formData["currentOwner"]}]]';
+                document.getElementById('submitterCccd').value = '[[${opsDossier.formData["ownerIdNumber"]}]]';
+                document.getElementById('submitterAddress').value = '[[${opsDossier.formData["ownerAddress"]}]]';
+
+                // Clear Owner Info (To be filled by lookup)
+                document.querySelector('input[name="currentOwner"]').value = '';
+                document.querySelector('input[name="ownerIdNumber"]').value = '';
+                document.querySelector('input[name="ownerAddress"]').value = '';
+                document.querySelector('input[name="ownerAddress"]').value = '';
+                // document.querySelector('input[name="ownerIdNumber"]').removeAttribute('readonly'); 
+                // Ensure it stays readonly
+                document.querySelector('input[name="ownerIdNumber"]').setAttribute('readonly', 'readonly');
+                // Unlock the search capability if needed, or rely on the lookup button logic
+
                 setTimeout(() => document.getElementById('authorizerCccd').focus(), 100);
             } else {
                 section.classList.add('d-none');
-                // Reset to logged-in user data
+
+                // Hide Submitter Info
+                document.getElementById('submitterInfoSection').classList.add('d-none');
+
+                // Reset to logged-in user data into Owner fields
                 const initialCccd = '[[${opsDossier.formData["ownerIdNumber"]}]]';
                 document.querySelector('input[name="currentOwner"]').value = '[[${opsDossier.formData["currentOwner"]}]]';
                 document.querySelector('input[name="ownerIdNumber"]').value = initialCccd;
                 document.querySelector('input[name="ownerAddress"]').value = '[[${opsDossier.formData["ownerAddress"]}]]';
+                document.querySelector('input[name="ownerIdNumber"]').setAttribute('readonly', 'readonly');
+
                 fetchLandAssets(initialCccd);
             }
 

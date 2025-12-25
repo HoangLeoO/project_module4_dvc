@@ -71,6 +71,7 @@ public class CitizenServiceController {
             case "HK01_TRE" -> "redirect:/citizen/forms/hk01-tre";
             case "HK02_KAITU" -> "redirect:/citizen/services/death/HK02_KAITU";
             case "HT02_XACNHANHN" -> "redirect:/citizen/tuphap/marital-status";
+            case "DD01_BIENDONG" -> "redirect:/citizen/services/land/DD01_BIENDONG";
             default -> "redirect:/citizen/forms/not-supported?code=" + code;
         };
     }
