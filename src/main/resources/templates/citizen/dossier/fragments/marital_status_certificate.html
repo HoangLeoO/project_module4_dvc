@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="marital_status_certificate(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${d.serviceCode == 'HT02_XACNHANHN' && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-secondary ps-3">Thông tin cấp giấy xác nhận tình
+            trạng hôn nhân</h5>
+
+        <div class="row g-3">
+            <!-- Requester Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-person-badge me-2"></i>Thông tin Người yêu cầu
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Họ và tên</label>
+                        <span class="fw-bold" th:text="${d.formData['requesterFullName']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Số CCCD</label>
+                        <span class="fw-bold" th:text="${d.formData['idNumber']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Ngày sinh</label>
+                        <span class="fw-bold" th:if="${d.formData['dateOfBirth'] != null}"
+                            th:with="dobStr=${d.formData['dateOfBirth'].toString()}"
+                            th:text="${dobStr.contains('-') ? #strings.substring(dobStr,8,10) + '/' + #strings.substring(dobStr,5,7) + '/' + #strings.substring(dobStr,0,4) : dobStr}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-file-text me-2"></i>Thông tin Giấy
+                    xác nhận</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Tình trạng hôn nhân hiện tại</label>
+                        <span class="fw-bold" th:text="${d.formData['currentMaritalStatus']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Thời gian xác nhận</label>
+                        <span class="fw-bold" th:text="${d.formData['confirmationPeriod']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Mục đích sử dụng</label>
+                        <span class="fw-bold" th:text="${d.formData['purposeOfUse']}">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
