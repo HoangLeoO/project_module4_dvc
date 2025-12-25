@@ -43,6 +43,8 @@ public class LandDossierWebController {
     @Autowired
     private org.example.project_module4_dvc.repository.ops.OpsDossierFileRepository fileRepository;
     @Autowired
+    private org.example.project_module4_dvc.service.FileStorageService fileStorageService;
+    @Autowired
     private ObjectMapper objectMapper;
 
     // ==================== BƯỚC 1: NỘP HỒ SƠ (CITIZEN) ====================
@@ -122,6 +124,7 @@ public class LandDossierWebController {
             @RequestParam("landPurpose") String landPurpose,
             @RequestParam("newPurpose") String newPurpose,
             @RequestParam("changeReason") String changeReason,
+            @RequestParam("commitment") String commitment,
             @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
             Principal principal) {
 
@@ -135,12 +138,33 @@ public class LandDossierWebController {
             formDataMap.put("ownerAddress", ownerAddress);
             formDataMap.put("landCertificateNumber", landCertificateNumber);
             formDataMap.put("landPlotNumber", landPlotNumber);
-            formDataMap.put("landMapSheet", landMapSheet);
+            formDataMap.put("mapSheetNumber", landMapSheet);
             formDataMap.put("landAddress", landAddress);
-            formDataMap.put("landArea", landArea);
-            formDataMap.put("landPurpose", landPurpose);
-            formDataMap.put("newPurpose", newPurpose);
-            formDataMap.put("changeReason", changeReason);
+
+            // Convert landArea to BigDecimal
+            try {
+                formDataMap.put("landAreaM2", new java.math.BigDecimal(landArea));
+            } catch (Exception e) {
+                formDataMap.put("landAreaM2", null);
+            }
+
+            // Map land purpose code to full text
+            Map<String, String> purposeMap = new java.util.HashMap<>();
+            purposeMap.put("ODT", "Đất ở tại đô thị (ODT)");
+            purposeMap.put("ONT", "Đất ở tại nông thôn (ONT)");
+            purposeMap.put("TMC", "Đất thương mại, dịch vụ (TMC)");
+            purposeMap.put("SXK", "Đất sản xuất, kinh doanh phi nông nghiệp (SXK)");
+            purposeMap.put("NKH", "Đất nông nghiệp khác (NKH)");
+            purposeMap.put("CLN", "Đất trồng cây lâu năm (CLN)");
+            purposeMap.put("BHK", "Đất trồng cây hàng năm khác (BHK)");
+
+            String currentPurposeText = purposeMap.getOrDefault(landPurpose, landPurpose);
+            String newPurposeText = purposeMap.getOrDefault(newPurpose, newPurpose);
+
+            formDataMap.put("currentLandPurpose", currentPurposeText);
+            formDataMap.put("requestedLandPurpose", newPurposeText);
+            formDataMap.put("reasonForChange", changeReason);
+            formDataMap.put("commitment", commitment);
             formDataMap.put("serviceCode", serviceCode);
 
             String formDataJson = objectMapper.writeValueAsString(formDataMap);
@@ -156,7 +180,7 @@ public class LandDossierWebController {
             dto.setApplicantId(currentUser.getId());
             dto.setReceivingDeptId(receivingDeptId);
             dto.setFormData(formDataJson);
-            
+
             // Xử lý File Upload
             if (files != null && !files.isEmpty()) {
                 List<FileUploadDTO> fileDTOs = new java.util.ArrayList<>();
@@ -165,8 +189,11 @@ public class LandDossierWebController {
                         FileUploadDTO f = new FileUploadDTO();
                         f.setFileName(file.getOriginalFilename());
                         f.setFileType(file.getContentType());
-                        // URL sẽ được generate trong Service hoặc xử lý upload thật ở đây
-                        // Tạm thời truyền thông tin cơ bản
+
+                        // Lưu file thật và lấy URL
+                        String fileUrl = fileStorageService.store(file);
+                        f.setFileUrl(fileUrl);
+
                         fileDTOs.add(f);
                     }
                 }

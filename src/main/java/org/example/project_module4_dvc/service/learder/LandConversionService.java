@@ -94,11 +94,15 @@ public class LandConversionService {
                                 org.example.project_module4_dvc.entity.ops.OpsDossierFile fileEntity = new org.example.project_module4_dvc.entity.ops.OpsDossierFile();
                                 fileEntity.setDossier(dossier);
                                 fileEntity.setFileName(fileDto.getFileName());
-                                // Giả lập lưu file, thực tế cần upload lên storage server và lấy URL
-                                // Ở đây ta giả định fileDto.getFileData() chứa byte[] nhưng DTO chưa có,
-                                // ta sẽ cập nhật Controller để xử lý upload và truyền URL hoặc giả lập URL.
-                                // Tạm thời giả lập URL local
-                                fileEntity.setFileUrl("/uploads/" + dossier.getId() + "/" + fileDto.getFileName());
+                                
+                                // Sử dụng URL từ DTO nếu có (đã xử lý bởi Controller)
+                                if (fileDto.getFileUrl() != null && !fileDto.getFileUrl().isEmpty()) {
+                                    fileEntity.setFileUrl(fileDto.getFileUrl());
+                                } else {
+                                    // Fallback (cho các trường hợp legacy hoặc test không có FileStorage)
+                                    fileEntity.setFileUrl("/uploads/" + dossier.getId() + "/" + fileDto.getFileName());
+                                }
+                                
                                 fileEntity.setFileType(limitString(fileDto.getFileType(), 100));
                                 fileRepo.save(fileEntity);
                         }
