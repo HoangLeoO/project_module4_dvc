@@ -150,7 +150,7 @@ public class SysUserService implements ISysUserService {
 
         // 2. Update Roles
         // Clear existing
-        userRoleRepository.deleteByUserId(user.getId());
+        userRoleRepository.deleteByUser_Id(user.getId());
 
         // Add new
         if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
