@@ -285,7 +285,18 @@ public class LandDossierWebController {
         // --- GENERIC VIEW SUPPORT ---
         model.addAttribute("schema", dossier.getService().getFormSchema());
         model.addAttribute("data", dossier.getFormData());
-        model.addAttribute("formFragment", "fragments/dynamic-form-readonly :: render");
+
+        // Determine form fragment based on service code
+        String serviceCode = dossier.getService().getServiceCode();
+        String formFragment = "fragments/dynamic-form-readonly :: render";
+
+        if ("DD02_CHUYENMDSD".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-purpose-change :: form-detail";
+        } else if ("DD03_TACHHOP".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-split-merge :: form-detail";
+        }
+
+        model.addAttribute("formFragment", formFragment);
 
         return "pages/officer/officer-reception";
     }
@@ -363,7 +374,18 @@ public class LandDossierWebController {
         // Add Generic Support for Appraisal too (in case template is updated)
         model.addAttribute("schema", dossier.getService().getFormSchema());
         model.addAttribute("data", dossier.getFormData());
-        model.addAttribute("formFragment", "fragments/dynamic-form-readonly :: render");
+
+        // Determine form fragment based on service code
+        String serviceCode = dossier.getService().getServiceCode();
+        String formFragment = "fragments/dynamic-form-readonly :: render";
+
+        if ("DD02_CHUYENMDSD".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-purpose-change :: form-detail";
+        } else if ("DD03_TACHHOP".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-split-merge :: form-detail";
+        }
+
+        model.addAttribute("formFragment", formFragment);
 
         return "pages/land/appraisal-detail";
     }
@@ -417,6 +439,18 @@ public class LandDossierWebController {
 
         model.addAttribute("dossier", dossier);
         model.addAttribute("chairmen", chairmen);
+
+        // Determine form fragment based on service code
+        String serviceCode = dossier.getService().getServiceCode();
+        String formFragment = "fragments/dynamic-form-readonly :: render";
+
+        if ("DD02_CHUYENMDSD".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-purpose-change :: form-detail";
+        } else if ("DD03_TACHHOP".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-split-merge :: form-detail";
+        }
+
+        model.addAttribute("formFragment", formFragment);
 
         return "pages/land/submit-leader";
     }
@@ -483,6 +517,18 @@ public class LandDossierWebController {
         model.addAttribute("dossier", dossier);
         model.addAttribute("logs", logs);
 
+        // Determine form fragment based on service code
+        String serviceCode = dossier.getService().getServiceCode();
+        String formFragment = "fragments/dynamic-form-readonly :: render";
+
+        if ("DD02_CHUYENMDSD".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-purpose-change :: form-detail";
+        } else if ("DD03_TACHHOP".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-split-merge :: form-detail";
+        }
+
+        model.addAttribute("formFragment", formFragment);
+
         return "pages/land/approval-detail";
     }
 
@@ -543,6 +589,18 @@ public class LandDossierWebController {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ"));
 
         model.addAttribute("dossier", dossier);
+
+        // Determine form fragment based on service code
+        String serviceCode = dossier.getService().getServiceCode();
+        String formFragment = "fragments/dynamic-form-readonly :: render";
+
+        if ("DD02_CHUYENMDSD".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-purpose-change :: form-detail";
+        } else if ("DD03_TACHHOP".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-split-merge :: form-detail";
+        }
+
+        model.addAttribute("formFragment", formFragment);
 
         return "pages/land/update-record";
     }
@@ -628,6 +686,18 @@ public class LandDossierWebController {
 
         model.addAttribute("dossier", dossier);
         model.addAttribute("logs", logs);
+
+        // Determine form fragment based on service code
+        String serviceCode = dossier.getService().getServiceCode();
+        String formFragment = "fragments/dynamic-form-readonly :: render";
+
+        if ("DD02_CHUYENMDSD".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-purpose-change :: form-detail";
+        } else if ("DD03_TACHHOP".equals(serviceCode)) {
+            formFragment = "components/form/preview/land-split-merge :: form-detail";
+        }
+
+        model.addAttribute("formFragment", formFragment);
 
         return "pages/land/history";
     }

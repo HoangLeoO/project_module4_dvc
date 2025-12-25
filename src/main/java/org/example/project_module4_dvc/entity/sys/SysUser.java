@@ -38,11 +38,13 @@ public class SysUser extends BaseEntity {
     @Column(name = "user_type", nullable = false, length = 20)
     @NotBlank(message = "Loại người dùng không được để trống")
     // Gợi ý: Có thể dùng @Pattern để validate nếu cần thiết
-    // @Pattern(regexp = "CITIZEN|OFFICIAL|ADMIN", message = "Loại người dùng không hợp lệ")
+    // @Pattern(regexp = "CITIZEN|OFFICIAL|ADMIN", message = "Loại người dùng không
+    // hợp lệ")
     private String userType;
 
     // --- Relationship: Liên kết hồ sơ công dân (Optional) ---
-    // Dùng FetchType.LAZY để khi load User đăng nhập không bị query thừa sang bảng Citizen nếu không cần
+    // Dùng FetchType.LAZY để khi load User đăng nhập không bị query thừa sang bảng
+    // Citizen nếu không cần
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "citizen_id", referencedColumnName = "id")
     private MockCitizen citizen;
@@ -51,4 +53,7 @@ public class SysUser extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_id", referencedColumnName = "id")
     private SysDepartment department;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 }

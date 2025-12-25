@@ -48,9 +48,15 @@ public class LeaderController {
     @Autowired
     private PdfService pdfService;
 
+    @Autowired
+    private org.example.project_module4_dvc.service.learder.LandConversionService landConversionService;
+
+    @Autowired
+    private org.example.project_module4_dvc.service.learder.LandSplitService landSplitService;
+
     private SimpMessagingTemplate messagingTemplate;
 
-    public LeaderController(ILeaderService leaderService, SimpMessagingTemplate messagingTemplate){
+    public LeaderController(ILeaderService leaderService, SimpMessagingTemplate messagingTemplate) {
         this.leaderService = leaderService;
         this.messagingTemplate = messagingTemplate;
     }
@@ -321,6 +327,28 @@ public class LeaderController {
                         .eFileUrl("/uploads/pdf/" + new File(pdfPath).getName())
                         .build();
                 leaderService.opsDossierResults(result);
+
+                // Update land data if this is a land purpose change dossier
+                if ("DD02_CHUYENMDSD".equals(dossier.getService().getServiceCode())) {
+                    try {
+                        landConversionService.updateLandDataFromDossier(dossier);
+                    } catch (Exception landEx) {
+                        System.err.println("ERROR: Failed to update land data - " + landEx.getMessage());
+                        landEx.printStackTrace();
+                        // Don't block the approval flow
+                    }
+                }
+
+                // Split land if this is a land split/merge dossier
+                if ("DD03_TACHHOP".equals(dossier.getService().getServiceCode())) {
+                    try {
+                        landSplitService.splitLandFromDossier(dossier);
+                    } catch (Exception landEx) {
+                        System.err.println("ERROR: Failed to split land - " + landEx.getMessage());
+                        landEx.printStackTrace();
+                        // Don't block the approval flow
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -328,7 +356,7 @@ public class LeaderController {
         }
 
         messagingTemplate.convertAndSend("/topic/dossiers/returned", "returned");
-        redirectAttributes.addFlashAttribute("mess","Phê duyệt thành công!");
+        redirectAttributes.addFlashAttribute("mess", "Phê duyệt thành công!");
         return "redirect:/leader/my-dossiers";
     }
 

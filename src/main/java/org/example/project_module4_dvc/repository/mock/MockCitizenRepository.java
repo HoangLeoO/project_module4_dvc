@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MockCitizenRepository extends JpaRepository<MockCitizen, Long> {
     java.util.Optional<MockCitizen> findByCccd(String cccd);
+
+    // Search for autocomplete
+    java.util.List<MockCitizen> findByCccdContainingOrFullNameContainingIgnoreCase(String cccd, String fullName);
 }
