@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="land_change_registration(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${d.serviceCode == 'DD01_BIENDONG' && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-warning ps-3">Thông tin đăng ký chuyển nhượng đất
+        </h5>
+
+        <div class="row g-3">
+            <!-- Current Owner Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>Thông tin Chủ sở hữu hiện
+                    tại</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Họ và tên</label>
+                        <span class="fw-bold" th:text="${d.formData['currentOwner']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Số CCCD</label>
+                        <span class="fw-bold" th:text="${d.formData['ownerIdNumber']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Địa chỉ</label>
+                        <span class="fw-bold" th:text="${d.formData['ownerAddress']}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Land Asset Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-geo-alt me-2"></i>Thông tin Thửa
+                    đất</h6>
+                <div class="row g-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Số giấy chứng nhận</label>
+                        <span class="fw-bold" th:text="${d.formData['landCertificateNumber']}">---</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Số thửa</label>
+                        <span class="fw-bold" th:text="${d.formData['landPlotNumber']}">---</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Tờ bản đồ</label>
+                        <span class="fw-bold" th:text="${d.formData['landMapSheet']}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-arrow-left-right me-2"></i>Thông
+                    tin Chuyển nhượng</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Loại chuyển nhượng</label>
+                        <span class="fw-bold" th:text="${d.formData['changeType']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Lý do chuyển nhượng</label>
+                        <span class="fw-bold" th:text="${d.formData['changeReason']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Chủ sở hữu mới</label>
+                        <span class="fw-bold" th:text="${d.formData['newOwner']}">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

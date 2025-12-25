@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="land_purpose_change(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${d.serviceCode == 'DD02_CHUYENMDSD' && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-info ps-3">Thông tin đăng ký chuyển đổi mục đích
+            sử dụng đất</h5>
+
+        <div class="row g-3">
+            <!-- Land Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Thông tin Thửa đất</h6>
+                <div class="row g-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Số giấy chứng nhận</label>
+                        <span class="fw-bold" th:text="${d.formData['landCertificateNumber']}">---</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Số thửa</label>
+                        <span class="fw-bold" th:text="${d.formData['landPlotNumber']}">---</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small text-muted d-block">Tờ bản đồ</label>
+                        <span class="fw-bold" th:text="${d.formData['mapSheetNumber']}">---</span>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small text-muted d-block">Diện tích (m²)</label>
+                        <span class="fw-bold" th:text="${d.formData['landAreaM2']}">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purpose Change Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-arrow-repeat me-2"></i>Thông tin
+                    Chuyển đổi</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Mục đích sử dụng hiện tại</label>
+                        <span class="fw-bold" th:text="${d.formData['currentLandPurpose']}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Mục đích sử dụng đề nghị</label>
+                        <span class="fw-bold" th:text="${d.formData['requestedLandPurpose']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Lý do chuyển đổi</label>
+                        <span class="fw-bold" th:text="${d.formData['reasonForChange']}">---</span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="small text-muted d-block">Cam kết</label>
+                        <span class="fw-bold" th:text="${d.formData['commitment']}">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

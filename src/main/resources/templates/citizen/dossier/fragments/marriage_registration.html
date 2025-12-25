@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="marriage_registration(d)" class="card card-modern border-0 shadow-sm p-4 mb-4"
+        th:if="${d.serviceCode == 'HT01_KETHON' && d.formData != null}">
+        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-danger ps-3">Thông tin đăng ký kết hôn</h5>
+
+        <div class="row g-3">
+            <!-- Couple Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-people me-2"></i>Thông tin Cặp đôi</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded h-100">
+                            <div class="fw-bold mb-2 text-dark">THÔNG TIN CHỒNG</div>
+                            <div class="mb-1">
+                                <span class="small text-muted">Họ tên:</span>
+                                <span class="fw-bold" th:text="${d.formData['husbandFullName']}">---</span>
+                            </div>
+                            <div class="mb-1">
+                                <span class="small text-muted">CCCD:</span>
+                                <span class="fw-bold" th:text="${d.formData['husbandIdNumber']}">---</span>
+                            </div>
+                            <div>
+                                <span class="small text-muted">Ngày sinh:</span>
+                                <span class="fw-bold" th:if="${d.formData['husbandDob'] != null}"
+                                    th:with="dobStr=${d.formData['husbandDob'].toString()}"
+                                    th:text="${dobStr.contains('-') ? #strings.substring(dobStr,8,10) + '/' + #strings.substring(dobStr,5,7) + '/' + #strings.substring(dobStr,0,4) : dobStr}">---</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded h-100">
+                            <div class="fw-bold mb-2 text-dark">THÔNG TIN VỢ</div>
+                            <div class="mb-1">
+                                <span class="small text-muted">Họ tên:</span>
+                                <span class="fw-bold" th:text="${d.formData['wifeFullName']}">---</span>
+                            </div>
+                            <div class="mb-1">
+                                <span class="small text-muted">CCCD:</span>
+                                <span class="fw-bold" th:text="${d.formData['wifeIdNumber']}">---</span>
+                            </div>
+                            <div>
+                                <span class="small text-muted">Ngày sinh:</span>
+                                <span class="fw-bold" th:if="${d.formData['wifeDob'] != null}"
+                                    th:with="dobStr=${d.formData['wifeDob'].toString()}"
+                                    th:text="${dobStr.contains('-') ? #strings.substring(dobStr,8,10) + '/' + #strings.substring(dobStr,5,7) + '/' + #strings.substring(dobStr,0,4) : dobStr}">---</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marriage Info -->
+            <div class="col-12">
+                <h6 class="text-primary fw-bold mb-3 border-top pt-3"><i class="bi bi-calendar-heart me-2"></i>Thông tin
+                    Đăng ký</h6>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Ngày dự định kết hôn</label>
+                        <span class="fw-bold" th:if="${d.formData['intendedMarriageDate'] != null}"
+                            th:with="dateStr=${d.formData['intendedMarriageDate'].toString()}"
+                            th:text="${dateStr.contains('-') ? #strings.substring(dateStr,8,10) + '/' + #strings.substring(dateStr,5,7) + '/' + #strings.substring(dateStr,0,4) : dateStr}">---</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small text-muted d-block">Nơi đăng ký</label>
+                        <span class="fw-bold" th:text="${d.formData['registeredPlace']}">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
