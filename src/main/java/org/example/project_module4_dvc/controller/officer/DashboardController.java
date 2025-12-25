@@ -157,7 +157,7 @@ public class DashboardController {
         @PostMapping("reception/reject")
         public String rejectDossierStatus (@RequestParam("id") Long id, @RequestParam("reason") String
         reason, RedirectAttributes redirectAttributes){
-            officerService.updateDossierRejectStatus(id, "REJECT", reason);
+            officerService.updateDossierRejectStatus(id, "REJECTED", reason);
             redirectAttributes.addFlashAttribute("toastType", "success");
             messagingTemplate.convertAndSend("/topic/dossiers/reject", "reject");
             redirectAttributes.addFlashAttribute("toastMessage", "Đã từ chối hồ sơ thành công!");
