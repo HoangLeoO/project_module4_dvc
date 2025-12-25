@@ -48,7 +48,7 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 where hs.dueDate > :now
                   and hs.dueDate <= :limit and hs.dossierStatus = 'NEW'
                   and hs.receivingDept.deptName = :departmentName
-                               and  hs.currentHandler.id = :specialistId
+                              and  hs.currentHandler.id = :specialistId
             """)
     List<OpsDossier> findNearlyDueSpecialist(
             @Param("now") LocalDateTime now,
@@ -65,8 +65,8 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             """)
     long countThisMonth();
 
-  // Đếm theo trạng thái
-  long countByDossierStatus(String dossierStatus);
+    // Đếm theo trạng thái
+    long countByDossierStatus(String dossierStatus);
 
     // Đếm hồ sơ quá hạn
     @Query("""
@@ -93,15 +93,15 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             """)
     List<String> findAllDomains();
 
-  // Danh sách hồ sơ quá hạn
-  @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus NOT IN ('APPROVED','REJECTED') AND d.dueDate < CURRENT_TIMESTAMP")
-  List<OpsDossier> findOverdueDossiers();
+    // Danh sách hồ sơ quá hạn
+    @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus NOT IN ('APPROVED','REJECTED') AND d.dueDate < CURRENT_TIMESTAMP")
+    List<OpsDossier> findOverdueDossiers();
 
-  // Danh sách hồ sơ không ở trong trạng thái cho trước
-  List<OpsDossier> findByDossierStatusNotIn(List<String> statusList);
+    // Danh sách hồ sơ không ở trong trạng thái cho trước
+    List<OpsDossier> findByDossierStatusNotIn(List<String> statusList);
 
-  // Phân trang theo trạng thái
-  Page<OpsDossier> findOpsDossierByDossierStatus(String dossierStatus, Pageable pageable);
+    // Phân trang theo trạng thái
+    Page<OpsDossier> findOpsDossierByDossierStatus(String dossierStatus, Pageable pageable);
 
     // Tìm hồ sơ gần đến hạn (trạng thái NEW)
     @Query("""
@@ -145,27 +145,24 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 service.id,
                 service.serviceName,
                 service.serviceCode,
-                service.slaHours,
-                res.decisionNumber,
-                res.eFileUrl
+                service.slaHours
             )
             FROM OpsDossier d
             JOIN d.applicant applicant
             JOIN d.service service
             LEFT JOIN d.currentHandler handler
             LEFT JOIN handler.department dept
-            LEFT JOIN OpsDossierResult res ON res.dossier = d
             WHERE d.id = :dossierId
             """)
     Optional<OpsDossierDetailDTO> findDossierDetailById(@Param("dossierId") Long dossierId);
 
-  @Query("""
-          SELECT d.dossierStatus, COUNT(d)
-          FROM OpsDossier d
-          WHERE d.applicant.id = :applicantId
-          GROUP BY d.dossierStatus
-      """)
-  List<Object[]> countStatusesByApplicant(@Param("applicantId") Long applicantId);
+    @Query("""
+                SELECT d.dossierStatus, COUNT(d)
+                FROM OpsDossier d
+                WHERE d.applicant.id = :applicantId
+                GROUP BY d.dossierStatus
+            """)
+    List<Object[]> countStatusesByApplicant(@Param("applicantId") Long applicantId);
 
     @Query("""
             SELECT new org.example.project_module4_dvc.dto.OpsDossierDTO.OpsDossierSummaryDTO(
@@ -175,14 +172,12 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 d.submissionDate,
                 applicant.fullName,
                 service.serviceName,
-                handler.fullName,
-                res.id
+                handler.fullName
             )
             FROM OpsDossier d
             JOIN d.applicant applicant
             JOIN d.service service
             LEFT JOIN d.currentHandler handler
-            LEFT JOIN d.result res
             WHERE applicant.id = :applicantId
             AND (:keyword IS NULL OR (
                 LOWER(d.dossierCode) LIKE LOWER(:keyword) OR
@@ -205,14 +200,12 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
                 d.submissionDate,
                 applicant.fullName,
                 service.serviceName,
-                handler.fullName,
-                res.id
+                handler.fullName
             )
             FROM OpsDossier d
             JOIN d.applicant applicant
             JOIN d.service service
             LEFT JOIN d.currentHandler handler
-            LEFT JOIN d.result res
             WHERE applicant.id = :applicantId
             ORDER BY d.submissionDate DESC
             """)
@@ -222,7 +215,6 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
      * đã xong/
      *
      * //----------------------------------------------------------------------------------------------------//
-     *
      *
      *
      *
@@ -246,20 +238,20 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
     // """)
     // List<OpsDossierLog> findLogsByDossierId(@Param("dossierId") Long dossierId);
 
-  @Query(value = """
-          SELECT
-              d.id AS dossierId,
-              d.dossier_code AS dossierCode,
-              l.action AS action,
-              l.comments AS message,
-              l.created_at AS createdAt
-          FROM ops_dossier_logs l
-          JOIN ops_dossiers d ON l.dossier_id = d.id
-          WHERE d.applicant_id = :currentUserId
-          ORDER BY l.created_at DESC
-          LIMIT 3
-      """, nativeQuery = true)
-  List<CitizenNotificationProjection> findTop3NotificationsByApplicant(@Param("currentUserId") Long currentUserId);
+    @Query(value = """
+                SELECT
+                    d.id AS dossierId,
+                    d.dossier_code AS dossierCode,
+                    l.action AS action,
+                    l.comments AS message,
+                    l.created_at AS createdAt
+                FROM ops_dossier_logs l
+                JOIN ops_dossiers d ON l.dossier_id = d.id
+                WHERE d.applicant_id = :currentUserId
+                ORDER BY l.created_at DESC
+                LIMIT 3
+            """, nativeQuery = true)
+    List<CitizenNotificationProjection> findTop3NotificationsByApplicant(@Param("currentUserId") Long currentUserId);
 
     @Query(value = """
               SELECT
@@ -283,44 +275,44 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
 
     // lấy phân trang cảnh báo hồ sơ quá hạn và sắp đến hạn
     @Query(value = """
-                SELECT
-                    d.id AS id,
-                    d.dossier_code AS code,
-                    s.domain AS domain,
-                    ABS(DATEDIFF(d.due_date, NOW())) AS days,
-                    'OVERDUE' AS type
-                FROM ops_dossiers d
-                JOIN cat_services s ON d.service_id = s.id
-                WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-                  AND d.due_date < NOW()
-                ORDER BY d.due_date ASC
-            """, countQuery = """
-                SELECT COUNT(*)
-                FROM ops_dossiers d
-                WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-                  AND d.due_date < NOW()
-            """, nativeQuery = true)
+            SELECT
+                d.id AS id,
+                d.dossier_code AS code,
+                s.domain AS domain,
+                ABS(DATEDIFF(d.due_date, NOW())) AS days,
+                'OVERDUE' AS type
+            FROM ops_dossiers d
+            JOIN cat_services s ON d.service_id = s.id
+            WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+              AND d.due_date < NOW()
+            ORDER BY d.due_date ASC
+              """, countQuery = """
+            SELECT COUNT(*)
+            FROM ops_dossiers d
+            WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+              AND d.due_date < NOW()
+                      """, nativeQuery = true)
     Page<Map<String, Object>> findOverdueAlerts(Pageable pageable);
 
     // lấy phân trang cảnh báo hồ sơ sắp đến hạn
     @Query(value = """
-                SELECT
-                    d.id AS id,
-                    d.dossier_code AS code,
-                    s.domain AS domain,
-                    DATEDIFF(d.due_date, NOW()) AS days,
-                    'NEARLY_DUE' AS type
-                FROM ops_dossiers d
-                JOIN cat_services s ON d.service_id = s.id
-                WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-                  AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)
-                ORDER BY d.due_date ASC
-            """, countQuery = """
-                SELECT COUNT(*)
-                FROM ops_dossiers d
-                WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
-                  AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)
-            """, nativeQuery = true)
+            SELECT
+                d.id AS id,
+                d.dossier_code AS code,
+                s.domain AS domain,
+                DATEDIFF(d.due_date, NOW()) AS days,
+                'NEARLY_DUE' AS type
+            FROM ops_dossiers d
+            JOIN cat_services s ON d.service_id = s.id
+            WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+              AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)
+            ORDER BY d.due_date ASC
+              """, countQuery = """
+            SELECT COUNT(*)
+            FROM ops_dossiers d
+            WHERE d.dossier_status NOT IN ('APPROVED','REJECTED')
+              AND d.due_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)
+                      """, nativeQuery = true)
     Page<Map<String, Object>> findNearlyDueAlerts(Pageable pageable);
 
     // đem số hồ sơ hoàn thành
@@ -343,63 +335,48 @@ public interface OpsDossierRepository extends JpaRepository<OpsDossier, Long> {
             """)
     long countCompletedOnTime();
 
-    // đếm tổng số hồ sơ
-    @Query("""
-                SELECT COUNT(d)
-                FROM OpsDossier d
-                WHERE d.dossierStatus <> 'REJECTED'
-            """)
-    long countTotalForKpi();
+    // tìm hồ sơ theo trạng thái
+    List<OpsDossier> findByDossierStatus(String status);
 
-    // đếm số hồ sơ hoàn thành đúng hạn
-    @Query("""
-                SELECT COUNT(d)
-                FROM OpsDossier d
-                WHERE
-                    (
-                        d.dossierStatus = 'COMPLETED'
-                        AND d.finishDate IS NOT NULL
-                        AND d.dueDate IS NOT NULL
-                        AND d.finishDate <= d.dueDate
-                    )
-                    OR
-                    (
-                        d.dossierStatus <> 'COMPLETED'
-                        AND d.dueDate IS NOT NULL
-                        AND d.dueDate >= CURRENT_TIMESTAMP
-                    )
-            """)
-    long countOnTimeForKpi();
+    // tìm hồ sơ theo người nộp
+    List<OpsDossier> findByApplicantId(Long applicantId);
 
-  @Query(value = """
-          SELECT d.dossier_code
-          FROM ops_dossiers d
-          WHERE d.dossier_code LIKE CONCAT(:prefix, '%')
-          ORDER BY d.dossier_code DESC
-          LIMIT 1
-      """, nativeQuery = true)
-  Optional<String> findLatestDossierCode(@Param("prefix") String prefix);
+    // tìm hồ sơ theo cán bộ thụ lý hiện tại
+    List<OpsDossier> findByCurrentHandlerId(Long handlerId);
 
-  // tìm hồ sơ theo trạng thái và mã dịch vụ bắt đầu với
-  List<OpsDossier> findByDossierStatusAndServiceServiceCodeStartingWith(
-      String status, String serviceCodePrefix);
+    // tìm hồ sơ mới theo phòng ban nhận
+    @Query("SELECT d FROM OpsDossier d WHERE d.dossierStatus = 'NEW' AND d.receivingDept.id = ?1")
+    List<OpsDossier> findNewDossiersByDept(Long deptId);
 
-  // [NEW] Optimized Query (Eager Fetch)
-  @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service WHERE d.dossierStatus = :status AND d.service.serviceCode LIKE CONCAT(:serviceCodePrefix, '%')")
-  List<OpsDossier> findWithRelationsByDossierStatusAndServiceServiceCodeStartingWith(
-      @Param("status") String status, @Param("serviceCodePrefix") String serviceCodePrefix);
+    @Query(value = """
+                SELECT d.dossier_code
+                FROM ops_dossiers d
+                WHERE d.dossier_code LIKE CONCAT(:prefix, '%')
+                ORDER BY d.dossier_code DESC
+                LIMIT 1
+            """, nativeQuery = true)
+    Optional<String> findLatestDossierCode(@Param("prefix") String prefix);
 
-  // tìm hồ sơ theo cán bộ thụ lý hiện tại, trạng thái và mã dịch vụ bắt đầu với
-  List<OpsDossier> findByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
-      Long handlerId, String status, String serviceCodePrefix);
+    // tìm hồ sơ theo trạng thái và mã dịch vụ bắt đầu với
+    List<OpsDossier> findByDossierStatusAndServiceServiceCodeStartingWith(
+            String status, String serviceCodePrefix);
 
-  // [NEW] Optimized Query with Handler (Eager Fetch)
-  @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service WHERE d.currentHandler.id = :handlerId AND d.dossierStatus = :status AND d.service.serviceCode LIKE CONCAT(:serviceCodePrefix, '%')")
-  List<OpsDossier> findWithRelationsByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
-      @Param("handlerId") Long handlerId, @Param("status") String status,
-      @Param("serviceCodePrefix") String serviceCodePrefix);
+    // [NEW] Optimized Query (Eager Fetch)
+    @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service WHERE d.dossierStatus = :status AND d.service.serviceCode LIKE CONCAT(:serviceCodePrefix, '%')")
+    List<OpsDossier> findWithRelationsByDossierStatusAndServiceServiceCodeStartingWith(
+            @Param("status") String status, @Param("serviceCodePrefix") String serviceCodePrefix);
 
-  // Helper to fetch with relations for detail view
-  @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service LEFT JOIN FETCH d.currentHandler WHERE d.id = :id")
-  Optional<OpsDossier> findWithRelationsById(@Param("id") Long id);
+    // tìm hồ sơ theo cán bộ thụ lý hiện tại, trạng thái và mã dịch vụ bắt đầu với
+    List<OpsDossier> findByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
+            Long handlerId, String status, String serviceCodePrefix);
+
+    // [NEW] Optimized Query with Handler (Eager Fetch)
+    @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service WHERE d.currentHandler.id = :handlerId AND d.dossierStatus = :status AND d.service.serviceCode LIKE CONCAT(:serviceCodePrefix, '%')")
+    List<OpsDossier> findWithRelationsByCurrentHandlerIdAndDossierStatusAndServiceServiceCodeStartingWith(
+            @Param("handlerId") Long handlerId, @Param("status") String status,
+            @Param("serviceCodePrefix") String serviceCodePrefix);
+
+    // Helper to fetch with relations for detail view
+    @Query("SELECT d FROM OpsDossier d JOIN FETCH d.applicant JOIN FETCH d.service LEFT JOIN FETCH d.currentHandler WHERE d.id = :id")
+    Optional<OpsDossier> findWithRelationsById(@Param("id") Long id);
 }
