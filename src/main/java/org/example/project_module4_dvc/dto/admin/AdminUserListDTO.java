@@ -15,6 +15,9 @@ public class AdminUserListDTO {
     private Long id;
     private String username;
     private String fullName;
+    private Long deptId;
     private String departmentName;
     private List<String> roles;
+    private List<Long> roleIds;
+    private Boolean isActive;
 }

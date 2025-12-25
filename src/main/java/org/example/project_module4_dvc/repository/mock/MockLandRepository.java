@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface MockLandRepository extends JpaRepository<MockLand, Long> {
     List<MockLand> findByOwnerId(Long ownerId);
+
+    java.util.Optional<MockLand> findByLandCertificateNumber(String landCertificateNumber);
 }

@@ -8,6 +8,7 @@ import org.example.project_module4_dvc.dto.landConversion.DossierReceiveDTO;
 import org.example.project_module4_dvc.dto.landConversion.DossierSubmitDTO;
 import org.example.project_module4_dvc.entity.cat.CatService;
 import org.example.project_module4_dvc.entity.cat.CatWorkflowStep;
+import org.example.project_module4_dvc.entity.mock.MockLand;
 import org.example.project_module4_dvc.entity.ops.OpsDossier;
 import org.example.project_module4_dvc.entity.ops.OpsDossierLog;
 import org.example.project_module4_dvc.entity.ops.OpsLogWorkflowStep;
@@ -42,6 +43,10 @@ public class LandConversionService {
         private CatWorkflowStepRepository catWorkflowRepo;
         @Autowired
         private org.example.project_module4_dvc.repository.ops.OpsDossierFileRepository fileRepo;
+        @Autowired
+        private org.example.project_module4_dvc.repository.mock.MockLandRepository mockLandRepository;
+        @Autowired
+        private LandSplitService landSplitService;
 
         // ==================== BƯỚC 1: CÔNG DÂN NỘP HỒ SƠ ====================
         @Transactional
@@ -94,15 +99,16 @@ public class LandConversionService {
                                 org.example.project_module4_dvc.entity.ops.OpsDossierFile fileEntity = new org.example.project_module4_dvc.entity.ops.OpsDossierFile();
                                 fileEntity.setDossier(dossier);
                                 fileEntity.setFileName(fileDto.getFileName());
-                                
+
                                 // Sử dụng URL từ DTO nếu có (đã xử lý bởi Controller)
                                 if (fileDto.getFileUrl() != null && !fileDto.getFileUrl().isEmpty()) {
-                                    fileEntity.setFileUrl(fileDto.getFileUrl());
+                                        fileEntity.setFileUrl(fileDto.getFileUrl());
                                 } else {
-                                    // Fallback (cho các trường hợp legacy hoặc test không có FileStorage)
-                                    fileEntity.setFileUrl("/uploads/" + dossier.getId() + "/" + fileDto.getFileName());
+                                        // Fallback (cho các trường hợp legacy hoặc test không có FileStorage)
+                                        fileEntity.setFileUrl(
+                                                        "/uploads/" + dossier.getId() + "/" + fileDto.getFileName());
                                 }
-                                
+
                                 fileEntity.setFileType(limitString(fileDto.getFileType(), 100));
                                 fileRepo.save(fileEntity);
                         }
@@ -261,14 +267,25 @@ public class LandConversionService {
 
                 String prevStatus = dossier.getDossierStatus();
 
-                // Cập nhật dữ liệu đất đai (logic cụ thể tùy nghiệp vụ)
-                // ... update mock_lands table ...
-
                 // Tạo log
                 OpsDossierLog log = createLog(dossier, officerId,
                                 "UPDATE_LAND_DB", prevStatus, "PROCESSING",
                                 comments);
                 linkWorkflowStep(log, 5); // Bước 5: Cập nhật sổ
+
+                // Kiểm tra loại dịch vụ để gọi logic tương ứng
+                if (dossier.getService().getServiceCode().equals("DD03_TACHHOP")) {
+                        try {
+                                landSplitService.splitLandFromDossier(dossier);
+                        } catch (Exception e) {
+                                // Log error but don't stop the flow? Or rethrow?
+                                // For now rethrow to show error to user
+                                throw new RuntimeException("Lỗi tách thửa: " + e.getMessage());
+                        }
+                } else {
+                        // Logic cũ cho chuyển mục đích (hoặc các dịch vụ khác)
+                        updateLandDataFromDossier(dossier);
+                }
 
                 return dossier;
         }
@@ -277,6 +294,8 @@ public class LandConversionService {
         @Transactional
         public OpsDossier finishDossier(Long dossierId, Long handlerId,
                         String comments) {
+                System.out.println("=== finishDossier called for dossierId: " + dossierId + " ===");
+
                 OpsDossier dossier = opsDossierRepository.findById(dossierId)
                                 .orElseThrow(() -> new RuntimeException("Dossier not found"));
 
@@ -284,6 +303,10 @@ public class LandConversionService {
 
                 // Hoàn tất hồ sơ
                 dossier.setDossierStatus("APPROVED");
+
+                // Ensure land data is updated (in case step 6A was skipped)
+                updateLandDataFromDossier(dossier);
+
                 dossier.setFinishDate(LocalDateTime.now());
                 opsDossierRepository.save(dossier);
 
@@ -293,6 +316,7 @@ public class LandConversionService {
                                 comments);
                 linkWorkflowStep(log, 6); // Bước 6: Trả kết quả
 
+                System.out.println("=== finishDossier completed ===");
                 return dossier;
         }
 
@@ -327,4 +351,51 @@ public class LandConversionService {
                 }
         }
 
+        public void updateLandDataFromDossier(OpsDossier dossier) {
+                Map<String, Object> formData = dossier.getFormData();
+                System.out.println("=== DEBUG: updateLandDataFromDossier called ===");
+                System.out.println("DEBUG: Dossier ID = " + dossier.getId());
+                System.out.println("DEBUG: FormData = " + formData);
+
+                if (formData != null) {
+                        String landCertNum = (String) formData.get("landCertificateNumber");
+                        // Controller stores full text in "requestedLandPurpose"
+                        String newPurpose = (String) formData.get("requestedLandPurpose");
+
+                        System.out.println("DEBUG: landCertificateNumber = " + landCertNum);
+                        System.out.println("DEBUG: requestedLandPurpose = " + newPurpose);
+
+                        if (landCertNum != null && newPurpose != null) {
+                                System.out.println("DEBUG: Searching for MockLand with certificate number: "
+                                                + landCertNum);
+
+                                try {
+                                        MockLand land = mockLandRepository
+                                                        .findByLandCertificateNumber(landCertNum)
+                                                        .orElseThrow(() -> new RuntimeException(
+                                                                        "Không tìm thấy sổ đỏ số: " + landCertNum));
+
+                                        System.out.println("DEBUG: Found MockLand ID = " + land.getId());
+                                        System.out.println("DEBUG: Current landPurpose = " + land.getLandPurpose());
+
+                                        // Cập nhật mục đích sử dụng
+                                        land.setLandPurpose(newPurpose);
+                                        mockLandRepository.save(land);
+
+                                        System.out.println("DEBUG: Updated landPurpose to = " + newPurpose);
+                                        System.out.println("DEBUG: MockLand saved successfully!");
+                                } catch (Exception e) {
+                                        System.err.println("ERROR: Failed to update MockLand - " + e.getMessage());
+                                        e.printStackTrace();
+                                        throw e;
+                                }
+                        } else {
+                                System.out.println("DEBUG: Missing data - landCertNum=" + landCertNum + ", newPurpose="
+                                                + newPurpose);
+                        }
+                } else {
+                        System.out.println("DEBUG: FormData is null!");
+                }
+                System.out.println("=== DEBUG: updateLandDataFromDossier completed ===");
+        }
 }

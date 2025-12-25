@@ -25,4 +25,9 @@ public class LandSplitMergeFormDTO {
     private String splitReason;
     private Integer numberOfNewPlots;
     private Boolean surveyCompleted;
+
+    // Additional fields for form submission
+    private String currentOwner;
+    private String ownerIdNumber;
+    private String ownerAddress;
 }

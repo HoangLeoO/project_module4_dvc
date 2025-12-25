@@ -12,4 +12,10 @@ public interface ISysUserService {
     SysUser findById(Long userId);
 
     List<AdminUserListDTO> getOfficials();
+
+    void createOfficial(org.example.project_module4_dvc.dto.admin.AdminCreateUserDTO dto);
+
+    void updateOfficial(org.example.project_module4_dvc.dto.admin.AdminUpdateUserDTO dto);
+
+    void toggleStatus(Long userId);
 }
