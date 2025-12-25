@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +48,11 @@ public class LeaderController {
     @Autowired
     private PdfService pdfService;
 
-    public LeaderController(ILeaderService leaderService) {
+    private SimpMessagingTemplate messagingTemplate;
+
+    public LeaderController(ILeaderService leaderService, SimpMessagingTemplate messagingTemplate){
         this.leaderService = leaderService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @ModelAttribute("pendingCount")
@@ -323,7 +327,8 @@ public class LeaderController {
             // Don't block flow, just log
         }
 
-        redirectAttributes.addFlashAttribute("mess", "Phê duyệt thành công!");
+        messagingTemplate.convertAndSend("/topic/dossiers/returned", "returned");
+        redirectAttributes.addFlashAttribute("mess","Phê duyệt thành công!");
         return "redirect:/leader/my-dossiers";
     }
 

@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MockBusinessRepository extends JpaRepository<MockBusiness, Long> {
+    @org.springframework.data.jpa.repository.Query("SELECT MAX(b.taxCode) FROM MockBusiness b")
+    String findMaxTaxCode();
 }
