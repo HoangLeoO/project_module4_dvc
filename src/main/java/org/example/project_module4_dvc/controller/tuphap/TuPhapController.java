@@ -316,7 +316,7 @@ public class TuPhapController {
 
             // 8. Trả về kết quả thành công
             // Gửi thông báo WebSocket
-            messagingTemplate.convertAndSend("/topic/dossiers", "new_dossier");
+            messagingTemplate.convertAndSend("/topic/dossiers/new", "new_dossier");
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
