@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8
+    container_name: dvc_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: dvc_app
+    depends_on:
+      - db
+    ports:
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}"     # map port host:container dựa vào biến APP_PORT
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE}
+      VNPAY_HASH_SECRET: ${VNPAY_HASH_SECRET}
+      VNPAY_PAY_URL: ${VNPAY_PAY_URL}
+      VNPAY_RETURN_URL: ${VNPAY_RETURN_URL}
+      VNPAY_IPN_URL: ${VNPAY_IPN_URL}
+      # ... Thêm biến cần thiết nếu dùng
+      # JAVA_OPTS: "-Dspring.profiles.active=prod"    # nếu cần truyền JVM options
+      SERVER_PORT: ${APP_PORT:-8080}
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads        # mount thư mục upload file local ra bên ngoài
+
+volumes:
+  db_data:
