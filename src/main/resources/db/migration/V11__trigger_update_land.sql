@@ -1,5 +1,3 @@
-use egov_db;
-
 -- =================================================================
 -- TRIGGER: trg_update_land_owner
 -- MỤC ĐÍCH: Tự động cập nhật chủ sở hữu đất khi hồ sơ "Biến động đất đai"

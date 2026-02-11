@@ -1,5 +1,3 @@
-USE egov_db;
-
 -- =======================================================
 -- BỔ SUNG BƯỚC 6: CÔNG DÂN XÁC NHẬN KẾT QUẢ
 -- Áp dụng cho dịch vụ Khai sinh (HK01_TRE)

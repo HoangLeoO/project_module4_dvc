@@ -1,5 +1,3 @@
-USE egov_db;
-
 -- =======================================================
 -- TRIGGER CẬP NHẬT TRẠNG THÁI KẾT HÔN
 -- Khi hồ sơ kết hôn được phê duyệt (APPROVED):

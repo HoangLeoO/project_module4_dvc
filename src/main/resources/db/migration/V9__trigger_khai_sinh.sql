@@ -1,5 +1,3 @@
-USE egov_db;
-
 DROP TRIGGER IF EXISTS trg_birth_registration_sync;
 DELIMITER $$
 
