@@ -1,14 +1,12 @@
-use egov_db;
-
 -- Thêm cấp 1: Thành phố
-INSERT INTO sys_departments (dept_code, dept_name, level)
+INSERT IGNORE INTO sys_departments (dept_code, dept_name, level)
 VALUES ('CITY-001', 'Thành phố Đà Nẵng', 1);
 
 -- Thêm cấp 2: Phường/Xã
 -- Lấy ID của Thành phố (đảm bảo không fix cứng là 1)
 SET @city_id = (SELECT id FROM sys_departments WHERE dept_code = 'CITY-001');
 
-INSERT INTO sys_departments (dept_code, dept_name, parent_id, level)
+INSERT IGNORE INTO sys_departments (dept_code, dept_name, parent_id, level)
 VALUES ('WARD-001', 'Phường Hải Châu', @city_id, 2),
        ('WARD-002', 'Phường Hòa Cường', @city_id, 2),
        ('WARD-003', 'Phường Thanh Khê', @city_id, 2),
@@ -16,7 +14,7 @@ VALUES ('WARD-001', 'Phường Hải Châu', @city_id, 2),
        ('WARD-005', 'Xã Bà Nà', @city_id, 2);
 
 -- Thêm các role cơ bản
-INSERT INTO sys_roles (role_name, description)
+INSERT IGNORE INTO sys_roles (role_name, description)
 VALUES
 -- Lãnh đạo UBND xã/phường
 ('CHU_TICH_UBND',
@@ -38,7 +36,7 @@ VALUES
 ('ADMIN',
  'Admin - Quyền cao nhất');
 
-INSERT INTO mock_citizens
+INSERT IGNORE INTO mock_citizens
 (cccd, full_name, dob, gender, hometown, ethnic_group, religion,
  permanent_address, temporary_address, fingerprint_data, avatar_url,
  marital_status, is_deceased)
@@ -102,7 +100,7 @@ VALUES ('012345679001', 'Nguyễn Văn An', '1975-05-12', 'MALE', 'Đà Nẵng',
        ('012345679020', 'Nguyễn Thị Thanh', '1999-12-25', 'FEMALE', 'Đà Nẵng', 'Kinh', 'Không',
         'Xã Bà Nà, TP Đà Nẵng', NULL, 'FP_020', '/avatars/20.png', 'SINGLE', FALSE);
 -- Thêm dữ liệu mẫu cho mối quan hệ gia đình
-INSERT INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
+INSERT IGNORE INTO mock_citizen_relationships (citizen_id, relative_id, relationship_type)
 VALUES
 -- 1. Gia đình ông An (1) - bà Bình (2) và con Lan (8)
 (1, 2, 'VO'),    -- An có vợ là Bình
@@ -124,7 +122,7 @@ VALUES
 (13, 14, 'VO'),   -- Long có vợ là Mai
 (14, 13, 'CHONG');-- Mai có chồng là Long
 
-INSERT INTO mock_households
+INSERT IGNORE INTO mock_households
 (household_code, head_citizen_id, address)
 VALUES
     ('HK-DN-0001', 1,
@@ -151,7 +149,7 @@ VALUES
     ('HK-DN-0008', 17,
      'Phường An Khê, TP Đà Nẵng');
 
-INSERT INTO mock_household_members
+INSERT IGNORE INTO mock_household_members
 (household_id, citizen_id, relation_to_head, move_in_date, status)
 VALUES
 -- Hộ 1: Gia đình đầy đủ (HK-DN-0001)
@@ -183,7 +181,7 @@ VALUES
 -- Hộ 8: Người đã ly hôn
 (8, 17, 'CHU_HO', '2018-11-11', 1);
 
-INSERT INTO mock_lands
+INSERT IGNORE INTO mock_lands
 (land_certificate_number, issue_date, issue_authority,
  map_sheet_number, parcel_number, address_detail,
  area_m2, usage_form, land_purpose, usage_period,
@@ -220,7 +218,7 @@ VALUES
  'Phường An Khê, TP Đà Nẵng',
  95.00, 'Sử dụng riêng', 'Đất ở đô thị', 'Lâu dài',
  80.00, 160.00, 'Nhà 2 tầng',
- 6, 'Đang thế chấp'),
+ 6, 'Không hợp pháp'),
 
 -- Đất ở đô thị – trung niên
 ('GCN-DN-0005', '2000-01-12', 'UBND TP Đà Nẵng',
@@ -246,7 +244,7 @@ VALUES
  50.00, 50.00, 'Nhà cấp 4 cũ',
  11, 'Hợp pháp');
 
-INSERT INTO mock_businesses
+INSERT IGNORE INTO mock_businesses
 (tax_code, business_name, capital, owner_id, address, business_lines)
 VALUES
 -- Hộ kinh doanh / doanh nghiệp nhỏ
@@ -302,14 +300,14 @@ VALUES
 
 set @password_hash = '$2a$10$Ln3qLLnFm.qeHaMK2kUuhuyLCtPvWS2dWApggINgZSLSL7lfRk5YO';
 
-INSERT INTO sys_users
+INSERT IGNORE INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
     ('admin', @password_hash, 'Quản trị hệ thống', 'ADMIN', NULL, NULL);
 
 
 # PHƯỜNG HẢI CHÂU (dept_id = 2)
-INSERT INTO sys_users
+INSERT IGNORE INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
     ('hc_ct',  @password_hash,  'Nguyễn Văn An',     'OFFICIAL', 1, 2),
@@ -319,7 +317,7 @@ VALUES
     ('hc_dc',  @password_hash,  'Hoàng Văn Em',      'OFFICIAL', 5, 2),
     ('hc_kt',  @password_hash,  'Ngô Thị Hạnh',      'OFFICIAL', 6, 2);
 
-INSERT INTO sys_users
+INSERT IGNORE INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
     ('cd_01', @password_hash, 'Nguyễn Văn An',  'CITIZEN', 1),
@@ -331,7 +329,7 @@ VALUES
 
 # PHƯỜNG THANH KHÊ (dept_id = 4)
 
-INSERT INTO sys_users
+INSERT IGNORE INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id, dept_id)
 VALUES
     ('tk_ct',  @password_hash,  'Bùi Văn Minh',   'OFFICIAL', 9, 4),
@@ -341,7 +339,7 @@ VALUES
     ('tk_dc',  @password_hash,  'Võ Thị Lan',     'OFFICIAL',8,4),
     ('tk_kt',  @password_hash,  'Lương Văn Quân', 'OFFICIAL',19,4);
 
-INSERT INTO sys_users
+INSERT IGNORE INTO sys_users
 (username, password_hash, full_name, user_type, citizen_id)
 VALUES
     ('cd_07', @password_hash, 'Bùi Văn Minh',    'CITIZEN', 9),
@@ -353,81 +351,81 @@ VALUES
 
 
 -- Gán role ADMIN cho user admin
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id
 FROM sys_users u
          JOIN sys_roles r ON r.role_name = 'ADMIN'
 WHERE u.username = 'admin';
 
 -- Thêm role CONG_DAN
-INSERT INTO sys_roles (role_name, description) VALUES ('CONG_DAN', 'Công dân - Người sử dụng dịch vụ công');
+INSERT IGNORE INTO sys_roles (role_name, description) VALUES ('CONG_DAN', 'Công dân - Người sử dụng dịch vụ công');
 
 -- Gán role CONG_DAN cho tất cả user type CITIZEN
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id
 FROM sys_users u
          JOIN sys_roles r ON r.role_name = 'CONG_DAN'
 WHERE u.user_type = 'CITIZEN';
 
 # Gán role cho PHƯỜNG HẢI CHÂU
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CHU_TICH_UBND'
 WHERE u.username = 'hc_ct';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'PHO_CHU_TICH_UBND'
 WHERE u.username = 'hc_pct';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_MOTCUA'
 WHERE u.username = 'hc_mc';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_TU_PHAP'
 WHERE u.username = 'hc_tp';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_DIA_CHINH'
 WHERE u.username = 'hc_dc';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_KINH_TE'
 WHERE u.username = 'hc_kt';
 
 # Gán role cho PHƯỜNG THANH KHÊ
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CHU_TICH_UBND'
 WHERE u.username = 'tk_ct';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'PHO_CHU_TICH_UBND'
 WHERE u.username = 'tk_pct';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_MOTCUA'
 WHERE u.username = 'tk_mc';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_TU_PHAP'
 WHERE u.username = 'tk_tp';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_DIA_CHINH'
 WHERE u.username = 'tk_dc';
 
-INSERT INTO sys_user_roles (user_id, role_id)
+INSERT IGNORE INTO sys_user_roles (user_id, role_id)
 SELECT u.id, r.id FROM sys_users u JOIN sys_roles r
                                         ON r.role_name = 'CANBO_KINH_TE'
 WHERE u.username = 'tk_kt';
@@ -451,7 +449,7 @@ ORDER BY d.dept_name, r.role_name;
 
 -- Thêm các dịch vụ công vào bảng cat_services
 -- 1. Dịch vụ Hộ tịch, Cư trú, và Y tế cho trẻ em
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
 VALUES ('HK01_TRE',
         'Đăng ký khai sinh, đăng ký thường trú, cấp thẻ bảo hiểm y tế cho trẻ em dưới 6 tuổi',
         (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
@@ -461,7 +459,7 @@ VALUES ('HK01_TRE',
         '{"sections": [{"id":"child_info","title":"Thông tin trẻ","fields":[{"name":"childFullName","label":"Họ và tên trẻ","type":"text","required":true},{"name":"dateOfBirth","label":"Ngày sinh","type":"date","required":true},{"name":"gender","label":"Giới tính","type":"select","options":[{"value":"MALE","label":"Nam"},{"value":"FEMALE","label":"Nữ"}],"required":true},{"name":"placeOfBirth","label":"Nơi sinh","type":"text","required":true}]},{"id":"parent_info","title":"Thông tin cha mẹ","fields":[{"name":"fatherFullName","label":"Họ tên cha","type":"text"},{"name":"fatherIdNumber","label":"CCCD Cha","type":"text"},{"name":"motherFullName","label":"Họ tên mẹ","type":"text","required":true},{"name":"motherIdNumber","label":"CCCD Mẹ","type":"text","required":true}]},{"id":"other_info","title":"Thông tin khác","fields":[{"name":"registeredAddress","label":"Địa chỉ thường trú","type":"text","required":true},{"name":"requestBhyt","label":"Đăng ký BHYT","type":"checkbox"}]}]}');
 
 -- 2. Đăng ký kết hôn
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
 VALUES ('HT01_KETHON',
         'Thủ tục đăng ký kết hôn',
         (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
@@ -471,7 +469,7 @@ VALUES ('HT01_KETHON',
         '{"sections": [{"id":"husband_info","title":"Thông tin người chồng","fields":[{"name":"husbandFullName","label":"Họ tên chồng","type":"text","required":true},{"name":"husbandDob","label":"Ngày sinh","type":"date","required":true},{"name":"husbandIdNumber","label":"CCCD/CMND","type":"text","required":true}]},{"id":"wife_info","title":"Thông tin người vợ","fields":[{"name":"wifeFullName","label":"Họ tên vợ","type":"text","required":true},{"name":"wifeDob","label":"Ngày sinh","type":"date","required":true},{"name":"wifeIdNumber","label":"CCCD/CMND","type":"text","required":true}]},{"id":"marriage_info","title":"Thông tin đăng ký","fields":[{"name":"intendedMarriageDate","label":"Ngày dự định kết hôn","type":"date","required":true},{"name":"registeredPlace","label":"Nơi đăng ký","type":"text","required":true}]}]}');
 
 -- 3. Đăng ký khai tử, xóa thường trú, chế độ mai táng/tử tuất
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
 VALUES ('HK02_KAITU',
         'Đăng ký khai tử, xóa đăng ký thường trú, giải quyết mai táng phí, tử tuất',
         (SELECT id FROM sys_roles WHERE role_name = 'CANBO_TU_PHAP'),
@@ -481,7 +479,7 @@ VALUES ('HK02_KAITU',
         '{"sections": [{"id":"deceased_info","title":"Thông tin người mất","fields":[{"name":"deceasedFullName","label":"Họ tên người mất","type":"text","required":true},{"name":"dateOfBirth","label":"Ngày sinh","type":"date","required":true},{"name":"dateOfDeath","label":"Ngày mất","type":"date","required":true},{"name":"placeOfDeath","label":"Nơi mất","type":"text","required":true},{"name":"lastResidence","label":"Nơi cư trú cuối cùng","type":"text","required":true}]},{"id":"declarant_info","title":"Thông tin người khai","fields":[{"name":"relativeFullName","label":"Họ tên người thân","type":"text","required":true},{"name":"relativeRelationship","label":"Mối quan hệ","type":"text","required":true}]}]}');
 
 -- 4. Cấp Giấy xác nhận tình trạng hôn nhân
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('HT02_XACNHANHN',
         'Thủ tục cấp Giấy xác nhận tình trạng hôn nhân',
@@ -492,7 +490,7 @@ VALUES ('HT02_XACNHANHN',
         '{"sections": [{"id":"personal_info","title":"Thông tin người yêu cầu","fields":[{"name":"requesterFullName","label":"Họ tên người yêu cầu","type":"text","required":true},{"name":"dateOfBirth","label":"Ngày sinh","type":"date","required":true},{"name":"idNumber","label":"CCCD/CMND","type":"text","required":true}]},{"id":"status_info","title":"Tình trạng hôn nhân","fields":[{"name":"currentMaritalStatus","label":"Tình trạng hiện tại","type":"text","required":true},{"name":"confirmationPeriod","label":"Giai đoạn xác nhận","type":"text","required":true},{"name":"purposeOfUse","label":"Mục đích sử dụng","type":"text","required":true}]}]}');
 
 -- 5. Đăng ký biến động đất đai do thay đổi quyền sử dụng (hộ/vợ chồng)
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('DD01_BIENDONG',
         'Đăng ký biến động đối với trường hợp thay đổi quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất theo thỏa thuận của các thành viên hộ gia đình hoặc của vợ và chồng',
@@ -503,7 +501,7 @@ VALUES ('DD01_BIENDONG',
         '{"sections": [{"id":"land_info","title":"Thông tin thửa đất","fields":[{"name":"landCertificateNumber","label":"Số GCN (Sổ đỏ)","type":"text","required":true},{"name":"landPlotNumber","label":"Số thửa","type":"text","required":true},{"name":"landMapSheet","label":"Tờ bản đồ số","type":"text","required":true},{"name":"currentOwner","label":"Chủ sở hữu hiện tại","type":"text","required":true}]},{"id":"change_info","title":"Thông tin biến động","fields":[{"name":"changeType","label":"Loại biến động","type":"text","required":true},{"name":"changeReason","label":"Lý do biến động","type":"text","required":true},{"name":"newOwner","label":"Chủ sở hữu mới","type":"text"}]}]}');
 
 -- 6. Chuyển mục đích sử dụng đất
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('DD02_CHUYENMDSD',
         'Thủ tục chuyển mục đích sử dụng đất phải được phép của cơ quan nhà nước có thẩm quyền đối với hộ gia đình, cá nhân',
@@ -514,7 +512,7 @@ VALUES ('DD02_CHUYENMDSD',
         '{"sections": [{"id":"land_info","title":"Thông tin thửa đất","fields":[{"name":"landCertificateNumber","label":"Số GCN (Sổ đỏ)","type":"text","required":true},{"name":"landPlotNumber","label":"Số thửa","type":"text","required":true},{"name":"mapSheetNumber","label":"Tờ bản đồ số","type":"text","required":true},{"name":"landAreaM2","label":"Diện tích (m2)","type":"number","required":true}]},{"id":"purpose_info","title":"Thông tin chuyển đổi","fields":[{"name":"currentLandPurpose","label":"Mục đích sử dụng hiện tại","type":"text","required":true},{"name":"requestedLandPurpose","label":"Mục đích sử dụng mong muốn","type":"text","required":true},{"name":"reasonForChange","label":"Lý do chuyển mục đích","type":"textarea","required":true}]},{"id":"commitment_info","title":"Cam kết","fields":[{"name":"commitment","label":"Cam kết của người xin chuyển","type":"textarea","required":true}]}]}');
 
 -- 7. Tách thửa hoặc hợp thửa đất
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount,
                           form_schema)
 VALUES ('DD03_TACHHOP',
         'Thủ tục tách thửa hoặc hợp thửa đất',
@@ -525,7 +523,7 @@ VALUES ('DD03_TACHHOP',
         '{"sections": [{"id":"land_info","title":"Thông tin thửa đất gốc","fields":[{"name":"landCertificateNumber","label":"Số GCN (Sổ đỏ)","type":"text","required":true},{"name":"landPlotNumber","label":"Số thửa","type":"text","required":true},{"name":"mapSheetNumber","label":"Tờ bản đồ số","type":"text","required":true},{"name":"originalAreaM2","label":"Diện tích gốc (m2)","type":"number","required":true}]},{"id":"split_info","title":"Thông tin tách thửa","fields":[{"name":"requestedSplitAreas","label":"Diện tích các thửa mới (phân cách bằng dấu phẩy)","type":"text","required":true},{"name":"numberOfNewPlots","label":"Số lượng thửa mới","type":"number","required":true},{"name":"splitReason","label":"Lý do tách thửa","type":"textarea","required":true},{"name":"surveyCompleted","label":"Đã đo đạc địa chính?","type":"checkbox","required":true}]}]}');
 
 -- 8. Đăng ký thành lập hộ kinh doanh
-INSERT INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
+INSERT IGNORE INTO cat_services (service_code, service_name, role_id, domain, sla_hours, fee_amount, form_schema)
 VALUES ('KD01_HKD',
         'Đăng ký thành lập hộ kinh doanh',
         (SELECT id FROM sys_roles WHERE role_name = 'CANBO_KINH_TE'),
@@ -539,7 +537,7 @@ VALUES ('KD01_HKD',
 
 -- 1. HK01_TRE: Khai sinh + Thường trú + BHYT
 -- Quy trình: Một cửa tiếp nhận -> Tư pháp thẩm định -> Tư pháp xác minh cư trú -> Lãnh đạo phê duyệt -> Một cửa trả kết quả
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HK01_TRE' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Kiểm tra hồ sơ hộ tịch', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HK01_TRE' AND r.role_name = 'CANBO_TU_PHAP'
@@ -552,7 +550,7 @@ SELECT s.id, 'Trả kết quả', 5, r.id FROM cat_services s, sys_roles r WHERE
 
 -- 2. HT01_KETHON: Đăng ký kết hôn
 -- Quy trình: Một cửa tiếp nhận -> Tư pháp thẩm tra -> Chủ tịch phê duyệt -> Một cửa trao GCN
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HT01_KETHON' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Thẩm tra điều kiện kết hôn', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HT01_KETHON' AND r.role_name = 'CANBO_TU_PHAP'
@@ -563,7 +561,7 @@ SELECT s.id, 'Trao Giấy chứng nhận kết hôn', 4, r.id FROM cat_services 
 
 -- 3. HK02_KAITU: Khai tử
 -- Quy trình: Một cửa tiếp nhận -> Tư pháp xác minh -> Lãnh đạo phê duyệt -> Tư pháp cập nhật -> Một cửa trả KQ
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HK02_KAITU' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Xác minh thông tin khai tử', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HK02_KAITU' AND r.role_name = 'CANBO_TU_PHAP'
@@ -576,7 +574,7 @@ SELECT s.id, 'Trả kết quả', 5, r.id FROM cat_services s, sys_roles r WHERE
 
 -- 4. HT02_XACNHANHN: Xác nhận tình trạng hôn nhân
 -- Quy trình: Một cửa tiếp nhận -> Tư pháp đối soát -> Lãnh đạo xác nhận -> Một cửa trả KQ
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HT02_XACNHANHN' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Đối soát dữ liệu hôn nhân', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'HT02_XACNHANHN' AND r.role_name = 'CANBO_TU_PHAP'
@@ -587,7 +585,7 @@ SELECT s.id, 'Trả giấy xác nhận', 4, r.id FROM cat_services s, sys_roles 
 
 -- 5. DD01_BIENDONG: Biến động đất đai
 -- Quy trình: Một cửa tiếp nhận -> Địa chính kiểm tra -> Địa chính lấy ý kiến -> Chủ tịch phê duyệt -> Địa chính cập nhật -> Một cửa trả KQ
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'DD01_BIENDONG' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Kiểm tra pháp lý đất đai', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'DD01_BIENDONG' AND r.role_name = 'CANBO_DIA_CHINH'
@@ -602,7 +600,7 @@ SELECT s.id, 'Trả kết quả', 6, r.id FROM cat_services s, sys_roles r WHERE
 
 -- 6. DD02_CHUYENMDSD: Chuyển mục đích sử dụng đất
 -- Quy trình: Một cửa tiếp nhận -> Địa chính thẩm định -> Địa chính quy hoạch -> Chủ tịch phê duyệt -> Địa chính cập nhật -> Một cửa trả KQ
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'DD02_CHUYENMDSD' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Thẩm định nhu cầu sử dụng đất', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'DD02_CHUYENMDSD' AND r.role_name = 'CANBO_DIA_CHINH'
@@ -617,7 +615,7 @@ SELECT s.id, 'Trả kết quả', 6, r.id FROM cat_services s, sys_roles r WHERE
 
 -- 7. DD03_TACHHOP: Tách / Hợp thửa đất
 -- Quy trình: Một cửa tiếp nhận -> Địa chính kiểm tra -> Địa chính đo đạc -> Chủ tịch phê duyệt -> Một cửa trả KQ
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'DD03_TACHHOP' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Kiểm tra điều kiện tách/hợp thửa', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'DD03_TACHHOP' AND r.role_name = 'CANBO_DIA_CHINH'
@@ -630,7 +628,7 @@ SELECT s.id, 'Trả kết quả', 5, r.id FROM cat_services s, sys_roles r WHERE
 
 -- 8. KD01_HKD: Đăng ký hộ kinh doanh
 -- Quy trình: Một cửa tiếp nhận -> Kinh tế thẩm tra -> Lãnh đạo phê duyệt -> Một cửa trả KQ
-INSERT INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
+INSERT IGNORE INTO cat_workflow_steps (service_id, step_name, step_order, role_required_id)
 SELECT s.id, 'Tiếp nhận hồ sơ', 1, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'KD01_HKD' AND r.role_name = 'CANBO_MOTCUA'
 UNION ALL
 SELECT s.id, 'Thẩm tra thông tin kinh doanh', 2, r.id FROM cat_services s, sys_roles r WHERE s.service_code = 'KD01_HKD' AND r.role_name = 'CANBO_KINH_TE'
@@ -646,7 +644,7 @@ SELECT s.id, 'Cấp Giấy chứng nhận HKD', 4, r.id FROM cat_services s, sys
 -- 1. HỒ SƠ 1: Mới tiếp nhận (NEW) - Khai sinh
 -- Người nộp: cd_01 (Nguyễn Văn An)
 -- Cán bộ xử lý: hc_mc (Lê Văn Cường - Một cửa Phường Hải Châu)
-INSERT INTO ops_dossiers
+INSERT IGNORE INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES
     ('HS-HK01-0001',
@@ -661,7 +659,7 @@ VALUES
     );
 
 -- Log cho HS 1
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0001'),
      (SELECT id FROM sys_users WHERE username = 'cd_01'),
@@ -670,7 +668,7 @@ VALUES
 -- 2. HỒ SƠ 2: Đang xử lý (PENDING) - Đất đai (Biến động)
 -- Người nộp: cd_02 (Trần Thị Bình)
 -- Cán bộ xử lý: hc_dc (Hoàng Văn Em - Địa chính Phường Hải Châu)
-INSERT INTO ops_dossiers
+INSERT IGNORE INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES
     ('HS-DD01-0002',
@@ -684,7 +682,7 @@ VALUES
      '{"landCertificateNumber": "GCN-DN-0001", "landPlotNumber": "TH-001", "landMapSheet": "TBD-01", "currentOwner": "Nguyễn Văn An", "changeType": "Tặng cho quyền sử dụng đất", "changeReason": "Tặng cho con gái", "newOwner": "Nguyễn Thị Oanh"}'
     );
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0002'),
      (SELECT id FROM sys_users WHERE username = 'cd_02'),
@@ -696,9 +694,9 @@ VALUES
 -- 3. HỒ SƠ 3: Đã trình ký (VERIFIED) - Xác nhận hôn nhân
 -- Người nộp: cd_04 (Phạm Thị Dung)
 -- Cán bộ xử lý: hc_pct (Trần Thị Bình -- HS 16: Hộ kinh doanh (Hải Châu)
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES ('HS-KD01-0016', (SELECT id FROM cat_services WHERE service_code = 'KD01_HKD'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_04'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'NEW', NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), '{"businessName": "Tiệm làm tóc Dung", "businessAddress": "Phường Hòa Cường, TP Đà Nẵng", "businessLine": "Dịch vụ cắt tóc, gội đầu", "registeredCapital": 50000000, "numberOfEmployees": 2, "businessOwner": "Phạm Thị Dung", "ownerIdNumber": "012345679004"}');
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments) VALUES ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0016'), (SELECT id FROM sys_users WHERE username = 'cd_04'), 'NOP_HO_SO', NULL, 'NEW', NULL);
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments) VALUES ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0016'), (SELECT id FROM sys_users WHERE username = 'cd_04'), 'NOP_HO_SO', NULL, 'NEW', NULL);
 
 
 -- =======================================================
@@ -706,7 +704,7 @@ INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_st
 -- =======================================================
 
 -- 1. Cấu hình hệ thống (sys_configs)
-INSERT INTO sys_configs (config_key, config_value, description)
+INSERT IGNORE INTO sys_configs (config_key, config_value, description)
 VALUES
     ('UPLOAD_PATH', '/var/www/uploads', 'Đường dẫn lưu trữ file upload'),
     ('MAX_FILE_SIZE_MB', '20', 'Dung lượng file tối đa (MB)'),
@@ -715,7 +713,7 @@ VALUES
 
 -- 2. Ủy quyền (sys_user_delegations)
 -- Chủ tịch (hc_ct) ủy quyền cho Phó Chủ tịch (hc_pct) trong 1 tuần
-INSERT INTO sys_user_delegations (from_user_id, to_user_id, start_time, end_time, status, notes)
+INSERT IGNORE INTO sys_user_delegations (from_user_id, to_user_id, start_time, end_time, status, notes)
 VALUES
     ((SELECT id FROM sys_users WHERE username = 'hc_ct'),
      (SELECT id FROM sys_users WHERE username = 'hc_pct'),
@@ -725,14 +723,14 @@ VALUES
      'Đi công tác Hà Nội, ủy quyền xử lý hồ sơ');
 
 -- Thêm phạm vi ủy quyền (Chỉ được duyệt Hộ tịch và Đất đai)
-INSERT INTO sys_delegation_scopes (delegation_id, scope_type, scope_value)
+INSERT IGNORE INTO sys_delegation_scopes (delegation_id, scope_type, scope_value)
 SELECT id, 'DOMAIN', 'HỘ TỊCH'
 FROM sys_user_delegations
 WHERE from_user_id = (SELECT id FROM sys_users WHERE username = 'hc_ct')
   AND to_user_id = (SELECT id FROM sys_users WHERE username = 'hc_pct')
 ORDER BY id DESC LIMIT 1;
 
-INSERT INTO sys_delegation_scopes (delegation_id, scope_type, scope_value)
+INSERT IGNORE INTO sys_delegation_scopes (delegation_id, scope_type, scope_value)
 SELECT id, 'DOMAIN', 'ĐẤT ĐAI'
 FROM sys_user_delegations
 WHERE from_user_id = (SELECT id FROM sys_users WHERE username = 'hc_ct')
@@ -740,7 +738,7 @@ WHERE from_user_id = (SELECT id FROM sys_users WHERE username = 'hc_ct')
 ORDER BY id DESC LIMIT 1;
 
 -- 3. Biểu mẫu in (cat_templates)
-INSERT INTO cat_templates (service_id, template_name, file_path, variable_mapping)
+INSERT IGNORE INTO cat_templates (service_id, template_name, file_path, variable_mapping)
 VALUES
     -- Khai sinh
     ((SELECT id FROM cat_services WHERE service_code = 'HK01_TRE'),
@@ -757,7 +755,7 @@ VALUES
 
 -- 4. Kho cá nhân (mod_personal_vaults)
 -- Công dân 1 (Nguyễn Văn An) lưu giấy tờ
-INSERT INTO mod_personal_vaults (user_id, doc_name, doc_type, file_url)
+INSERT IGNORE INTO mod_personal_vaults (user_id, doc_name, doc_type, file_url)
 VALUES
     ((SELECT id FROM sys_users WHERE username = 'cd_01'), 'CCCD Mặt trước', 'IMAGE', '/vault/cd01_cccd_mt.jpg'),
     ((SELECT id FROM sys_users WHERE username = 'cd_01'), 'CCCD Mặt sau', 'IMAGE', '/vault/cd01_cccd_ms.jpg'),
@@ -765,7 +763,7 @@ VALUES
     ((SELECT id FROM sys_users WHERE username = 'cd_01'), 'Bằng đại học', 'PDF', '/vault/cd01_bang_dai_hoc.pdf');
 
 -- 5. Phản ánh (mod_feedbacks)
-INSERT INTO mod_feedbacks (user_id, dossier_id, title, content, rating, is_resolved)
+INSERT IGNORE INTO mod_feedbacks (user_id, dossier_id, title, content, rating, is_resolved)
 VALUES
     ((SELECT id FROM sys_users WHERE username = 'cd_02'),
      (SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0002'),
@@ -776,7 +774,7 @@ VALUES
      'Hệ thống chậm', 'Truy cập vào giờ cao điểm hơi lag, đề nghị nâng cấp.', 3, FALSE);
 
 -- 6. Thông báo (mod_notifications)
-INSERT INTO mod_notifications (user_id, title, message, type)
+INSERT IGNORE INTO mod_notifications (user_id, title, message, type)
 VALUES
     ((SELECT id FROM sys_users WHERE username = 'cd_01'),
      'Hồ sơ đã được phê duyệt',
@@ -793,7 +791,7 @@ VALUES
      'Hồ sơ khai tử (HS-HK02-0005) cần bổ sung giấy báo tử bản gốc.',
      'STATUS_UPDATE');
 
-INSERT INTO ops_dossiers
+INSERT IGNORE INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES
     ('HS-HT02-0003',
@@ -807,7 +805,7 @@ VALUES
      '{"requesterFullName": "Võ Thị Lan", "dateOfBirth": "1990-12-01", "idNumber": "012345679008", "currentMaritalStatus": "Độc thân", "confirmationPeriod": "Từ 2008 đến nay", "purposeOfUse": "Vay vốn ngân hàng"}'
     );
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT02-0003'),
      (SELECT id FROM sys_users WHERE username = 'cd_11'),
@@ -822,7 +820,7 @@ VALUES
 -- 4. HỒ SƠ 4: Đã phê duyệt (APPROVED) - ĐK Kinh doanh
 -- Người nộp: cd_01 (Nguyễn Văn An)
 -- Cán bộ xử lý: hc_mc (Một cửa - Chờ trả)
-INSERT INTO ops_dossiers
+INSERT IGNORE INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, finish_date, form_data)
 VALUES
     ('HS-KD01-0004',
@@ -837,7 +835,7 @@ VALUES
      '{"businessName": "Tạp hóa Cô Bình", "businessAddress": "Phường Hải Châu, TP Đà Nẵng", "businessLine": "Bán lẻ tạp hóa", "registeredCapital": 50000000, "numberOfEmployees": 1, "businessOwner": "Nguyễn Văn An", "ownerIdNumber": "012345679001"}'
     );
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0004'),
      (SELECT id FROM sys_users WHERE username = 'cd_01'),
@@ -853,7 +851,7 @@ VALUES
      'PHE_DUYET', 'VERIFIED', 'APPROVED', 'Đã ký giấy phép kinh doanh');
 
 -- Tạo kết quả cho HS 4
-INSERT INTO ops_dossier_results (dossier_id, decision_number, signer_name, e_file_url)
+INSERT IGNORE INTO ops_dossier_results (dossier_id, decision_number, signer_name, e_file_url)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0004'),
      'GPKD-001/2023', 'Trần Thị Bình', '/results/gpkd_001.pdf');
@@ -861,7 +859,7 @@ VALUES
 -- 5. HỒ SƠ 5: Bị từ chối (REJECTED) - Khai tử
 -- Người nộp: cd_03 (Lê Văn Cường)
 -- Trạng thái cuối: REJECTED
-INSERT INTO ops_dossiers
+INSERT IGNORE INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, rejection_reason, form_data)
 VALUES
     ('HS-HK02-0005',
@@ -875,7 +873,7 @@ VALUES
      '{"deceasedFullName": "Nguyễn Văn X", "dateOfBirth": "1950-01-01", "dateOfDeath": "2023-12-01", "placeOfDeath": "Tại nhà", "lastResidence": "Phường Hải Châu, TP Đà Nẵng", "relativeFullName": "Lê Văn Cường", "relativeRelationship": "Con"}'
     );
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0005'),
      (SELECT id FROM sys_users WHERE username = 'cd_03'),
@@ -891,7 +889,7 @@ VALUES
 -- 6. HỒ SƠ 6: Đã trả kết quả (RESULT_RETURNED) - Tách thửa
 -- Người nộp: cd_05 (Hoàng Văn Em)
 -- Đã hoàn thành toàn bộ
-INSERT INTO ops_dossiers
+INSERT IGNORE INTO ops_dossiers
 (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, finish_date, form_data)
 VALUES
     ('HS-DD03-0006',
@@ -905,7 +903,7 @@ VALUES
      '{"landCertificateNumber": "GCN-DN-0003", "landPlotNumber": "TH-102", "mapSheetNumber": "TBD-05", "originalAreaM2": 350.00, "requestedSplitAreas": "150.00, 200.00", "numberOfNewPlots": 2, "splitReason": "Chia cho con", "surveyCompleted": true}'
     );
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0006'),
      (SELECT id FROM sys_users WHERE username = 'cd_05'),
@@ -926,23 +924,23 @@ VALUES
      (SELECT id FROM sys_users WHERE username = 'hc_mc'),
      'TRA_KQ', 'APPROVED', 'RESULT_RETURNED', 'Đã trả kết quả cho công dân');
 
-INSERT INTO ops_dossier_results (dossier_id, decision_number, signer_name, e_file_url)
+INSERT IGNORE INTO ops_dossier_results (dossier_id, decision_number, signer_name, e_file_url)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0006'),
      'QD-TACHTHUA-088', 'Nguyễn Văn An', '/results/tachthua_088.pdf');
 
 -- Thanh toán phí cho HS 6
-INSERT INTO mod_payments (dossier_id, amount, receipt_number, payment_status, pay_date)
+INSERT IGNORE INTO mod_payments (dossier_id, amount, receipt_number, payment_status, pay_date)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0006'),
      50000.00, 'PAY-009988', 'SUCCESS', DATE_SUB(NOW(), INTERVAL 2 DAY));
 
 -- File đính kèm mẫu
-INSERT INTO ops_dossier_files (dossier_id, file_name, file_url, file_type)
+INSERT IGNORE INTO ops_dossier_files (dossier_id, file_name, file_url, file_type)
 SELECT id, 'cmnd_mat_truoc.jpg', '/uploads/cmnd_mt.jpg', 'IMAGE'
 FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0001';
 
-INSERT INTO ops_dossier_files (dossier_id, file_name, file_url, file_type)
+INSERT IGNORE INTO ops_dossier_files (dossier_id, file_name, file_url, file_type)
 SELECT id, 'so_do_ban_chinh.pdf', '/uploads/sodo.pdf', 'PDF'
 FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0002';
 
@@ -952,7 +950,7 @@ FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0002';
 -- =======================================================
 
 -- 1. HS-HK01-0020: Khai sinh (VERIFIED)
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES (
            'HS-HK01-0020',
            (SELECT id FROM cat_services WHERE service_code = 'HK01_TRE'),
@@ -965,14 +963,14 @@ VALUES (
            '{"childFullName": "Ngô Văn G", "dateOfBirth": "2023-11-20", "gender": "MALE", "placeOfBirth": "Trạm y tế phường", "fatherFullName": "Đặng Văn Khôi", "fatherIdNumber": "012345679007", "motherFullName": "Ngô Thị Hạnh", "motherIdNumber": "012345679006", "registeredAddress": "Phường An Khê, TP Đà Nẵng", "requestBhyt": true}'
        );
 -- Log
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0020'), (SELECT id FROM sys_users WHERE username = 'cd_06'), 'NOP_HO_SO', NULL, 'NEW', 'Nộp hồ sơ trực tuyến'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0020'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK01-0020'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đã thẩm định thông tin khai sinh, trình ký');
 
 -- 2. HS-DD01-0021: Biến động đất đai (VERIFIED)
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES (
            'HS-DD01-0021',
            (SELECT id FROM cat_services WHERE service_code = 'DD01_BIENDONG'),
@@ -985,14 +983,14 @@ VALUES (
            '{"landCertificateNumber": "GCN-DN-0007", "landPlotNumber": "TH-009", "landMapSheet": "TBD-01", "currentOwner": "Nguyễn Văn Phúc", "changeType": "Thừa kế", "changeReason": "Thừa kế theo di chúc", "newOwner": "Bùi Văn Minh muốn sang tên"}'
        );
 -- Log
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0021'), (SELECT id FROM sys_users WHERE username = 'cd_07'), 'NOP_HO_SO', NULL, 'NEW', 'Nộp hồ sơ biến động'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0021'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD01-0021'), (SELECT id FROM sys_users WHERE username = 'hc_dc'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đất không tranh chấp, đủ điều kiện sang tên');
 
 -- 3. HS-KD01-0022: Đăng ký kinh doanh (VERIFIED)
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES (
            'HS-KD01-0022',
            (SELECT id FROM cat_services WHERE service_code = 'KD01_HKD'),
@@ -1005,14 +1003,14 @@ VALUES (
            '{"businessName": "Cửa hàng hoa tươi Ngọc", "businessAddress": "Phường Hòa Cường, TP Đà Nẵng", "businessLine": "Mua bán hoa tươi", "registeredCapital": 30000000, "numberOfEmployees": 1, "businessOwner": "Đỗ Thị Ngọc", "ownerIdNumber": "012345679010"}'
        );
 -- Log
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0022'), (SELECT id FROM sys_users WHERE username = 'cd_08'), 'NOP_HO_SO', NULL, 'NEW', 'Nộp hồ sơ ĐKKD'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0022'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-KD01-0022'), (SELECT id FROM sys_users WHERE username = 'hc_kt'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Địa điểm kinh doanh hợp lệ');
 
 -- 4. HS-HT01-0023: Kết hôn (VERIFIED)
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES (
            'HS-HT01-0023',
            (SELECT id FROM cat_services WHERE service_code = 'HT01_KETHON'),
@@ -1025,14 +1023,14 @@ VALUES (
            '{"husbandFullName": "Phan Văn Long", "husbandDob": "1982-02-02", "husbandIdNumber": "012345679013", "wifeFullName": "Lê Thị Hồng", "wifeDob": "1985-05-05", "wifeIdNumber": "012345679999", "intendedMarriageDate": "2023-12-25", "registeredPlace": "UBND Phường Thanh Khê"}'
        );
 -- Log
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0023'), (SELECT id FROM sys_users WHERE username = 'cd_09'), 'NOP_HO_SO', NULL, 'NEW', 'Đăng ký kết hôn'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0023'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0023'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Hai bên đủ điều kiện kết hôn');
 
 -- 5. HS-HK02-0024: Khai tử (VERIFIED)
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES (
            'HS-HK02-0024',
            (SELECT id FROM cat_services WHERE service_code = 'HK02_KAITU'),
@@ -1045,7 +1043,7 @@ VALUES (
            '{"deceasedFullName": "Trương Văn Cụ", "dateOfBirth": "1940-01-01", "dateOfDeath": "2023-12-15", "placeOfDeath": "Tại nhà", "lastResidence": "Phường Thanh Khê, TP Đà Nẵng", "relativeFullName": "Trương Thị Quỳnh", "relativeRelationship": "Con"}'
        );
 -- Log
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0024'), (SELECT id FROM sys_users WHERE username = 'cd_10'), 'NOP_HO_SO', NULL, 'NEW', 'Báo tử'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0024'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển hồ sơ cho bộ phận chuyên môn'),
@@ -1057,7 +1055,7 @@ VALUES
 -- =======================================================
 
 -- 1. HS-HK01-0001 (NEW)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id, description)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id, description)
 SELECT l.id, s.id, 'Công dân nộp hồ sơ'
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1065,14 +1063,14 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HK01-0001' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
 -- 2. HS-DD01-0002 (PENDING)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-DD01-0002' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1080,7 +1078,7 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD01-0002' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
 -- 3. HS-KD01-0016 (NEW)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1088,21 +1086,21 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-KD01-0016' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
 -- 4. HS-HT02-0003 (VERIFIED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HT02-0003' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HT02-0003' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1110,28 +1108,28 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HT02-0003' AND l.action = 'TRINH_KY' AND s.step_order = 2;
 
 -- 5. HS-KD01-0004 (APPROVED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-KD01-0004' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-KD01-0004' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-KD01-0004' AND l.action = 'TRINH_KY' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1139,14 +1137,14 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-KD01-0004' AND l.action = 'PHE_DUYET' AND s.step_order = 3;
 
 -- 6. HS-HK02-0005 (REJECTED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HK02-0005' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1154,7 +1152,7 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HK02-0005' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
 -- Step 2 failure leads to rejection (TU_CHOI mapped to Step 2)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1162,14 +1160,14 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HK02-0005' AND l.action = 'TU_CHOI' AND s.step_order = 2;
 
 -- 7. HS-DD03-0006 (RESULT_RETURNED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-DD03-0006' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1177,7 +1175,7 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD03-0006' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
 -- Step 3: Do dac (DO_DAC)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1185,7 +1183,7 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD03-0006' AND l.action = 'DO_DAC' AND s.step_order = 3;
 
 -- Step 3: Trinh ky (TRINH_KY) matches end of Step 3
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1193,7 +1191,7 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD03-0006' AND l.action = 'TRINH_KY' AND s.step_order = 3;
 
 -- Step 4: Phe duyet (PHE_DUYET)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1201,7 +1199,7 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD03-0006' AND l.action = 'PHE_DUYET' AND s.step_order = 4;
 
 -- Step 5: Tra KQ (TRA_KQ)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1209,21 +1207,21 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD03-0006' AND l.action = 'TRA_KQ' AND s.step_order = 5;
 
 -- 8. HS-HK01-0020 (VERIFIED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HK01-0020' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HK01-0020' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1231,21 +1229,21 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HK01-0020' AND l.action = 'TRINH_KY' AND s.step_order = 3;
 
 -- 9. HS-DD01-0021 (VERIFIED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-DD01-0021' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-DD01-0021' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1253,21 +1251,21 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-DD01-0021' AND l.action = 'TRINH_KY' AND s.step_order = 3;
 
 -- 10. HS-KD01-0022 (VERIFIED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-KD01-0022' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-KD01-0022' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1275,21 +1273,21 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-KD01-0022' AND l.action = 'TRINH_KY' AND s.step_order = 2;
 
 -- 11. HS-HT01-0023 (VERIFIED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HT01-0023' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HT01-0023' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1297,21 +1295,21 @@ FROM ops_dossier_logs l
 WHERE d.dossier_code = 'HS-HT01-0023' AND l.action = 'TRINH_KY' AND s.step_order = 2;
 
 -- 12. HS-HK02-0024 (VERIFIED)
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HK02-0024' AND l.action = 'NOP_HO_SO' AND s.step_order = 1;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
          JOIN cat_workflow_steps s ON d.service_id = s.service_id
 WHERE d.dossier_code = 'HS-HK02-0024' AND l.action = 'CHUYEN_BUOC' AND s.step_order = 2;
 
-INSERT INTO ops_log_workflow_steps (log_id, workflow_step_id)
+INSERT IGNORE INTO ops_log_workflow_steps (log_id, workflow_step_id)
 SELECT l.id, s.id
 FROM ops_dossier_logs l
          JOIN ops_dossiers d ON l.dossier_id = d.id
@@ -1324,39 +1322,39 @@ WHERE d.dossier_code = 'HS-HK02-0024' AND l.action = 'TRINH_KY' AND s.step_order
 -- =======================================================
 
 -- 1. HT01_KETHON (Marriage Registration) - VERIFIED
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES ('HS-HT01-0005', (SELECT id FROM cat_services WHERE service_code = 'HT01_KETHON'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_03'), (SELECT id FROM sys_users WHERE username = 'hc_pct'), 'VERIFIED', NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), '{"husbandFullName": "Lê Văn Cường", "husbandDob": "1992-02-10", "husbandIdNumber": "012345679003", "husbandAddress": "Phường Thanh Khê, TP Đà Nẵng", "husbandEthnicity": "Kinh", "husbandNationality": "Việt Nam", "wifeFullName": "Phạm Thị Dung", "wifeDob": "1995-11-03", "wifeIdNumber": "012345679004", "wifeAddress": "Phường Hòa Cường, TP Đà Nẵng", "wifeEthnicity": "Kinh", "wifeNationality": "Việt Nam", "intendedMarriageDate": "2023-12-25", "registeredPlace": "UBND Phường Hải Châu"}');
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0005'), (SELECT id FROM sys_users WHERE username = 'cd_03'), 'NOP_HO_SO', NULL, 'NEW', NULL),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0005'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Tư pháp thẩm tra'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HT01-0005'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đủ điều kiện, trình ký');
 
 -- 2. HK02_KAITU (Death Registration) - PENDING
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES ('HS-HK02-0006', (SELECT id FROM cat_services WHERE service_code = 'HK02_KAITU'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_01'), (SELECT id FROM sys_users WHERE username = 'hc_tp'), 'PENDING', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), '{"deceasedFullName": "Nguyễn Văn Cụ", "dateOfBirth": "1940-01-01", "dateOfDeath": "2023-11-20", "placeOfDeath": "Tại nhà riêng", "causeOfDeath": "Tuổi cao sức yếu", "lastResidence": "Phường Hải Châu, TP Đà Nẵng", "ethnicity": "Kinh", "nationality": "Việt Nam", "idNumber": "001040000001", "relativeFullName": "Nguyễn Văn An", "relativeRelationship": "Con đẻ"}');
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0006'), (SELECT id FROM sys_users WHERE username = 'cd_01'), 'NOP_HO_SO', NULL, 'NEW', NULL),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-HK02-0006'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Tư pháp xác minh');
 
 -- 3. DD02_CHUYENMDSD (Land Purpose Change) - VERIFIED
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES ('HS-DD02-0007', (SELECT id FROM cat_services WHERE service_code = 'DD02_CHUYENMDSD'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_05'), (SELECT id FROM sys_users WHERE username = 'hc_pct'), 'VERIFIED', NOW(), DATE_ADD(NOW(), INTERVAL 20 DAY), '{"landCertificateNumber": "GCN-DN-0003", "landPlotNumber": "TH-102", "mapSheetNumber": "TBD-05", "landAreaM2": 350.0, "currentLandPurpose": "Đất trồng cây lâu năm", "requestedLandPurpose": "Đất ở nông thôn", "reasonForChange": "Xây dựng nhà ở cho con trai", "commitment": "Cam kết sử dụng đúng mục đích và nộp đủ thuế"}');
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD02-0007'), (SELECT id FROM sys_users WHERE username = 'cd_05'), 'NOP_HO_SO', NULL, 'NEW', NULL),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD02-0007'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Địa chính thẩm định'),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD02-0007'), (SELECT id FROM sys_users WHERE username = 'hc_dc'), 'TRINH_KY', 'PENDING', 'VERIFIED', 'Đã thẩm định, đủ điều kiện');
 
 -- 4. DD03_TACHHOP (Land Split) - PENDING
-INSERT INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
+INSERT IGNORE INTO ops_dossiers (dossier_code, service_id, receiving_dept_id, applicant_id, current_handler_id, dossier_status, submission_date, due_date, form_data)
 VALUES ('HS-DD03-0008', (SELECT id FROM cat_services WHERE service_code = 'DD03_TACHHOP'), (SELECT id FROM sys_departments WHERE dept_code = 'WARD-001'), (SELECT id FROM sys_users WHERE username = 'cd_01'), (SELECT id FROM sys_users WHERE username = 'hc_dc'), 'PENDING', NOW(), DATE_ADD(NOW(), INTERVAL 15 DAY), '{"landCertificateNumber": "GCN-DN-0001", "landPlotNumber": "TH-001", "mapSheetNumber": "TBD-01", "originalAreaM2": 120.0, "numberOfNewPlots": 2, "requestedSplitAreas": "60.0, 60.0", "splitReason": "Tách cho 2 con", "surveyCompleted": true}');
 
-INSERT INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
+INSERT IGNORE INTO ops_dossier_logs (dossier_id, actor_id, action, prev_status, next_status, comments)
 VALUES
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0008'), (SELECT id FROM sys_users WHERE username = 'cd_01'), 'NOP_HO_SO', NULL, 'NEW', NULL),
     ((SELECT id FROM ops_dossiers WHERE dossier_code = 'HS-DD03-0008'), (SELECT id FROM sys_users WHERE username = 'hc_mc'), 'CHUYEN_BUOC', 'NEW', 'PENDING', 'Chuyển Địa chính đo đạc');
